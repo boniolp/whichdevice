@@ -20,29 +20,41 @@ import streamlit as st
 frequency_list = ['30 seconds', '1 minutes','10 minutes']
 models_list = ['ConvNet','ResNet','Inception','TransApp','Arsenal']
 lengths_list = ['6 hours', '12 hours', '1 Day']
+devices_list = ['whashing Machine', 'Dish Washer', 'Microwave', 'Kettle']
 list_name_ts = []
 
 def run_playground_frame():
     st.markdown("Here show the time series and CAM")
 
-    col1, col2, col3, col4 = st.columns(4)
+    col1, col2, col3, col4, col5 = st.columns(5)
 
     with col1:
         select_ts = st.selectbox(
             "Choose a load curve", list_name_ts
         )
     with col2:
+        devices = st.multiselect(
+            "Choose devices:", devices_list,["Dish Washer"]
+        )
+    with col3:
         frequency = st.selectbox(
             "Choose a sampling rate:", frequency_list
         )
-    with col3:
-        models = st.multiselect(
-            "Choose a model:", models_list,["ResNet"]
-        )
     with col4:
+        models = st.multiselect(
+            "Choose models:", models_list,["ResNet"]
+        )
+    with col5:
         length = st.selectbox(
             "Choose the window length:", lengths_list
         )
+
+    st.markdown("show TS et prob devices")
+    
+    if st.button("When the appliance is used?", type="primary"):
+        st.markdown("show CAM")
+            
+    
 
 def run_benchmark_frame():
     st.markdown("Here show benchmark results")
