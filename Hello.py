@@ -34,6 +34,10 @@ def run():
     """
     )
 
+    tab_playground, tab_benchmark, tab_about = st.tabs(
+        ["Playground", "Benchmark", "About"]
+    )
+    
     with tab_playground:
         run_playground_frame()
 
