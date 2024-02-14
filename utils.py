@@ -17,6 +17,15 @@ import textwrap
 
 import streamlit as st
 
+def run_playground_frame():
+    st.markdown("Here show the time series and CAM")
+
+def run_benchmark_frame():
+    st.markdown("Here show benchmark results")
+
+def run_about_frame():
+    st.markdown("Here show info on the models, data and us")
+
 
 def show_code(demo):
     """Showing the code of the demo."""
