@@ -27,7 +27,8 @@ def run_playground_frame():
     frequency = st.selectbox(
         "Choose a sampling rate:", frequency_list
     )
-    models = st.multiselect(
+    container_models = st.container()
+    models = container_models.multiselect(
         "Choose a model:","ResNet", models_list
     )
     length = st.selectbox(
