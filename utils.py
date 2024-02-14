@@ -17,12 +17,22 @@ import textwrap
 
 import streamlit as st
 
-frequency = ['30 seconds', '1 minutes','10 minutes']
-models = ['ConvNet','ResNet','Inception','TransApp','Arsenal']
-lengths = ['6 hours', '12 hours', '1 Day']
+frequency_list = ['30 seconds', '1 minutes','10 minutes']
+models_list = ['ConvNet','ResNet','Inception','TransApp','Arsenal']
+lengths_list = ['6 hours', '12 hours', '1 Day']
 
 def run_playground_frame():
     st.markdown("Here show the time series and CAM")
+
+    frequency = st.selectbox(
+        "Choose a sampling rate:", frequency_list
+    )
+    models = st.multiselect(
+        "Choose a model:","ResNet", models_list
+    )
+    length = st.selectbox(
+        "Choose the window length:", lengths_list
+    )
 
 def run_benchmark_frame():
     st.markdown("Here show benchmark results")
