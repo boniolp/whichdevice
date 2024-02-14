@@ -34,7 +34,7 @@ def run():
     """
     )
 
-    with Playground:
+    with tab_playground:
         run_playground_frame()
 
     with tab_benchmark:
