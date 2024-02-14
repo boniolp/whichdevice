@@ -20,19 +20,29 @@ import streamlit as st
 frequency_list = ['30 seconds', '1 minutes','10 minutes']
 models_list = ['ConvNet','ResNet','Inception','TransApp','Arsenal']
 lengths_list = ['6 hours', '12 hours', '1 Day']
+list_name_ts = []
 
 def run_playground_frame():
     st.markdown("Here show the time series and CAM")
 
-    frequency = st.selectbox(
-        "Choose a sampling rate:", frequency_list
-    )
-    models = st.multiselect(
-        "Choose a model:", models_list,["ResNet"]
-    )
-    length = st.selectbox(
-        "Choose the window length:", lengths_list
-    )
+    col1, col2, col3, col4 = st.columns(4)
+
+    with col1:
+        select_ts = st.selectbox(
+            "Choose a load curve", list_name_ts
+        )
+    with col2:
+        frequency = st.selectbox(
+            "Choose a sampling rate:", frequency_list
+        )
+    with col3:
+        models = st.multiselect(
+            "Choose a model:", models_list,["ResNet"]
+        )
+    with col4:
+        length = st.selectbox(
+            "Choose the window length:", lengths_list
+        )
 
 def run_benchmark_frame():
     st.markdown("Here show benchmark results")
