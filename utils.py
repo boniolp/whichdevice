@@ -37,7 +37,7 @@ def run_playground_frame():
             "Choose devices:", devices_list,["Dish Washer"]
         )
 
-    col3_1, col3_2, col3_3 = st.columns(5)
+    col3_1, col3_2, col3_3 = st.columns(3)
     with col3_1:
         frequency = st.selectbox(
             "Choose a sampling rate:", frequency_list
