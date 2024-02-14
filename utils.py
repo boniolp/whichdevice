@@ -17,6 +17,10 @@ import textwrap
 
 import streamlit as st
 
+frequency = ['30 seconds', '1 minutes','10 minutes']
+models = ['ConvNet','ResNet','Inception','TransApp','Arsenal']
+lengths = ['6 hours', '12 hours', '1 Day']
+
 def run_playground_frame():
     st.markdown("Here show the time series and CAM")
 
