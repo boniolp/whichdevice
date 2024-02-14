@@ -26,7 +26,7 @@ list_name_ts = []
 def run_playground_frame():
     st.markdown("Here show the time series and CAM")
 
-    col1, col2, col3, col4, col5 = st.columns(5)
+    col1, col2 = st.columns(2)
 
     with col1:
         select_ts = st.selectbox(
@@ -36,15 +36,17 @@ def run_playground_frame():
         devices = st.multiselect(
             "Choose devices:", devices_list,["Dish Washer"]
         )
-    with col3:
+
+    col3_1, col3_2, col3_3 = st.columns(5)
+    with col3_1:
         frequency = st.selectbox(
             "Choose a sampling rate:", frequency_list
         )
-    with col4:
+    with col3_2:
         models = st.multiselect(
             "Choose models:", models_list,["ResNet"]
         )
-    with col5:
+    with col3_3:
         length = st.selectbox(
             "Choose the window length:", lengths_list
         )
