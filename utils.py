@@ -21,7 +21,7 @@ frequency_list = ['30 seconds', '1 minutes','10 minutes']
 models_list = ['ConvNet','ResNet','Inception','TransApp','Arsenal']
 lengths_list = ['6 hours', '12 hours', '1 Day']
 devices_list = ['Washing Machine', 'Dishwasher', 'Microwave', 'Kettle']
-list_name_ts = []
+list_name_ts = ['UKDALE 1']
 
 def run_playground_frame():
     st.markdown("Here show the time series and CAM")
