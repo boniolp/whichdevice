@@ -20,7 +20,7 @@ import streamlit as st
 frequency_list = ['30 seconds', '1 minutes','10 minutes']
 models_list = ['ConvNet','ResNet','Inception','TransApp','Arsenal']
 lengths_list = ['6 hours', '12 hours', '1 Day']
-devices_list = ['whashing Machine', 'Dish Washer', 'Microwave', 'Kettle']
+devices_list = ['Washing Machine', 'Dishwasher', 'Microwave', 'Kettle']
 list_name_ts = []
 
 def run_playground_frame():
