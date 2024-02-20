@@ -34,7 +34,7 @@ def run_playground_frame():
         )
     with col2:
         devices = st.multiselect(
-            "Choose devices:", devices_list,["Dish Washer"]
+            "Choose devices:", devices_list,["Dishwasher"]
         )
 
     col3_1, col3_2, col3_3 = st.columns(3)
