@@ -330,14 +330,14 @@ def plot_cam(k, df, window_size, appliances, pred_dict_all):
 
     fig_cam = make_subplots(rows=len(appliances), cols=1, subplot_titles=[f'CAM {appliance}' for appliance in appliances])
 
-    for appliance in appliances:
+    for i,appliance in enumerate(appliances):
         pred_dict_appl = pred_dict_all[appliance]
 
         for model_name, values in pred_dict_appl.items():
             if values['pred_cam'] is not None:
                 # Clip CAM to 0 and set * by predicted label for each model
                 cam = np.clip(values['pred_cam'], a_min=0, a_max=None) * values['pred_label']
-                fig_cam.add_trace(go.Scatter(x=window_df.index, y=cam, mode='lines', name=f'CAM {model_name}'))
+                fig_cam.add_trace(go.Scatter(x=window_df.index, y=cam, mode='lines', name=f'CAM {model_name}'),row=i)
 
         fig_cam.update_layout(title='CAM', xaxis_title='Time', yaxis_title=f'CAM {appliance}', template="ggplot2")
     return fig_cam
