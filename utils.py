@@ -65,6 +65,10 @@ def run_playground_frame():
         length = st.selectbox(
             "Choose the window length:", lengths_list, index=0
         )
+    
+    #st.markdown("show TS et prob devices")
+    df, window_size = get_time_series_data(ts_name, frequency=frequency, length=length)
+    n_win = len(df) // window_size
 
     colcontrol_1, colcontrol_2, colcontrol_3 = st.columns(3)
     with colcontrol_1:
@@ -79,10 +83,6 @@ def run_playground_frame():
             CURRENT_WINDOW += 1
             CURRENT_WINDOW  = min(CURRENT_WINDOW,n_win)
     
-    #st.markdown("show TS et prob devices")
-    df, window_size = get_time_series_data(ts_name, frequency=frequency, length=length)
-    n_win = len(df) // window_size
-
     pred_dict_all = pred_one_window(CURRENT_WINDOW, df, window_size, ts_name, appliances, frequency, models)
     fig_ts, fig_app, fig_prob = plot_one_window(CURRENT_WINDOW,  df, window_size, appliances, pred_dict_all)
     
