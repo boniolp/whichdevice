@@ -339,6 +339,6 @@ def plot_cam(k, df, window_size, appliances, pred_dict_all):
                 cam = np.clip(values['pred_cam'], a_min=0, a_max=None) * values['pred_label']
                 fig_cam.add_trace(go.Scatter(x=window_df.index, y=cam, mode='lines', name=f'CAM {model_name}',legendgroup=i+1),row=i+1,col=1)
 
-        fig_cam.update_layout(title='CAM', xaxis_title='Time', legend_tracegroupgap=(4 - len(pred_dict_appl))*20)
+        fig_cam.update_layout(title='CAM', xaxis_title='Time', legend_tracegroupgap=(4 - len(pred_dict_appl))*18)
     return fig_cam
 
