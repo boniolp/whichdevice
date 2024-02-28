@@ -364,7 +364,7 @@ def plot_cam(k, df, window_size, appliances, pred_dict_all):
     fig_cam.update_layout(title='Class Activation Map to localize appliance pattern', **xaxis_title_dict)
 
     # Update legend to be at the bottom and horizontal
-    fig_cam.update_layout(legend=dict(orientation='h', x=0.5, xanchor='center', y=-0.2))
+    fig_cam.update_layout(legend=dict(orientation='h', x=0.5, xanchor='center', y=-1))
 
     return fig_cam
 
