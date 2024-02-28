@@ -33,11 +33,11 @@ from Models.ResNet import ResNet
 from Models.InceptionTime import Inception
 from Helpers.class_activation_map import CAM
 
-k=0
+CURRENT_WINDOW=0
 
 def run_playground_frame():
 
-    global k
+    global CURRENT_WINDOW
     
     st.markdown("Here show the time series and CAM")
 
@@ -66,25 +66,25 @@ def run_playground_frame():
             "Choose the window length:", lengths_list, index=0
         )
 
+    colcontrol_1, colcontrol_2, colcontrol_3 = st.columns(3)
+    with colcontrol_1:
+        if st.button("Previous", type="primary"):
+            CURRENT_WINDOW -= 1
+            CURRENT_WINDOW  = max(0,CURRENT_WINDOW)
+    with colcontrol_2:
+        st.markdown("Window {}".format(CURRENT_WINDOW))
+    
+    with colcontrol_3:
+        if st.button("Next", type="primary"):
+            CURRENT_WINDOW += 1
+            CURRENT_WINDOW  = min(CURRENT_WINDOW,n_win)
+    
     #st.markdown("show TS et prob devices")
     df, window_size = get_time_series_data(ts_name, frequency=frequency, length=length)
     n_win = len(df) // window_size
 
-    pred_dict_all = pred_one_window(k, df, window_size, ts_name, appliances, frequency, models)
-    fig_ts, fig_app, fig_prob = plot_one_window(k,  df, window_size, appliances, pred_dict_all)
-
-    colcontrol_1, colcontrol_2, colcontrol_3 = st.columns(3)
-    with colcontrol_1:
-        if st.button("Previous", type="primary"):
-            k -= 1
-            k  = max(0,k)
-    with colcontrol_2:
-        st.markdown("Window {}".format(k))
-    
-    with colcontrol_3:
-        if st.button("Next", type="primary"):
-            k += 1
-            k  = min(k,n_win)
+    pred_dict_all = pred_one_window(CURRENT_WINDOW, df, window_size, ts_name, appliances, frequency, models)
+    fig_ts, fig_app, fig_prob = plot_one_window(CURRENT_WINDOW,  df, window_size, appliances, pred_dict_all)
     
     st.plotly_chart(fig_ts, use_container_width=True)
     st.plotly_chart(fig_app, use_container_width=True)
@@ -93,7 +93,7 @@ def run_playground_frame():
 
     if st.button("When the appliance is used?", type="primary"):
         st.markdown("show CAM")
-        fig_cam = plot_cam(k, df, window_size, appliances, pred_dict_all)
+        fig_cam = plot_cam(CURRENT_WINDOW, df, window_size, appliances, pred_dict_all)
         st.plotly_chart(fig_cam, use_container_width=True)
         
             
