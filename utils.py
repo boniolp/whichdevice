@@ -68,10 +68,10 @@ def run_playground_frame():
 
     colcontrol_1, colcontrol_2, colcontrol_3 = st.columns(3)
     with colcontrol_1:
-        if st.button("Previous", type="primary"):
+        if st.button("Previous :rewind:", type="primary"):
             CURRENT_WINDOW -= 1
     with colcontrol_3:
-        if st.button("Next", type="primary"):
+        if st.button("Next :fast_forward:", type="primary"):
             CURRENT_WINDOW += 1
     with colcontrol_2:
         st.markdown("Window {}".format(CURRENT_WINDOW))
