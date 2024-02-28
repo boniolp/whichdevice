@@ -72,12 +72,15 @@ def run_playground_frame():
     pred_dict_all = pred_one_window(k, df, window_size, ts_name, appliances, frequency, models)
     fig_ts, fig_app, fig_prob = plot_one_window(k,  df, window_size, appliances, pred_dict_all)
 
-    colcontrol_1, colcontrol_2 = st.columns(2)
+    colcontrol_1, colcontrol_2, colcontrol_3 = st.columns(3)
     with colcontrol_1:
         if st.button("Previous", type="primary"):
             k -= 1
             k  = max(0,k)
     with colcontrol_2:
+        st.markdown("Window {}".format(k))
+    
+    with colcontrol_3:
         if st.button("Next", type="primary"):
             k += 1
             k  = min(k,n_win)
