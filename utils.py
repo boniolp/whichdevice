@@ -68,18 +68,19 @@ def run_playground_frame():
 
     colcontrol_1, colcontrol_2, colcontrol_3 = st.columns(3)
     with colcontrol_1:
-        if st.button("Previous :rewind:", type="primary"):
+        if st.button(":rewind: Previous", type="primary"):
             CURRENT_WINDOW -= 1
     with colcontrol_3:
         if st.button("Next :fast_forward:", type="primary"):
             CURRENT_WINDOW += 1
-    with colcontrol_2:
-        st.markdown("Window {}".format(CURRENT_WINDOW))
     
     #st.markdown("show TS et prob devices")
     df, window_size = get_time_series_data(ts_name, frequency=frequency, length=length)
     n_win = len(df) // window_size
 
+    with colcontrol_2:
+        st.markdown("from {} to {}".format(df.iloc[CURRENT_WINDOW*window_size: (CURRENT_WINDOW+1)*window_size].index(0),df.iloc[CURRENT_WINDOW*window_size: (CURRENT_WINDOW+1)*window_size].index(-1)))
+    
     if CURRENT_WINDOW > n_win:
         CURRENT_WINDOW=n_win
     elif CURRENT_WINDOW < 0:
