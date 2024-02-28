@@ -89,8 +89,12 @@ def run_playground_frame():
     pred_dict_all = pred_one_window(CURRENT_WINDOW, df, window_size, ts_name, appliances, frequency, models)
     fig_ts, fig_app, fig_prob = plot_one_window(CURRENT_WINDOW,  df, window_size, appliances, pred_dict_all)
     
-    st.plotly_chart(fig_ts, use_container_width=True)
-    st.plotly_chart(fig_app, use_container_width=True)
+    tab_ts,tab_app = st.tabs(["Aggregated", "Per device"])
+    
+    with tab_ts:
+        st.plotly_chart(fig_ts, use_container_width=True)
+    with tab_app:
+        st.plotly_chart(fig_app, use_container_width=True)
     
     tab_prob,tab_cam = st.tabs(["Which Appliance?", "When is it used?"])
 
