@@ -183,7 +183,7 @@ def get_prediction_one_appliance(ts_name, window_agg, appliance, frequency, mode
         # Decompress model
         with lzma.open(path_model, 'rb') as file:
             decompressed_file = file.read()
-        model_parameters = torch.load(io.BytesIO(decompressed_file))
+        model_parameters = torch.load(io.BytesIO(decompressed_file), map_location='cpu')
         del decompressed_file
         # Load state dict
         model_inst.load_state_dict(model_parameters['model_state_dict'])
