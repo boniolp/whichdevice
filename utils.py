@@ -35,6 +35,9 @@ from Helpers.class_activation_map import CAM
 
 
 def run_playground_frame():
+
+    k=0
+    
     st.markdown("Here show the time series and CAM")
 
     col1, col2 = st.columns(2)
@@ -65,11 +68,20 @@ def run_playground_frame():
     #st.markdown("show TS et prob devices")
     df, window_size = get_time_series_data(ts_name, frequency=frequency, length=length)
     n_win = len(df) // window_size
-    k=0
 
     pred_dict_all = pred_one_window(k, df, window_size, ts_name, appliances, frequency, models)
     fig_ts, fig_app, fig_prob = plot_one_window(k,  df, window_size, appliances, pred_dict_all)
 
+    colcontrol_1, colcontrol_3 = st.columns(2)
+    with colcontrol_1:
+        if st.button("Previous", type="primary"):
+            k -= 1
+            k  = max(0,k)
+    with colcontrol_1:
+        if st.button("Next", type="primary"):
+            k += 1
+            k  = min(k,n_win)
+    
     st.plotly_chart(fig_ts, use_container_width=True)
     st.plotly_chart(fig_app, use_container_width=True)
     st.plotly_chart(fig_prob, use_container_width=True)
