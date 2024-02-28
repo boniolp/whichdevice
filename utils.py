@@ -337,7 +337,7 @@ def plot_cam(k, df, window_size, appliances, pred_dict_all):
             if values['pred_cam'] is not None:
                 # Clip CAM to 0 and set * by predicted label for each model
                 cam = np.clip(values['pred_cam'], a_min=0, a_max=None) * values['pred_label']
-                fig_cam.add_trace(go.Scatter(x=window_df.index, y=cam, mode='lines', name=f'CAM {model_name}'),row=i,col=1)
+                fig_cam.add_trace(go.Scatter(x=window_df.index, y=cam, mode='lines', name=f'CAM {model_name}'),row=i+1,col=1)
 
         fig_cam.update_layout(title='CAM', xaxis_title='Time', yaxis_title=f'CAM {appliance}', template="ggplot2")
     return fig_cam
