@@ -33,10 +33,11 @@ from Models.ResNet import ResNet
 from Models.InceptionTime import Inception
 from Helpers.class_activation_map import CAM
 
+k=0
 
 def run_playground_frame():
 
-    k=0
+    global k
     
     st.markdown("Here show the time series and CAM")
 
