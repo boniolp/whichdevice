@@ -70,12 +70,11 @@ def run_playground_frame():
     with colcontrol_1:
         if st.button("Previous", type="primary"):
             CURRENT_WINDOW -= 1
-    with colcontrol_2:
-        st.markdown("Window {}".format(CURRENT_WINDOW))
-    
     with colcontrol_3:
         if st.button("Next", type="primary"):
             CURRENT_WINDOW += 1
+    with colcontrol_2:
+        st.markdown("Window {}".format(CURRENT_WINDOW))
     
     #st.markdown("show TS et prob devices")
     df, window_size = get_time_series_data(ts_name, frequency=frequency, length=length)
