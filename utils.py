@@ -79,7 +79,7 @@ def run_playground_frame():
     n_win = len(df) // window_size
 
     with colcontrol_2:
-        st.markdown("<p style='text-align: center;'>from {} to {} <\p>".format(df.iloc[CURRENT_WINDOW*window_size: (CURRENT_WINDOW+1)*window_size].index[0],df.iloc[CURRENT_WINDOW*window_size: (CURRENT_WINDOW+1)*window_size].index[-1]))
+        st.markdown("<p style='text-align: center;'>from {} to {} <\p>".format(df.iloc[CURRENT_WINDOW*window_size: (CURRENT_WINDOW+1)*window_size].index[0],df.iloc[CURRENT_WINDOW*window_size: (CURRENT_WINDOW+1)*window_size].index[-1]),unsafe_allow_html=True)
     
     if CURRENT_WINDOW > n_win:
         CURRENT_WINDOW=n_win
