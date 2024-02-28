@@ -1,7 +1,3 @@
-# Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022)
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
 #     http://www.apache.org/licenses/LICENSE-2.0
@@ -262,14 +258,17 @@ def plot_detection_probabilities(data):
     num_appliances = len(data)
     appliances = list(data.keys())
 
+    dict_color_model = {'ConvNet': 'wheat', 'ResNet': 'coral', 'Inception': 'powderblue', 'TransApp': 'peachpuff', 'Ensemble': 'indianred'}
+
     # Create subplots: one row, as many columns as there are appliances
-    fig = make_subplots(rows=1, cols=num_appliances, subplot_titles=appliances)
+    fig = make_subplots(rows=1, cols=num_appliances, subplot_titles=appliances, shared_yaxes=True)
 
     for i, appliance in enumerate(appliances, start=1):
         appliance_data = data[appliance]
         models = list(appliance_data.keys())
         class_0_probs = [appliance_data[model]['pred_prob'][0] for model in models]
         class_1_probs = [appliance_data[model]['pred_prob'][1] for model in models]
+        color_model   = [dict_color_model[model] for model in models]
 
         # Calculating the average probabilities for the ensemble model
         ensemble_class_0_avg = np.mean(class_0_probs)
@@ -279,19 +278,30 @@ def plot_detection_probabilities(data):
         models.append('Ensemble')
         class_0_probs.append(ensemble_class_0_avg)
         class_1_probs.append(ensemble_class_1_avg)
+        color_model.append(dict_color_model['Ensemble'])
 
         # Add bars for each class in the subplot
-        fig.add_trace(go.Bar(x=models, y=class_0_probs, name='Class 0 Probability', marker_color='indianred'), row=1, col=i)
-        fig.add_trace(go.Bar(x=models, y=class_1_probs, name='Class 1 Probability', marker_color='lightsalmon'), row=1, col=i)
+        #fig.add_trace(go.Bar(x=models, y=class_0_probs, name='Class 0 Probability', marker_color='indianred'), row=1, col=i)
+        fig.add_trace(go.Bar(x=models, y=class_1_probs,  marker_color=color_model), row=1, col=i)
+
+    for axis in fig.layout:
+        if axis.startswith('yaxis'):
+            fig.layout[axis].update(
+                range=[-0.1, 1.1],
+                tickmode='array',
+                tickvals=[0, 0.5, 1],
+                ticktext=['Not Detected', '0.5', 'Detected']
+            )
 
     # Update layout once, outside the loop
     fig.update_layout(
-        title_text='Probability of Detection for Each Model Including Ensemble (Avg. Probability of each selected models)',
+        title_text='Probability of Detection for Each Model',
         barmode='group',
+        showlegend=False,
         bargap=0.15, # gap between bars of adjacent location coordinates.
         bargroupgap=0.1, # gap between bars of the same location coordinate.
         height=400, # You can adjust the height based on your needs
-        width=1000 # Adjust the width based on the number of appliances or your display requirements
+        width=1000, # Adjust the width based on the number of appliances or your display requirements
     )
 
     return fig
@@ -313,26 +323,58 @@ def plot_one_window(k, df, window_size, appliances, pred_dict_all):
     window_df = df.iloc[k*window_size: k*window_size + window_size]
     # Plot for 'Aggregate' column for the window
     fig_aggregate_window = go.Figure()
-    fig_aggregate_window.add_trace(go.Scatter(x=window_df.index, y=window_df['Aggregate'], mode='lines', name='Aggregate', line=dict(color='royalblue')))
-    fig_aggregate_window.update_layout(title='Aggregate Consumption', xaxis_title='Time', yaxis_title='Aggregate Consumption (Watts)', template="plotly")
+    fig_aggregate_window.add_trace(go.Scatter(x=window_df.index, y=window_df['Aggregate'], mode='lines', name='Aggregate', fill='tozeroy', line=dict(color='royalblue')))
+    fig_aggregate_window.update_layout(title='Aggregate Consumption', xaxis_title='Time', yaxis_title='Power Consumption (Watts)', template="plotly")
 
     # Plot load curve of selected Appliances for the window
     fig_appliances_window = go.Figure()
     for appliance in appliances:
-        fig_appliances_window.add_trace(go.Scatter(x=window_df.index, y=window_df[appliance], mode='lines', name=appliance.capitalize()))
+        fig_appliances_window.add_trace(go.Scatter(x=window_df.index, y=window_df[appliance], mode='lines', name=appliance.capitalize(), fill='tozeroy'))
 
-    fig_appliances_window.update_layout(title='True Appliance Consumption', xaxis_title='Time', yaxis_title='Appliances Consumption (Watts)', template="plotly")
+    fig_appliances_window.update_layout(title='True Appliance Consumption', 
+                                        xaxis_title='Time', 
+                                        yaxis_title='Appliances Consumption (Watts)', 
+                                        template="plotly",
+                                        legend=dict(orientation='h', x=0.5, xanchor='center', y=-0.2)
+                                        )
 
-    # The plots are prepared and can be visualized in a local environment or integrated with Streamlit for dynamic interaction
-    # Since the visualization cannot be directy shown here due to the connection issue, please run this code in your local environment
-    return fig_aggregate_window,fig_appliances_window,plot_detection_probabilities(pred_dict_all)
-
+    return fig_aggregate_window, fig_appliances_window, plot_detection_probabilities(pred_dict_all)
 
 
 def plot_cam(k, df, window_size, appliances, pred_dict_all):
     window_df = df.iloc[k*window_size: k*window_size + window_size]
 
-    fig_cam = make_subplots(rows=len(appliances), cols=1, subplot_titles=[f'CAM {appliance}' for appliance in appliances], shared_xaxes=True,)
+    dict_color_model = {'ConvNet': 'wheat', 'ResNet': 'coral', 'Inception': 'powderblue', 'TransApp': 'peachpuff', 'Ensemble': 'indianred'}
+
+    fig_cam = make_subplots(rows=len(appliances), cols=1, subplot_titles=[f'{appliance}' for appliance in appliances], shared_xaxes=True)
+
+    for i, appliance in enumerate(appliances):
+        pred_dict_appl = pred_dict_all[appliance]
+
+        for model_name, values in pred_dict_appl.items():
+            if values['pred_cam'] is not None:
+                # Clip CAM to 0 and set * by predicted label for each model
+                cam = np.clip(values['pred_cam'], a_min=0, a_max=None) * values['pred_label']
+                fig_cam.add_trace(go.Scatter(x=window_df.index, y=cam, mode='lines', fill='tozeroy', marker=dict(color=dict_color_model[model_name]), name=f'{appliance}: CAM {model_name}'), row=i+1, col=1)
+
+    # Dynamically set the x-axis title for the last subplot
+    xaxis_title_dict = {f'xaxis{len(appliances)}_title': 'Time'}
+
+    # Update layout with dynamic x-axis title and general figure properties
+    fig_cam.update_layout(title='Class Activation Map to localize appliance pattern', **xaxis_title_dict)
+
+    # Update legend to be at the bottom and horizontal
+    fig_cam.update_layout(legend=dict(orientation='h', x=0.5, xanchor='center', y=-0.2))
+
+    return fig_cam
+
+"""
+def plot_cam(k, df, window_size, appliances, pred_dict_all):
+    window_df = df.iloc[k*window_size: k*window_size + window_size]
+
+    dict_color_model = {'ConvNet': 'wheat', 'ResNet': 'coral', 'Inception': 'powderblue', 'TransApp': 'peachpuff', 'Ensemble': 'indianred'}
+
+    fig_cam = make_subplots(rows=len(appliances), cols=1, subplot_titles=[f'CAM {appliance}' for appliance in appliances], shared_xaxes=True)
 
     for i,appliance in enumerate(appliances):
         pred_dict_appl = pred_dict_all[appliance]
@@ -341,8 +383,11 @@ def plot_cam(k, df, window_size, appliances, pred_dict_all):
             if values['pred_cam'] is not None:
                 # Clip CAM to 0 and set * by predicted label for each model
                 cam = np.clip(values['pred_cam'], a_min=0, a_max=None) * values['pred_label']
-                fig_cam.add_trace(go.Scatter(x=window_df.index, y=cam, mode='lines', name=f'CAM {model_name}',legendgroup=i+1),row=i+1,col=1)
+                fig_cam.add_trace(go.Scatter(x=window_df.index, y=cam, mode='lines', fill='tozeroy', marker=dict(color=dict_color_model[model_name]), name=f'CAM {model_name}', legendgroup=i+1), row=i+1, col=1)
 
-        fig_cam.update_layout(title='CAM', xaxis_title='Time', legend_tracegroupgap=(3 - len(pred_dict_appl))*20+10)
+        fig_cam.update_layout(title='CAM', 
+                              xaxis_title='Time', 
+                              legend_tracegroupgap=(3 - len(pred_dict_appl))*20+10,
+                )
     return fig_cam
-
+"""
