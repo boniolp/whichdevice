@@ -68,12 +68,18 @@ def run_playground_frame():
     k=0
 
     pred_dict_all = pred_one_window(k, df, window_size, ts_name, appliances, frequency, models)
-    plot_one_window(k,  df, window_size, appliances, pred_dict_all)
+    fig_ts, fig_app, fig_prob = plot_one_window(k,  df, window_size, appliances, pred_dict_all)
+
+    st.plotly_chart(fig_ts, use_container_width=True)
+    st.plotly_chart(fig_app, use_container_width=True)
+    st.plotly_chart(fig_prob, use_container_width=True)
 
 
     if st.button("When the appliance is used?", type="primary"):
         st.markdown("show CAM")
-        plot_cam(k, df, window_size, appliances, pred_dict_all)
+        fig_cam = plot_cam(k, df, window_size, appliances, pred_dict_all)
+        st.plotly_chart(fig_cam, use_container_width=True)
+        
             
     
 
@@ -264,8 +270,7 @@ def plot_detection_probabilities(data):
         width=1000 # Adjust the width based on the number of appliances or your display requirements
     )
 
-    # Show the figure
-    fig.show()
+    return fig
 
 
 def pred_one_window(k, df, window_size, ts_name, appliances, frequency, models):
@@ -296,10 +301,8 @@ def plot_one_window(k, df, window_size, appliances, pred_dict_all):
 
     # The plots are prepared and can be visualized in a local environment or integrated with Streamlit for dynamic interaction
     # Since the visualization cannot be directy shown here due to the connection issue, please run this code in your local environment
-    fig_aggregate_window.show()
-    fig_appliances_window.show()
+    return fig_aggregate_window,fig_appliances_window,plot_detection_probabilities(pred_dict_all)
 
-    plot_detection_probabilities(pred_dict_all)
 
 
 def plot_cam(k, df, window_size, appliances, pred_dict_all):
@@ -317,5 +320,5 @@ def plot_cam(k, df, window_size, appliances, pred_dict_all):
                 fig_cam.add_trace(go.Scatter(x=window_df.index, y=cam, mode='lines', name=f'CAM {model_name}'))
 
         fig_cam.update_layout(title='CAM', xaxis_title='Time', yaxis_title=f'CAM {appliance}', template="ggplot2")
-        fig_cam.show()
+    return fig_cam
 
