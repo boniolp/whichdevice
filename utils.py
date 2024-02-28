@@ -41,7 +41,7 @@ def run_playground_frame():
 
     with col1:
         ts_name = st.selectbox(
-            "Choose a load curve", list_name_ts, index=list_name_ts.index(0)
+            "Choose a load curve", list_name_ts, index=0
         )
     with col2:
         appliances = st.multiselect(
@@ -51,7 +51,7 @@ def run_playground_frame():
     col3_1, col3_2, col3_3 = st.columns(3)
     with col3_1:
         frequency = st.selectbox(
-            "Choose a sampling rate:", frequency_list, index=frequency_list.index(0)
+            "Choose a sampling rate:", frequency_list, index=0
         )
     with col3_2:
         models = st.multiselect(
@@ -59,7 +59,7 @@ def run_playground_frame():
         )
     with col3_3:
         length = st.selectbox(
-            "Choose the window length:", lengths_list, index=lengths_list.index(0)
+            "Choose the window length:", lengths_list, index=0
         )
 
     #st.markdown("show TS et prob devices")
@@ -73,6 +73,7 @@ def run_playground_frame():
 
     if st.button("When the appliance is used?", type="primary"):
         st.markdown("show CAM")
+        plot_cam(k, df, window_size, appliances, pred_dict_all)
             
     
 
@@ -286,13 +287,10 @@ def plot_one_window(k, df, window_size, appliances, pred_dict_all):
     fig_aggregate_window.add_trace(go.Scatter(x=window_df.index, y=window_df['Aggregate'], mode='lines', name='Aggregate', line=dict(color='royalblue')))
     fig_aggregate_window.update_layout(title='Aggregate Consumption', xaxis_title='Time', yaxis_title='Aggregate Consumption (Watts)', template="plotly")
 
-    appliances = ['Kettle', 'Dishwasher', 'WashingMachine', 'Microwave']
-    colors     = ['gold', 'turquoise', 'magenta', 'lightgreen']
-
     # Plot load curve of selected Appliances for the window
     fig_appliances_window = go.Figure()
-    for appliance, color in zip(appliances, colors):
-        fig_appliances_window.add_trace(go.Scatter(x=window_df.index, y=window_df[appliance], mode='lines', name=appliance.capitalize(), line=dict(color=color)))
+    for appliance in appliances:
+        fig_appliances_window.add_trace(go.Scatter(x=window_df.index, y=window_df[appliance], mode='lines', name=appliance.capitalize()))
 
     fig_appliances_window.update_layout(title='True Appliance Consumption', xaxis_title='Time', yaxis_title='Appliances Consumption (Watts)', template="plotly")
 
@@ -302,4 +300,22 @@ def plot_one_window(k, df, window_size, appliances, pred_dict_all):
     fig_appliances_window.show()
 
     plot_detection_probabilities(pred_dict_all)
+
+
+def plot_cam(k, df, window_size, appliances, pred_dict_all):
+    window_df = df.iloc[k*window_size: k*window_size + window_size]
+
+    fig_cam = make_subplots(rows=len(appliances), cols=1, subplot_titles=[f'CAM {appliance}' for appliance in appliances])
+
+    for appliance in appliances:
+        pred_dict_appl = pred_dict_all[appliance]
+
+        for model_name, values in pred_dict_appl.items():
+            if values['pred_cam'] is not None:
+                # Clip CAM to 0 and set * by predicted label for each model
+                cam = np.clip(values['pred_cam'], a_min=0, a_max=None) * values['pred_label']
+                fig_cam.add_trace(go.Scatter(x=window_df.index, y=cam, mode='lines', name=f'CAM {model_name}'))
+
+        fig_cam.update_layout(title='CAM', xaxis_title='Time', yaxis_title=f'CAM {appliance}', template="ggplot2")
+        fig_cam.show()
 
