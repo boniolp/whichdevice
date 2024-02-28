@@ -66,7 +66,7 @@ def run_playground_frame():
             "Choose the window length:", lengths_list, index=0
         )
 
-    colcontrol_1, colcontrol_2, colcontrol_3 = st.columns(3)
+    colcontrol_1, colcontrol_2, colcontrol_3 = st.columns([0.2,0.8,0.2])
     with colcontrol_1:
         if st.button(":rewind: Previous", type="primary"):
             CURRENT_WINDOW -= 1
