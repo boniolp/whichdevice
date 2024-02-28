@@ -90,11 +90,12 @@ def run_playground_frame():
     
     st.plotly_chart(fig_ts, use_container_width=True)
     st.plotly_chart(fig_app, use_container_width=True)
-    st.plotly_chart(fig_prob, use_container_width=True)
+    
+    tab_prob,tab_cam = st.tabs(["Which Appliance?", "When is it used?"])
 
-
-    if st.button("When the appliance is used?", type="primary"):
-        st.markdown("show CAM")
+    with tab_prob:
+        st.plotly_chart(fig_prob, use_container_width=True)
+    with tab_cam:
         fig_cam = plot_cam(CURRENT_WINDOW, df, window_size, appliances, pred_dict_all)
         st.plotly_chart(fig_cam, use_container_width=True)
         
