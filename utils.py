@@ -372,48 +372,6 @@ def plot_one_window(k, df, window_size, appliances, pred_dict_all):
     return fig_aggregate_window, fig_appliances_window, plot_detection_probabilities(pred_dict_all), fig_appliances_window_stacked
 
 
-def plot_cam(k, df, window_size, appliances, pred_dict_all):
-    window_df = df.iloc[k*window_size: k*window_size + window_size]
-
-    dict_color_model = {'ConvNet': 'wheat', 'ResNet': 'coral', 'Inception': 'powderblue', 'TransApp': 'peachpuff', 'Ensemble': 'indianred'}
-
-    fig_cam = make_subplots(rows=len(appliances), cols=1, subplot_titles=[f'{appliance}' for appliance in appliances], shared_xaxes=True)
-
-    for i, appliance in enumerate(appliances):
-        pred_dict_appl = pred_dict_all[appliance]
-        cam_max_values = []
-
-        for model_name, values in pred_dict_appl.items():
-            if values['pred_cam'] is not None:
-                # Clip CAM to 0 and set to null if predicted label is 0
-                cam = np.clip(values['pred_cam'], a_min=0, a_max=None) * values['pred_label'] # CAM set to 0 if appliance not detected
-                cam_max_values.append(np.max(cam))
-                fig_cam.add_trace(go.Scatter(x=window_df.index, y=cam, mode='lines', fill='tozeroy', marker=dict(color=dict_color_model[model_name]), name=f'{appliance}: CAM {model_name}'), 
-                                  row=i+1, col=1)
-        
-        # Determine y-axis range for this subplot
-        if cam_max_values:  # Check if list is not empty
-            y_range_max = max(10, np.max(cam_max_values))
-        else:
-            y_range_max = 10  # Default or fallback value
-        
-        # Update y-axis range for this subplot
-        fig_cam.update_yaxes(range=[0, y_range_max], row=i+1, col=1)
-
-    # Dynamically set the x-axis title for the last subplot
-    xaxis_title_dict = {f'xaxis{len(appliances)}_title': 'Time'}
-
-    # Update layout with dynamic x-axis title and general figure properties
-    fig_cam.update_layout(title='Class Activation Map to localize appliance pattern', **xaxis_title_dict)
-
-    # Update legend to be at the bottom and horizontal
-    fig_cam.update_layout(legend=dict(orientation='h', x=0.5, xanchor='center', y=-0.1),
-                          height=250 * len(appliances),
-                          width=1000, 
-                          margin=dict(l=30, r=20, t=50, b=20))
-
-    return fig_cam
-
 """
 def plot_cam(k, df, window_size, appliances, pred_dict_all):
     window_df = df.iloc[k*window_size: k*window_size + window_size]
@@ -435,5 +393,51 @@ def plot_cam(k, df, window_size, appliances, pred_dict_all):
                               xaxis_title='Time', 
                               legend_tracegroupgap=(3 - len(pred_dict_appl))*20+10,
                 )
+    return fig_cam
+"""
+
+
+def plot_cam(k, df, window_size, appliances, pred_dict_all):
+    window_df = df.iloc[k*window_size: k*window_size + window_size]
+
+    dict_color_model = {'ConvNet': 'wheat', 'ResNet': 'coral', 'Inception': 'powderblue', 'TransApp': 'peachpuff', 'Ensemble': 'indianred'}
+
+    fig_cam = make_subplots(rows=len(appliances), cols=1, subplot_titles=[f'{appliance}' for appliance in appliances], shared_xaxes=True)
+
+    added_models = set()  # Track which models have been added to figure for legend purposes
+
+    for i, appliance in enumerate(appliances):
+        pred_dict_appl = pred_dict_all[appliance]
+        cam_max_values = []
+
+        for model_name, values in pred_dict_appl.items():
+            if values['pred_cam'] is not None:
+                cam = np.clip(values['pred_cam'], a_min=0, a_max=None) * values['pred_label']
+                cam_max_values.append(np.max(cam))
+
+                show_legend = model_name not in added_models  # Show legend only if model hasn't been added
+                added_models.add(model_name)  # Mark model as added
+
+                fig_cam.add_trace(go.Scatter(x=window_df.index, y=cam, mode='lines', fill='tozeroy',
+                                             marker=dict(color=dict_color_model[model_name]),
+                                             name=f'CAM {model_name}',
+                                             legendgroup=model_name,  # Assign legend group
+                                             showlegend=show_legend),
+                                  row=i+1, col=1)
+        
+        if cam_max_values:  # Check if list is not empty
+            y_range_max = max(10, np.max(cam_max_values))
+        else:
+            y_range_max = 10  # Default or fallback value
+        
+        fig_cam.update_yaxes(range=[0, y_range_max], row=i+1, col=1)
+
+    xaxis_title_dict = {f'xaxis{len(appliances)}_title': 'Time'}
+    fig_cam.update_layout(title='Class Activation Map to localize appliance pattern', **xaxis_title_dict)
+    fig_cam.update_layout(legend=dict(orientation='h', x=0.5, xanchor='center', y=-0.1),
+                          height=50 + 30 + 180 * len(appliances),
+                          width=1000,
+                          margin=dict(l=30, r=20, t=50, b=30))
+
     return fig_cam
 """
