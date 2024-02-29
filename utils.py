@@ -266,19 +266,20 @@ def plot_detection_probabilities(data):
     for i, appliance in enumerate(appliances, start=1):
         appliance_data = data[appliance]
         models = list(appliance_data.keys())
-        class_0_probs = [appliance_data[model]['pred_prob'][0] for model in models]
+        #class_0_probs = [appliance_data[model]['pred_prob'][0] for model in models]
         class_1_probs = [appliance_data[model]['pred_prob'][1] for model in models]
         color_model   = [dict_color_model[model] for model in models]
 
         # Calculating the average probabilities for the ensemble model
-        ensemble_class_0_avg = np.mean(class_0_probs)
+        #ensemble_class_0_avg = np.mean(class_0_probs)
         ensemble_class_1_avg = np.mean(class_1_probs)
 
-        # Adding the ensemble model to the model list and its probabilities to the lists
-        models.append('Ensemble')
-        class_0_probs.append(ensemble_class_0_avg)
-        class_1_probs.append(ensemble_class_1_avg)
-        color_model.append(dict_color_model['Ensemble'])
+        # Adding the ensemble model to the model list only if multiple selected models
+        if len(models)>1:
+            models.append('Mean Prediciton')
+            #class_0_probs.append(ensemble_class_0_avg)
+            class_1_probs.append(ensemble_class_1_avg)
+            color_model.append(dict_color_model['Ensemble'])
 
         # Add bars for each class in the subplot
         #fig.add_trace(go.Bar(x=models, y=class_0_probs, name='Class 0 Probability', marker_color='indianred'), row=1, col=i)
@@ -324,7 +325,15 @@ def plot_one_window(k, df, window_size, appliances, pred_dict_all):
     # Plot for 'Aggregate' column for the window
     fig_aggregate_window = go.Figure()
     fig_aggregate_window.add_trace(go.Scatter(x=window_df.index, y=window_df['Aggregate'], mode='lines', name='Aggregate', fill='tozeroy', line=dict(color='royalblue')))
-    fig_aggregate_window.update_layout(title='Aggregate Consumption', xaxis_title='Time', yaxis_title='Power Consumption (Watts)', template="plotly")
+    fig_aggregate_window.update_layout(title='Aggregate Consumption', 
+                                       xaxis_title='Time', 
+                                       yaxis_title='Power Consumption (Watts)',
+                                       template="plotly",
+                                       height=450,
+                                       width=1000, 
+                                       margin=dict(l=30, r=20, t=30, b=40),
+                                       yaxis_range=[0, max(3000, np.max(window_df['Aggregate'].values) + 50)]
+                                       )
 
     # Plot load curve of selected Appliances for the window
     fig_appliances_window = go.Figure()
@@ -335,7 +344,11 @@ def plot_one_window(k, df, window_size, appliances, pred_dict_all):
                                         xaxis_title='Time', 
                                         yaxis_title='Appliances Consumption (Watts)', 
                                         template="plotly",
-                                        legend=dict(orientation='h', x=0.5, xanchor='center', y=-0.2)
+                                        legend=dict(orientation='h', x=0.5, xanchor='center', y=-0.2),
+                                        height=450,
+                                        width=1000, 
+                                        margin=dict(l=30, r=20, t=30, b=40),
+                                        yaxis_range=[0, max(3000, np.max(window_df['Aggregate'].values) + 50)]
                                         )
 
     return fig_aggregate_window, fig_appliances_window, plot_detection_probabilities(pred_dict_all)
@@ -350,12 +363,24 @@ def plot_cam(k, df, window_size, appliances, pred_dict_all):
 
     for i, appliance in enumerate(appliances):
         pred_dict_appl = pred_dict_all[appliance]
+        cam_max_values = []
 
         for model_name, values in pred_dict_appl.items():
             if values['pred_cam'] is not None:
-                # Clip CAM to 0 and set * by predicted label for each model
-                cam = np.clip(values['pred_cam'], a_min=0, a_max=None) * values['pred_label']
-                fig_cam.add_trace(go.Scatter(x=window_df.index, y=cam, mode='lines', fill='tozeroy', marker=dict(color=dict_color_model[model_name]), name=f'{appliance}: CAM {model_name}'), row=i+1, col=1)
+                # Clip CAM to 0 and set to null if predicted label is 0
+                cam = np.clip(values['pred_cam'], a_min=0, a_max=None) * values['pred_label'] # CAM set to 0 if appliance not detected
+                cam_max_values.append(np.max(cam))
+                fig_cam.add_trace(go.Scatter(x=window_df.index, y=cam, mode='lines', fill='tozeroy', marker=dict(color=dict_color_model[model_name]), name=f'{appliance}: CAM {model_name}'), 
+                                  row=i+1, col=1)
+        
+        # Determine y-axis range for this subplot
+        if cam_max_values:  # Check if list is not empty
+            y_range_max = max(10, np.max(cam_max_values))
+        else:
+            y_range_max = 10  # Default or fallback value
+        
+        # Update y-axis range for this subplot
+        fig_cam.update_yaxes(range=[0, y_range_max], row=i+1, col=1)
 
     # Dynamically set the x-axis title for the last subplot
     xaxis_title_dict = {f'xaxis{len(appliances)}_title': 'Time'}
@@ -364,7 +389,10 @@ def plot_cam(k, df, window_size, appliances, pred_dict_all):
     fig_cam.update_layout(title='Class Activation Map to localize appliance pattern', **xaxis_title_dict)
 
     # Update legend to be at the bottom and horizontal
-    fig_cam.update_layout(legend=dict(orientation='h', x=0.5, xanchor='center', y=-1))
+    fig_cam.update_layout(legend=dict(orientation='h', x=0.5, xanchor='center', y=-0.1),
+                          height=250 * len(appliances),
+                          width=1000, 
+                          margin=dict(l=30, r=20, t=50, b=20))
 
     return fig_cam
 
