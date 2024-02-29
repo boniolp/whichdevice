@@ -88,15 +88,14 @@ def run_playground_frame():
     tab_ts,tab_app = st.tabs(["Aggregated", "Per device"])
     
     with tab_ts:
+        st.plotly_chart(fig_ts, use_container_width=True)
+    
+    with tab_app:
         on = st.toggle('Stack')
-
         if on:
             st.plotly_chart(fig_stack, use_container_width=True)
         else:
-            st.plotly_chart(fig_ts, use_container_width=True)
-    
-    with tab_app:
-        st.plotly_chart(fig_app, use_container_width=True)
+            st.plotly_chart(fig_app, use_container_width=True)
     
     tab_prob,tab_cam = st.tabs(["Which Appliance?", "When is it used?"])
 
