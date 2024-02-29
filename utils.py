@@ -83,12 +83,18 @@ def run_playground_frame():
         CURRENT_WINDOW=0
     
     pred_dict_all = pred_one_window(CURRENT_WINDOW, df, window_size, ts_name, appliances, frequency, models)
-    fig_ts, fig_app, fig_prob = plot_one_window(CURRENT_WINDOW,  df, window_size, appliances, pred_dict_all)
+    fig_ts, fig_app, fig_prob,fig_stack = plot_one_window(CURRENT_WINDOW,  df, window_size, appliances, pred_dict_all)
     
     tab_ts,tab_app = st.tabs(["Aggregated", "Per device"])
     
     with tab_ts:
-        st.plotly_chart(fig_ts, use_container_width=True)
+        on = st.toggle('Stack')
+
+        if on:
+            st.plotly_chart(fig_stack, use_container_width=True)
+        else:
+            st.plotly_chart(fig_ts, use_container_width=True)
+    
     with tab_app:
         st.plotly_chart(fig_app, use_container_width=True)
     
@@ -337,8 +343,10 @@ def plot_one_window(k, df, window_size, appliances, pred_dict_all):
 
     # Plot load curve of selected Appliances for the window
     fig_appliances_window = go.Figure()
+    fig_appliances_window_stacked = go.Figure()
     for appliance in appliances:
         fig_appliances_window.add_trace(go.Scatter(x=window_df.index, y=window_df[appliance], mode='lines', name=appliance.capitalize(), fill='tozeroy'))
+        fig_appliances_window_stacked.add_trace(go.Scatter(x=window_df.index, y=window_df[appliance], mode='lines', name=appliance.capitalize(), stackgroup='one'))
 
     fig_appliances_window.update_layout(title='True Appliance Consumption', 
                                         xaxis_title='Time', 
@@ -351,7 +359,18 @@ def plot_one_window(k, df, window_size, appliances, pred_dict_all):
                                         yaxis_range=[0, max(3000, np.max(window_df['Aggregate'].values) + 50)]
                                         )
 
-    return fig_aggregate_window, fig_appliances_window, plot_detection_probabilities(pred_dict_all)
+    fig_appliances_window_stacked.update_layout(title='True Appliance Consumption', 
+                                        xaxis_title='Time', 
+                                        yaxis_title='Appliances Consumption (Watts)', 
+                                        template="plotly",
+                                        legend=dict(orientation='h', x=0.5, xanchor='center', y=-0.2),
+                                        height=450,
+                                        width=1000, 
+                                        margin=dict(l=30, r=20, t=30, b=40),
+                                        yaxis_range=[0, max(3000, np.max(window_df['Aggregate'].values) + 50)]
+                                        )
+    
+    return fig_aggregate_window, fig_appliances_window, plot_detection_probabilities(pred_dict_all), fig_appliances_window_stacked
 
 
 def plot_cam(k, df, window_size, appliances, pred_dict_all):
