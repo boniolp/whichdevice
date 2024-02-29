@@ -440,4 +440,3 @@ def plot_cam(k, df, window_size, appliances, pred_dict_all):
                           margin=dict(l=30, r=20, t=50, b=30))
 
     return fig_cam
-"""
