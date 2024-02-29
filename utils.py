@@ -345,7 +345,7 @@ def plot_one_window(k, df, window_size, appliances, pred_dict_all):
     fig_appliances_window_stacked = go.Figure()
     for appliance in appliances:
         fig_appliances_window.add_trace(go.Scatter(x=window_df.index, y=window_df[appliance], mode='lines', name=appliance.capitalize(), fill='tozeroy'))
-        fig_appliances_window_stacked.add_trace(go.Scatter(x=window_df.index, y=window_df[appliance], mode='lines', line=dict(width=0, color='black'), name=appliance.capitalize(), stackgroup='one'))
+        fig_appliances_window_stacked.add_trace(go.Scatter(x=window_df.index, y=window_df[appliance], mode='lines', line=dict(width=0), name=appliance.capitalize(), stackgroup='one'))
 
     fig_appliances_window.update_layout(title='True Appliance Consumption', 
                                         xaxis_title='Time', 
