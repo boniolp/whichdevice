@@ -83,12 +83,14 @@ def run_playground_frame():
         CURRENT_WINDOW=0
     
     pred_dict_all = pred_one_window(CURRENT_WINDOW, df, window_size, ts_name, appliances, frequency, models)
-    fig_ts, fig_app, fig_prob,fig_stack = plot_one_window(CURRENT_WINDOW,  df, window_size, appliances, pred_dict_all)
+    fig_ts, fig_app, fig_prob, fig_stack = plot_one_window(CURRENT_WINDOW,  df, window_size, appliances, pred_dict_all)
+    fig_stacked_cam = plot_stacked_cam(CURRENT_WINDOW, df, window_size, appliances, pred_dict_all)
     
     tab_ts,tab_app = st.tabs(["Aggregated", "Per device"])
     
     with tab_ts:
         st.plotly_chart(fig_ts, use_container_width=True)
+        st.plotly_chart(fig_stacked_cam, use_container_width=True)
     
     with tab_app:
         on = st.toggle('Stack')
@@ -440,3 +442,43 @@ def plot_cam(k, df, window_size, appliances, pred_dict_all):
                           margin=dict(l=30, r=20, t=50, b=30))
 
     return fig_cam
+
+
+def plot_stacked_cam(k, df, window_size, appliances, pred_dict_all):
+    window_df = df.iloc[k*window_size: k*window_size + window_size]
+    window_agg = window_df['Aggregate']
+
+    z = []  
+    for appl in appliances:
+        stacked_cam = None
+        dict_pred = pred_dict_all[appl]
+        for _, dict_model in dict_pred.items():
+            if dict_model['pred_cam'] is not None:
+                # Aggregate CAMs from different models
+                stacked_cam = stacked_cam + dict_model['pred_cam'] if stacked_cam is not None else dict_model['pred_cam']
+        
+        # Clip values and ensure it's an array with the same length as window_agg
+        stacked_cam = np.clip(stacked_cam, a_min=0, a_max=None) if stacked_cam is not None else np.zeros(len(window_agg))
+        z.append(stacked_cam)
+
+    z = np.array(z)
+    z = z / np.max(np.array(z)) + 1e-5 # Normalize
+
+    # Create the heatmap
+    fig = go.Figure(data=go.Heatmap(
+        z=z,
+        x=window_agg.index,  # Timestamps as x-axis
+        y=appliances,  # Appliances as y-axis
+        colorscale='RdBu_r',  # Color scale to represent stacked_cam values
+        showscale=False,
+    ))
+
+    # Update layout to add titles and adjust axis labels
+    fig.update_layout(xaxis_title='Time',
+                      xaxis=dict(tickmode='auto'), 
+                      yaxis=dict(tickmode='auto', tickvals=list(range(len(appliances))), ticktext=appliances)
+                    )
+    
+    fig.update_yaxes(tickangle=-45)
+
+    return fig  
