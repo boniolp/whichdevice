@@ -30,8 +30,8 @@ def run():
 
     st.markdown(
         """
-        Welcom to WhichDevice! This tools will help you to...
-    """
+        Welcome to WhichDevice! This app provides an analytical tool to detect and localize appliance patterns in electrical smart meter signals.
+        """
     )
 
     tab_playground, tab_benchmark, tab_about = st.tabs(

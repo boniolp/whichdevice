@@ -111,7 +111,19 @@ def run_playground_frame():
     
 
 def run_benchmark_frame():
-    st.markdown("Here show benchmark results")
+    st.markdown("Here show benchmark/datasets/methods results")
+
+    tab_comparaison, tab_dataset_description, tab_model_description = st.tabs(["Benchmark results", "Datasets", "Methods"])
+
+    with tab_comparaison:
+        st.markdown("Here show benchmark results")
+
+    with tab_dataset_description:
+        st.markdown(text_description_dataset)
+
+    with tab_model_description:
+        st.markdown(text_description_model)
+    
 
 
 def run_about_frame():
