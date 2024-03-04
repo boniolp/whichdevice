@@ -499,7 +499,7 @@ def plot_stacked_cam(k, df, window_size, appliances, pred_dict_all):
     fig.update_layout(xaxis_title='Time',
                       xaxis=dict(tickmode='auto'), 
                       yaxis=dict(tickmode='auto', tickvals=list(range(len(appliances))), ticktext=appliances),
-                      height= 20 + 50 * (len(appliances)+1),
+                      height= 100 * (len(appliances)+1),
                     )
     
     fig.update_yaxes(tickangle=-45)
