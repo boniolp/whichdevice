@@ -87,7 +87,7 @@ def run_playground_frame():
     fig_ts, fig_app, fig_prob, fig_stack = plot_one_window(CURRENT_WINDOW,  df, window_size, appliances, pred_dict_all)
     fig_stacked_cam = plot_stacked_cam(CURRENT_WINDOW, df, window_size, appliances, pred_dict_all)
     
-    tab_ts,tab_app = st.tabs(["Aggregated", "Per device"])
+    tab_ts, tab_app = st.tabs(["Aggregated", "Per device"])
     
     with tab_ts:
         st.plotly_chart(fig_ts, use_container_width=True)
@@ -99,6 +99,7 @@ def run_playground_frame():
             st.plotly_chart(fig_stack, use_container_width=True)
         else:
             st.plotly_chart(fig_app, use_container_width=True)
+        st.plotly_chart(fig_stacked_cam, use_container_width=True)
     
     tab_prob,tab_cam = st.tabs(["Which Appliance?", "When is it used?"])
 
@@ -469,10 +470,14 @@ def plot_stacked_cam(k, df, window_size, appliances, pred_dict_all):
         dict_pred = pred_dict_all[appl]
 
         k = 0
-        for _, dict_model in dict_pred.items():
+        for name_model, dict_model in dict_pred.items():
             if dict_model['pred_cam'] is not None:
                 # Aggregate CAMs from different models
-                tmp_cam = dict_model['pred_cam']
+                if dict_model['pred_label']<1:
+                    if name_model=='TransAppS':
+                        tmp_cam = dict_model['pred_cam'] * 0
+                    else:
+                        tmp_cam = dict_model['pred_cam'] * ['pred_prob'][1]
 
                 stacked_cam = stacked_cam + tmp_cam if stacked_cam is not None else tmp_cam
                 k+=1
@@ -482,18 +487,19 @@ def plot_stacked_cam(k, df, window_size, appliances, pred_dict_all):
         z.append(stacked_cam)
 
     # Create the heatmap
-    fig = go.Figure(data=go.Heatmap(
-        z=z,
-        x=window_agg.index,  # Timestamps as x-axis
-        y=appliances,  # Appliances as y-axis
-        colorscale='RdBu_r',  # Color scale to represent stacked_cam values
-        showscale=False,
-    ))
+    fig = go.Figure(data=go.Heatmap(z=z,
+                                    x=window_agg.index,  # Timestamps as x-axis
+                                    y=appliances,  # Appliances as y-axis
+                                    colorscale='RdBu_r',  # Color scale to represent stacked_cam values
+                                    showscale=False
+                                    )
+                    )
 
     # Update layout to add titles and adjust axis labels
     fig.update_layout(xaxis_title='Time',
                       xaxis=dict(tickmode='auto'), 
-                      yaxis=dict(tickmode='auto', tickvals=list(range(len(appliances))), ticktext=appliances)
+                      yaxis=dict(tickmode='auto', tickvals=list(range(len(appliances))), ticktext=appliances),
+                      height= 20 + 50 * len(appliances),
                     )
     
     fig.update_yaxes(tickangle=-45)
