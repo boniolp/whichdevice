@@ -206,7 +206,7 @@ def get_time_series_data(ts_name, frequency, length):
     window_size = convert_length_to_window_size(pd_freq, length)
 
     # Load dataframe
-    df = pd.read_csv(os.getcwd()+f'/data/{ts_name}.gzip', compression='gzip', parse_dates=['Time']).set_index('Time')
+    df = pd.read_csv(os.getcwd()+f'/Data/{ts_name}.gzip', compression='gzip', parse_dates=['Time']).set_index('Time')
     
     # Resample to choosen frequency (if > 30s)
     if pd_freq!='30s':
