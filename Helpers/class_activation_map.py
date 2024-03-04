@@ -55,7 +55,7 @@ class CAM():
         final_layer = self.last_conv_layer
         activated_features = SaveFeatures(final_layer)
         prediction = self.model(instance_to_try)
-        pred_probabilities = F.softmax(prediction, dim=1).data.squeeze()
+        pred_probabilities = F.softmax(prediction, dim=-1).data.squeeze()
         activated_features.remove()
         weight_softmax_params = list(self.fc_layer_name.parameters())
         weight_softmax = np.squeeze(weight_softmax_params[0].cpu().data.numpy())
@@ -73,53 +73,45 @@ class CAM():
         return overlay, class_idx.item()
 
 
-class Paul_CAM():
-    def __init__(self,model,device,last_conv_layer='layer3',fc_layer_name='fc1'):
+class AttentionMap():
+    def __init__(self, model, device, n_encoder_layers=1, merge_channels_att='sum', head_att='mean'):
         
         self.device = device
-        self.last_conv_layer = last_conv_layer
-        self.fc_layer_name = fc_layer_name
         self.model = model
+        self.merge_channels_att = merge_channels_att
+        self.head_att = head_att
+        self.n_encoder_layers = n_encoder_layers
 
-
-    def run(self,instance,label_instance=None):
-        cam,label_pred =  self.__get_CAM_class(np.array(instance))
-        if (label_instance is not None) and (label_pred != label_instance):
-            #Verbose
-            print("Expected classification as class {} but got class {}".format(label_instance,label_pred))
-            print("The Class activation map is for class {}".format(label_instance,label_pred))
-        return cam
-
+    def run(self, instance, return_att_for='all'):
+        self.model.eval()
+        
+        pred = self.model(torch.Tensor(instance).to(self.device))
+        pred = torch.nn.Softmax(dim=-1)(pred).detach().cpu().numpy()[0]
+        
+        if return_att_for=='all':
+            att = []
+            for n_e in range(self.n_encoder_layers):
+                att.append(self._extract_att_one_block(n_e))
+            att = np.array(att).mean(axis=0)
+        else:
+            assert return_att_for < self.n_encoder_layers
+            att = self._extract_att_one_block(return_att_for)
+        
+        return att, pred
     
+    def _extract_att_one_block(self, i):
+        att = self.model._modules['EncoderBlock'][i].att.detach().cpu().numpy()[0]
 
-    # ================Private methods=====================   
+        if self.merge_channels_att=='sum':
+            att = att.sum(axis=1)
+        else:
+            att = att.mean(axis=1)
 
-    def __getCAM(self,feature_conv, weight_fc, class_idx):
-        _, nc, length = feature_conv.shape
-        feature_conv_new = feature_conv
-        cam = weight_fc[class_idx].dot(feature_conv_new.reshape((nc,length)))
-        cam = cam.reshape(length)
-        
-        return cam
-
-
-    def __get_CAM_class(self,instance):
-        original_dim = len(instance)
-        original_length = len(instance[0])
-        instance_to_try = Variable(
-            torch.tensor(
-                instance.reshape(
-                    (1,original_dim,original_length))).float().to(self.device),
-            requires_grad=True)
-        final_layer = self.last_conv_layer
-        activated_features = SaveFeatures(final_layer)
-        prediction = self.model(instance_to_try)
-        pred_probabilities = F.softmax(prediction).data.squeeze()
-        activated_features.remove()
-        weight_softmax_params = list(self.fc_layer_name.parameters())
-        weight_softmax = np.squeeze(weight_softmax_params[0].cpu().data.numpy())
-        
-        class_idx = topk(pred_probabilities,1)[1].int()
-        overlay = self.__getCAM(activated_features.features, weight_softmax, class_idx )
-        
-        return overlay,class_idx.item()
+        if self.head_att=='sum':
+            att = att.sum(axis=0)
+        elif self.head_att=='mean':
+            att = att.mean(axis=0)
+        else:
+            att = att[i, :]
+            
+        return att

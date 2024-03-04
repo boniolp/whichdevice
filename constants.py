@@ -1,8 +1,51 @@
 frequency_list = ['30 seconds', '1 minutes','10 minutes']
-models_list    = ['ConvNet', 'ResNet', 'Inception', 'TransApp', 'Arsenal']
+models_list    = ['ConvNet', 'ResNet', 'Inception', 'TransAppS']
 lengths_list   = ['6 hours', '12 hours', '1 Day']
 devices_list   = ['WashingMachine', 'Dishwasher', 'Microwave', 'Kettle']
-list_name_ts   = ['UKDALE_House2_2013-05', 'UKDALE_House2_2013-06', 'UKDALE_House2_2013-07', 'UKDALE_House2_2013-08', 'UKDALE_House2_2013-09', 'UKDALE_House2_2013-10']
+list_name_ts   = ['UKDALE_House2_2013-05', 
+                    'UKDALE_House2_2013-06', 
+                    'UKDALE_House2_2013-07', 
+                    'UKDALE_House2_2013-08', 
+                    'UKDALE_House2_2013-09', 
+                    'UKDALE_House2_2013-10',
+                    'REFIT_House2_2013-09.gzip',
+                    'REFIT_House2_2013-10.gzip',
+                    'REFIT_House2_2013-11.gzip',
+                    'REFIT_House2_2013-12.gzip',
+                    'REFIT_House2_2014-01.gzip',
+                    'REFIT_House2_2014-02.gzip',
+                    'REFIT_House2_2014-03.gzip',
+                    'REFIT_House2_2014-04.gzip',
+                    'REFIT_House2_2014-05.gzip',
+                    'REFIT_House2_2014-06.gzip',
+                    'REFIT_House2_2014-07.gzip',
+                    'REFIT_House2_2014-08.gzip',
+                    'REFIT_House2_2014-09.gzip',
+                    'REFIT_House2_2014-10.gzip',
+                    'REFIT_House2_2014-11.gzip',
+                    'REFIT_House2_2014-12.gzip',
+                    'REFIT_House2_2015-01.gzip',
+                    'REFIT_House2_2015-02.gzip',
+                    'REFIT_House2_2015-03.gzip',
+                    'REFIT_House2_2015-04.gzip',
+                    'REFIT_House2_2015-05.gzip',
+                    'REFIT_House20_2014-03.gzip',
+                    'REFIT_House20_2014-04.gzip',
+                    'REFIT_House20_2014-05.gzip',
+                    'REFIT_House20_2014-06.gzip',
+                    'REFIT_House20_2014-07.gzip',
+                    'REFIT_House20_2014-08.gzip',
+                    'REFIT_House20_2014-09.gzip',
+                    'REFIT_House20_2014-10.gzip',
+                    'REFIT_House20_2014-11.gzip',
+                    'REFIT_House20_2014-12.gzip',
+                    'REFIT_House20_2015-01.gzip',
+                    'REFIT_House20_2015-02.gzip',
+                    'REFIT_House20_2015-03.gzip',
+                    'REFIT_House20_2015-04.gzip',
+                    'REFIT_House20_2015-05.gzip',
+                    'REFIT_House20_2015-06.gzip'
+                ]
 
 text_description_dataset  = f"""
 UKDALE and REFIT are two well-known Smart Meters datasets.

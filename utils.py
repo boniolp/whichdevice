@@ -27,7 +27,8 @@ from constants import *
 from Models.FCN import FCN
 from Models.ResNet import ResNet
 from Models.InceptionTime import Inception
-from Helpers.class_activation_map import CAM
+from Models.TransAppS import TransAppS
+from Helpers.class_activation_map import CAM, AttentionMap
 
 CURRENT_WINDOW=0
 
@@ -135,7 +136,7 @@ def run_about_frame():
 
 
 
-def get_model_instance(model_name):
+def get_model_instance(model_name, win_size):
     # Load instance according to selected model
     if model_name=='ConvNet':
         model_inst = FCN()
@@ -143,8 +144,10 @@ def get_model_instance(model_name):
         model_inst = ResNet()
     elif model_name=='Inception':
         model_inst = Inception()
+    elif model_name=='TransAppS':
+        model_inst = TransAppS(c_in=1, window_size=win_size,  store_att=True)
     else:
-        raise ValueError('Wrong model name.')
+        raise ValueError(f'Model {model_name} unknown.')
 
     return model_inst
 
@@ -214,6 +217,7 @@ def get_time_series_data(ts_name, frequency, length):
 
 def get_prediction_one_appliance(ts_name, window_agg, appliance, frequency, model_list):
     dict_freq  = {'30 seconds': '30s', '1 minutes': '1T', '10 minutes': '10T'}
+    dic_win    = {'30 seconds': 2880,  '1 minutes': 1440, '10 minutes':  144}
     sampling_rate = dict_freq[frequency]
 
     window_agg  = torch.Tensor(window_agg).unsqueeze(0).unsqueeze(0)
@@ -222,9 +226,9 @@ def get_prediction_one_appliance(ts_name, window_agg, appliance, frequency, mode
         
     for model_name in model_list:
         # Get model instance
-        model_inst = get_model_instance(model_name)
+        model_inst = get_model_instance(model_name, dic_win[frequency])
         # Load compressed model
-        path_model = os.getcwd()+f'/trained_clf/{get_dataset_name(ts_name)}/{sampling_rate}/{appliance}/{model_name}.pt.xz'
+        path_model = os.getcwd()+f'/TrainedModels/{get_dataset_name(ts_name)}/{sampling_rate}/{appliance}/{model_name}.pt.xz'
         # Decompress model
         with lzma.open(path_model, 'rb') as file:
             decompressed_file = file.read()
@@ -240,11 +244,9 @@ def get_prediction_one_appliance(ts_name, window_agg, appliance, frequency, mode
         pred_prob  = torch.nn.Softmax(dim=-1)(model_inst(window_agg)).detach().numpy().flatten()
         pred_label = np.argmax(pred_prob)
 
-        # Predict CAM if Conv based architecture
-        if model_name in ['ConvNet', 'ResNet', 'Inception']:
-            pred_cam = get_cam(window_agg, model_name, model_inst)
-        else:
-            pred_cam = None
+        # Predict CAM or AttMap
+        #if model_name in ['ConvNet', 'ResNet', 'Inception']:
+        pred_cam = get_cam(window_agg, model_name, model_inst)
 
         # Update pred_dict
         pred_dict[model_name] = {'pred_prob': pred_prob, 'pred_label': pred_label, 'pred_cam': pred_cam}
@@ -264,10 +266,18 @@ def get_cam(window_agg, model_name, model_inst):
     elif model_name=='Inception':
         last_conv_layer = model_inst._modules['Blocks'][1]
         fc_layer_name   = model_inst._modules['Linear']
+    elif model_name=='TransAppS':
+        n_encoder_layers = 3
 
     # Get CAM for selected model and device
-    CAM_builder = CAM(model_inst, device='cpu', last_conv_layer=last_conv_layer, fc_layer_name=fc_layer_name, verbose=False)
-    pred_cam, _ = CAM_builder.run(instance=window_agg, returned_cam_for_label=1)
+    if model_name=='TransAppS':
+        CAM_builder = AttentionMap(model_inst, device='cpu', n_encoder_layers=n_encoder_layers, merge_channels_att='sum', head_att='sum')
+        pred_cam, _ = CAM_builder.run(instance=window_agg, return_att_for='all')
+        pred_cam = scale_cam_inst(pred_cam)
+    else:
+        CAM_builder = CAM(model_inst, device='cpu', last_conv_layer=last_conv_layer, fc_layer_name=fc_layer_name, verbose=False)
+        pred_cam, _ = CAM_builder.run(instance=window_agg, returned_cam_for_label=1)
+        pred_cam = scale_cam_inst(pred_cam)
 
     return pred_cam
 
@@ -277,7 +287,7 @@ def plot_detection_probabilities(data):
     num_appliances = len(data)
     appliances = list(data.keys())
 
-    dict_color_model = {'ConvNet': 'wheat', 'ResNet': 'coral', 'Inception': 'powderblue', 'TransApp': 'peachpuff', 'Ensemble': 'indianred'}
+    dict_color_model = {'ConvNet': 'wheat', 'ResNet': 'coral', 'Inception': 'powderblue', 'TransAppS': 'peachpuff', 'Ensemble': 'indianred'}
 
     # Create subplots: one row, as many columns as there are appliances
     fig = make_subplots(rows=1, cols=num_appliances, subplot_titles=appliances, shared_yaxes=True)
@@ -390,7 +400,7 @@ def plot_one_window(k, df, window_size, appliances, pred_dict_all):
 def plot_cam(k, df, window_size, appliances, pred_dict_all):
     window_df = df.iloc[k*window_size: k*window_size + window_size]
 
-    dict_color_model = {'ConvNet': 'wheat', 'ResNet': 'coral', 'Inception': 'powderblue', 'TransApp': 'peachpuff', 'Ensemble': 'indianred'}
+    dict_color_model = {'ConvNet': 'wheat', 'ResNet': 'coral', 'Inception': 'powderblue', 'TransAppS': 'peachpuff', 'Ensemble': 'indianred'}
 
     fig_cam = make_subplots(rows=len(appliances), cols=1, subplot_titles=[f'CAM {appliance}' for appliance in appliances], shared_xaxes=True)
 
@@ -414,7 +424,7 @@ def plot_cam(k, df, window_size, appliances, pred_dict_all):
 def plot_cam(k, df, window_size, appliances, pred_dict_all):
     window_df = df.iloc[k*window_size: k*window_size + window_size]
 
-    dict_color_model = {'ConvNet': 'wheat', 'ResNet': 'coral', 'Inception': 'powderblue', 'TransApp': 'peachpuff', 'Ensemble': 'indianred'}
+    dict_color_model = {'ConvNet': 'wheat', 'ResNet': 'coral', 'Inception': 'powderblue', 'TransAppS': 'peachpuff', 'Ensemble': 'indianred'}
 
     fig_cam = make_subplots(rows=len(appliances), cols=1, subplot_titles=[f'{appliance}' for appliance in appliances], shared_xaxes=True)
 
@@ -422,12 +432,10 @@ def plot_cam(k, df, window_size, appliances, pred_dict_all):
 
     for i, appliance in enumerate(appliances):
         pred_dict_appl = pred_dict_all[appliance]
-        cam_max_values = []
 
         for model_name, values in pred_dict_appl.items():
             if values['pred_cam'] is not None:
                 cam = np.clip(values['pred_cam'], a_min=0, a_max=None) * values['pred_label']
-                cam_max_values.append(np.max(cam))
 
                 show_legend = model_name not in added_models  # Show legend only if model hasn't been added
                 added_models.add(model_name)  # Mark model as added
@@ -439,12 +447,7 @@ def plot_cam(k, df, window_size, appliances, pred_dict_all):
                                              showlegend=show_legend),
                                   row=i+1, col=1)
         
-        if cam_max_values:  # Check if list is not empty
-            y_range_max = max(10, np.max(cam_max_values))
-        else:
-            y_range_max = 10  # Default or fallback value
-        
-        fig_cam.update_yaxes(range=[0, y_range_max], row=i+1, col=1)
+        fig_cam.update_yaxes(range=[0, 1], row=i+1, col=1)
 
     xaxis_title_dict = {f'xaxis{len(appliances)}_title': 'Time'}
     fig_cam.update_layout(title='Class Activation Map to localize appliance pattern', **xaxis_title_dict)
@@ -464,17 +467,19 @@ def plot_stacked_cam(k, df, window_size, appliances, pred_dict_all):
     for appl in appliances:
         stacked_cam = None
         dict_pred = pred_dict_all[appl]
+
+        k = 0
         for _, dict_model in dict_pred.items():
             if dict_model['pred_cam'] is not None:
                 # Aggregate CAMs from different models
-                stacked_cam = stacked_cam + dict_model['pred_cam'] if stacked_cam is not None else dict_model['pred_cam']
-        
-        # Clip values and ensure it's an array with the same length as window_agg
-        stacked_cam = np.clip(stacked_cam, a_min=0, a_max=None) if stacked_cam is not None else np.zeros(len(window_agg))
-        z.append(stacked_cam)
+                tmp_cam = dict_model['pred_cam']
 
-    z = np.array(z)
-    z = z / np.max(np.array(z)) + 1e-5 # Normalize
+                stacked_cam = stacked_cam + tmp_cam if stacked_cam is not None else tmp_cam
+                k+=1
+        
+            # Clip values and ensure it's an array with the same length as window_agg
+        stacked_cam = np.clip(stacked_cam/k, a_min=0, a_max=None) if stacked_cam is not None else np.zeros(len(window_agg))
+        z.append(stacked_cam)
 
     # Create the heatmap
     fig = go.Figure(data=go.Heatmap(
@@ -494,3 +499,10 @@ def plot_stacked_cam(k, df, window_size, appliances, pred_dict_all):
     fig.update_yaxes(tickangle=-45)
 
     return fig  
+
+
+def scale_cam_inst(arr):
+    min_val = np.min(arr)
+    max_val = np.max(arr)
+    scaled_arr = 2 * (arr - min_val) / (max_val - min_val) - 1
+    return scaled_arr

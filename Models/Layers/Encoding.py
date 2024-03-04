@@ -106,6 +106,10 @@ class tAPE(nn.Module):
         pe[:, 1::2] = torch.cos((position * div_term)*(d_model/max_len))
         pe = scale_factor * pe.unsqueeze(0)
         self.register_buffer('pe', pe)  # this stores the variable in the state_dict (used for non-trainable variables)
+        
     def forward(self, x):
-        x = x + self.pe
+        B, L, _ = x.shape
+
+        x = x + self.pe.repeat(B, 1, 1)[:, :L, :] # Adapt to length < max_len
+        
         return self.dropout(x)
