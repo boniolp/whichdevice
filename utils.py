@@ -477,7 +477,7 @@ def plot_stacked_cam(k, df, window_size, appliances, pred_dict_all):
                     if name_model=='TransAppS':
                         tmp_cam = dict_model['pred_cam'] * 0
                     else:
-                        tmp_cam = dict_model['pred_cam'] * ['pred_prob'][1]
+                        tmp_cam = dict_model['pred_cam'] * dict_model['pred_prob'][1]
 
                 stacked_cam = stacked_cam + tmp_cam if stacked_cam is not None else tmp_cam
                 k+=1
