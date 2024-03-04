@@ -84,14 +84,13 @@ def run_playground_frame():
         CURRENT_WINDOW=0
     
     pred_dict_all = pred_one_window(CURRENT_WINDOW, df, window_size, ts_name, appliances, frequency, models)
-    fig_ts, fig_app, fig_prob, fig_stack = plot_one_window(CURRENT_WINDOW,  df, window_size, appliances, pred_dict_all)
-    fig_stacked_cam = plot_stacked_cam(CURRENT_WINDOW, df, window_size, appliances, pred_dict_all)
+    fig_ts, fig_app, fig_stack = plot_one_window(CURRENT_WINDOW,  df, window_size, appliances, pred_dict_all)
+    fig_prob = plot_detection_probabilities(pred_dict_all)
     
     tab_ts, tab_app = st.tabs(["Aggregated", "Per device"])
     
     with tab_ts:
         st.plotly_chart(fig_ts, use_container_width=True)
-        st.plotly_chart(fig_stacked_cam, use_container_width=True)
     
     with tab_app:
         on = st.toggle('Stack')
@@ -99,9 +98,8 @@ def run_playground_frame():
             st.plotly_chart(fig_stack, use_container_width=True)
         else:
             st.plotly_chart(fig_app, use_container_width=True)
-        st.plotly_chart(fig_stacked_cam, use_container_width=True)
     
-    tab_prob,tab_cam = st.tabs(["Which Appliance?", "When is it used?"])
+    tab_prob,tab_cam = st.tabs(["Probabilities for each model", "Localization for each model"])
 
     with tab_prob:
         st.plotly_chart(fig_prob, use_container_width=True)
@@ -283,6 +281,98 @@ def get_cam(window_agg, model_name, model_inst):
     return pred_cam
 
 
+def pred_one_window(k, df, window_size, ts_name, appliances, frequency, models):
+    window_df = df.iloc[k*window_size: k*window_size + window_size]
+    window_agg = window_df['Aggregate']
+
+    pred_dict_all = {}
+    for appl in appliances:
+        pred_dict_appl      = get_prediction_one_appliance(ts_name, window_agg, appl, frequency, models)
+        pred_dict_all[appl] = pred_dict_appl
+
+    return pred_dict_all
+
+
+def plot_one_window(k, df, window_size, appliances, pred_dict_all):
+    window_df = df.iloc[k*window_size: k*window_size + window_size]
+    
+    # Create subplots with 2 rows, shared x-axis
+    size_cam = 0.1 * (len(appliances)+1)
+    fig_agg = make_subplots(rows=2, cols=1, shared_xaxes=True, vertical_spacing=0.1, row_heights=[1-size_cam, size_cam])
+    fig_appliances_window = make_subplots(rows=2, cols=1, shared_xaxes=True, vertical_spacing=0.1, row_heights=[1-size_cam, size_cam])
+    fig_appliances_window_stacked = make_subplots(rows=2, cols=1, shared_xaxes=True, vertical_spacing=0.1, row_heights=[1-size_cam, size_cam])
+    
+    # Aggregate plot
+    fig_agg.add_trace(go.Scatter(x=window_df.index, y=window_df['Aggregate'], mode='lines', name='Aggregate', fill='tozeroy', line=dict(color='royalblue')),
+                  row=1, col=1)
+    
+    # Stacked CAM heatmap calculations
+    z = []
+    for appl in appliances:
+        fig_appliances_window.add_trace(go.Scatter(x=window_df.index, y=window_df[appl], mode='lines', name=appl.capitalize(), fill='tozeroy'))
+        fig_appliances_window_stacked.add_trace(go.Scatter(x=window_df.index, y=window_df[appl], mode='lines', line=dict(width=0), name=appl.capitalize(), stackgroup='one'))
+
+        stacked_cam = None
+        dict_pred = pred_dict_all[appl]
+
+        k = 0
+        for name_model, dict_model in dict_pred.items():
+            if dict_model['pred_cam'] is not None:
+                # Aggregate CAMs from different models
+                if dict_model['pred_label'] < 1:
+                    if name_model == 'TransAppS':
+                        tmp_cam = dict_model['pred_cam'] * 0
+                    else:
+                        tmp_cam = dict_model['pred_cam'] * dict_model['pred_prob'][1]
+                else:
+                    tmp_cam = dict_model['pred_cam']
+
+                stacked_cam = stacked_cam + tmp_cam if stacked_cam is not None else tmp_cam
+                k += 1
+        
+        # Clip values and ensure it's an array with the same length as window_agg
+        stacked_cam = np.clip(stacked_cam/k, a_min=0, a_max=None) if stacked_cam is not None else np.zeros(len(window_df['Aggregate']))
+        z.append(stacked_cam)
+    
+    # Heatmap for stacked CAM
+    fig_agg.add_trace(go.Heatmap(z=z, x=window_df.index, y=appliances, colorscale='RdBu_r', showscale=False, zmin=0, zmax=1), row=2, col=1)
+    fig_appliances_window.add_trace(go.Heatmap(z=z, x=window_df.index, y=appliances, colorscale='RdBu_r', showscale=False, zmin=0, zmax=1), row=2, col=1)
+    fig_appliances_window_stacked.add_trace(go.Heatmap(z=z, x=window_df.index, y=appliances, colorscale='RdBu_r', showscale=False, zmin=0, zmax=1), row=2, col=1)
+    
+    # Update layout for the combined figure
+    fig_agg.update_layout(
+        title='Aggregate Consumption and Stacked CAM',
+        xaxis2_title='Time',
+        height=500,
+        width=1000,
+        margin=dict(l=100, r=20, t=30, b=40)
+    )
+
+    fig_appliances_window.update_layout(
+        title='Aggregate Consumption and Stacked CAM',
+        xaxis2_title='Time',
+        height=500,
+        width=1000,
+        margin=dict(l=100, r=20, t=30, b=40)
+    )
+
+    fig_appliances_window_stacked.update_layout(
+        title='Aggregate Consumption and Stacked CAM',
+        xaxis2_title='Time',
+        height=500,
+        width=1000,
+        margin=dict(l=100, r=20, t=30, b=40)
+    )
+    
+    # Update y-axis for the aggregate consumption plot
+    fig_agg.update_yaxes(title_text='Power Consumption (Watts)', row=1, col=1, range=[0, max(3000, np.max(window_df['Aggregate'].values) + 50)])
+    
+    # Update y-axis for the heatmap
+    fig_agg.update_yaxes(tickmode='array', tickvals=list(appliances), ticktext=appliances, row=2, col=1, tickangle=-45)
+
+    return fig_agg, fig_appliances_window, fig_appliances_window_stacked
+
+
 def plot_detection_probabilities(data):
     # Determine the number of appliances to plot
     num_appliances = len(data)
@@ -338,19 +428,77 @@ def plot_detection_probabilities(data):
     return fig
 
 
-def pred_one_window(k, df, window_size, ts_name, appliances, frequency, models):
+def plot_cam(k, df, window_size, appliances, pred_dict_all):
     window_df = df.iloc[k*window_size: k*window_size + window_size]
-    window_agg = window_df['Aggregate']
 
-    pred_dict_all = {}
-    for appl in appliances:
-        pred_dict_appl      = get_prediction_one_appliance(ts_name, window_agg, appl, frequency, models)
-        pred_dict_all[appl] = pred_dict_appl
+    dict_color_model = {'ConvNet': 'wheat', 'ResNet': 'coral', 'Inception': 'powderblue', 'TransAppS': 'peachpuff', 'Ensemble': 'indianred'}
 
-    return pred_dict_all
+    fig_cam = make_subplots(rows=len(appliances), cols=1, subplot_titles=[f'{appliance}' for appliance in appliances], shared_xaxes=True)
+
+    added_models = set()  # Track which models have been added to figure for legend purposes
+
+    for i, appliance in enumerate(appliances):
+        pred_dict_appl = pred_dict_all[appliance]
+
+        for model_name, values in pred_dict_appl.items():
+            if values['pred_cam'] is not None:
+                cam = np.clip(values['pred_cam'], a_min=0, a_max=None) * values['pred_label']
+
+                show_legend = model_name not in added_models  # Show legend only if model hasn't been added
+                added_models.add(model_name)  # Mark model as added
+
+                fig_cam.add_trace(go.Scatter(x=window_df.index, y=cam, mode='lines', fill='tozeroy',
+                                             marker=dict(color=dict_color_model[model_name]),
+                                             name=f'CAM {model_name}',
+                                             legendgroup=model_name,  # Assign legend group
+                                             showlegend=show_legend),
+                                  row=i+1, col=1)
+        
+        fig_cam.update_yaxes(range=[0, 1], row=i+1, col=1)
+
+    xaxis_title_dict = {f'xaxis{len(appliances)}_title': 'Time'}
+    fig_cam.update_layout(title='Class Activation Map to localize appliance pattern', **xaxis_title_dict)
+    fig_cam.update_layout(legend=dict(orientation='h', x=0.5, xanchor='center', y=-0.1),
+                          height=50 + 30 + 180 * len(appliances),
+                          width=1000,
+                          margin=dict(l=30, r=20, t=50, b=30))
+
+    return fig_cam
 
 
-def plot_one_window(k, df, window_size, appliances, pred_dict_all):
+def scale_cam_inst(arr):
+    min_val = np.min(arr)
+    max_val = np.max(arr)
+    scaled_arr = 2 * (arr - min_val) / (max_val - min_val) - 1
+    return scaled_arr
+
+
+
+"""
+def plot_cam(k, df, window_size, appliances, pred_dict_all):
+    window_df = df.iloc[k*window_size: k*window_size + window_size]
+
+    dict_color_model = {'ConvNet': 'wheat', 'ResNet': 'coral', 'Inception': 'powderblue', 'TransAppS': 'peachpuff', 'Ensemble': 'indianred'}
+
+    fig_cam = make_subplots(rows=len(appliances), cols=1, subplot_titles=[f'CAM {appliance}' for appliance in appliances], shared_xaxes=True)
+
+    for i,appliance in enumerate(appliances):
+        pred_dict_appl = pred_dict_all[appliance]
+
+        for model_name, values in pred_dict_appl.items():
+            if values['pred_cam'] is not None:
+                # Clip CAM to 0 and set * by predicted label for each model
+                cam = np.clip(values['pred_cam'], a_min=0, a_max=None) * values['pred_label']
+                fig_cam.add_trace(go.Scatter(x=window_df.index, y=cam, mode='lines', fill='tozeroy', marker=dict(color=dict_color_model[model_name]), name=f'CAM {model_name}', legendgroup=i+1), row=i+1, col=1)
+
+        fig_cam.update_layout(title='CAM', 
+                              xaxis_title='Time', 
+                              legend_tracegroupgap=(3 - len(pred_dict_appl))*20+10,
+                )
+    return fig_cam
+
+
+def plot_one_window_old(k, df, window_size, appliances, pred_dict_all):
     window_df = df.iloc[k*window_size: k*window_size + window_size]
     # Plot for 'Aggregate' column for the window
     fig_aggregate_window = go.Figure()
@@ -397,69 +545,6 @@ def plot_one_window(k, df, window_size, appliances, pred_dict_all):
     return fig_aggregate_window, fig_appliances_window, plot_detection_probabilities(pred_dict_all), fig_appliances_window_stacked
 
 
-"""
-def plot_cam(k, df, window_size, appliances, pred_dict_all):
-    window_df = df.iloc[k*window_size: k*window_size + window_size]
-
-    dict_color_model = {'ConvNet': 'wheat', 'ResNet': 'coral', 'Inception': 'powderblue', 'TransAppS': 'peachpuff', 'Ensemble': 'indianred'}
-
-    fig_cam = make_subplots(rows=len(appliances), cols=1, subplot_titles=[f'CAM {appliance}' for appliance in appliances], shared_xaxes=True)
-
-    for i,appliance in enumerate(appliances):
-        pred_dict_appl = pred_dict_all[appliance]
-
-        for model_name, values in pred_dict_appl.items():
-            if values['pred_cam'] is not None:
-                # Clip CAM to 0 and set * by predicted label for each model
-                cam = np.clip(values['pred_cam'], a_min=0, a_max=None) * values['pred_label']
-                fig_cam.add_trace(go.Scatter(x=window_df.index, y=cam, mode='lines', fill='tozeroy', marker=dict(color=dict_color_model[model_name]), name=f'CAM {model_name}', legendgroup=i+1), row=i+1, col=1)
-
-        fig_cam.update_layout(title='CAM', 
-                              xaxis_title='Time', 
-                              legend_tracegroupgap=(3 - len(pred_dict_appl))*20+10,
-                )
-    return fig_cam
-"""
-
-
-def plot_cam(k, df, window_size, appliances, pred_dict_all):
-    window_df = df.iloc[k*window_size: k*window_size + window_size]
-
-    dict_color_model = {'ConvNet': 'wheat', 'ResNet': 'coral', 'Inception': 'powderblue', 'TransAppS': 'peachpuff', 'Ensemble': 'indianred'}
-
-    fig_cam = make_subplots(rows=len(appliances), cols=1, subplot_titles=[f'{appliance}' for appliance in appliances], shared_xaxes=True)
-
-    added_models = set()  # Track which models have been added to figure for legend purposes
-
-    for i, appliance in enumerate(appliances):
-        pred_dict_appl = pred_dict_all[appliance]
-
-        for model_name, values in pred_dict_appl.items():
-            if values['pred_cam'] is not None:
-                cam = np.clip(values['pred_cam'], a_min=0, a_max=None) * values['pred_label']
-
-                show_legend = model_name not in added_models  # Show legend only if model hasn't been added
-                added_models.add(model_name)  # Mark model as added
-
-                fig_cam.add_trace(go.Scatter(x=window_df.index, y=cam, mode='lines', fill='tozeroy',
-                                             marker=dict(color=dict_color_model[model_name]),
-                                             name=f'CAM {model_name}',
-                                             legendgroup=model_name,  # Assign legend group
-                                             showlegend=show_legend),
-                                  row=i+1, col=1)
-        
-        fig_cam.update_yaxes(range=[0, 1], row=i+1, col=1)
-
-    xaxis_title_dict = {f'xaxis{len(appliances)}_title': 'Time'}
-    fig_cam.update_layout(title='Class Activation Map to localize appliance pattern', **xaxis_title_dict)
-    fig_cam.update_layout(legend=dict(orientation='h', x=0.5, xanchor='center', y=-0.1),
-                          height=50 + 30 + 180 * len(appliances),
-                          width=1000,
-                          margin=dict(l=30, r=20, t=50, b=30))
-
-    return fig_cam
-
-
 def plot_stacked_cam(k, df, window_size, appliances, pred_dict_all):
     window_df = df.iloc[k*window_size: k*window_size + window_size]
     window_agg = window_df['Aggregate']
@@ -478,6 +563,8 @@ def plot_stacked_cam(k, df, window_size, appliances, pred_dict_all):
                         tmp_cam = dict_model['pred_cam'] * 0
                     else:
                         tmp_cam = dict_model['pred_cam'] * dict_model['pred_prob'][1]
+                else:
+                    tmp_cam = dict_model['pred_cam']
 
                 stacked_cam = stacked_cam + tmp_cam if stacked_cam is not None else tmp_cam
                 k+=1
@@ -505,10 +592,4 @@ def plot_stacked_cam(k, df, window_size, appliances, pred_dict_all):
     fig.update_yaxes(tickangle=-45)
 
     return fig  
-
-
-def scale_cam_inst(arr):
-    min_val = np.min(arr)
-    max_val = np.max(arr)
-    scaled_arr = 2 * (arr - min_val) / (max_val - min_val) - 1
-    return scaled_arr
+"""
