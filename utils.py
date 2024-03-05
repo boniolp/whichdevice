@@ -161,7 +161,7 @@ def plot_benchmark_figures(appliances, measure, dataset):
         df = df.loc[df['Dataset'] == dataset]
 
     dict_color_model = {'ConvNet': 'wheat', 'ResNet': 'coral', 'Inception': 'powderblue', 'TransAppS': 'peachpuff', 'Ensemble': 'indianred'}
-    dict_measure = {'Accuracy': 'Acc', 'Balanced Accuracy': 'Acc_Balanced', 'F1 Score Macro': 'F1_Macro'}
+    dict_measure = {'Accuracy': 'Acc', 'Balanced Accuracy': 'Acc_Balanced', 'F1 Macro': 'F1_Macro'}
 
     # Create subplots: one column for each appliance, shared y-axis
     fig = make_subplots(rows=1, cols=len(appliances), shared_yaxes=True, subplot_titles=[f"{appliance}" for appliance in appliances])
