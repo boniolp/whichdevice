@@ -117,15 +117,15 @@ def run_benchmark_frame():
 
     with col1:
         appliances = st.multiselect(
-            "Select devices:", devices_list, ["Dishwasher", "Washing Machine", "Kettle", "Microwave"]
+            "Select devices:", devices_list, ["Dishwasher"]
         )
     with col2:
         measure = st.selectbox(
-            "Choose measures", ['Accuracy', 'Balanced Accuracy', ' F1 Score Macro'], index=0
+            "Choose measures", measures_list, index=0
         )
     with col3:
         dataset = st.selectbox(
-            "Choose measures", ['All', 'UKDALE', ' REFIT'], index=0
+            "Choose dataset", dataset_list, index=0
         )
 
     fig_benchmark = plot_benchmark_figures(appliances, measure, dataset)
