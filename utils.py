@@ -160,7 +160,7 @@ def plot_benchmark_figures(appliances, measure, dataset):
     if dataset != 'All':
         df = df.loc[df['Dataset'] == dataset]
 
-    dict_color_model = {'ConvNet': 'wheat', 'ResNet': 'coral', 'Inception': 'powderblue', 'TransAppS': 'peachpuff', 'Ensemble': 'indianred'}
+    dict_color_model = {'ConvNet': 'wheat', 'ResNet': 'coral', 'Inception': 'powderblue', 'TransAppS': 'indianred', 'Ensemble': 'peachpuff'}
     dict_measure = {'Accuracy': 'Acc', 'Balanced Accuracy': 'Acc_Balanced', 'F1 Macro': 'F1_Macro'}
 
     # Create subplots: one column for each appliance, shared y-axis
@@ -447,7 +447,7 @@ def plot_detection_probabilities(data):
     num_appliances = len(data)
     appliances = list(data.keys())
 
-    dict_color_model = {'ConvNet': 'wheat', 'ResNet': 'coral', 'Inception': 'powderblue', 'TransAppS': 'peachpuff', 'Ensemble': 'indianred'}
+    dict_color_model = {'ConvNet': 'wheat', 'ResNet': 'coral', 'Inception': 'powderblue', 'TransAppS': 'indianred', 'Ensemble': 'peachpuff'}
 
     # Create subplots: one row, as many columns as there are appliances
     fig = make_subplots(rows=1, cols=num_appliances, subplot_titles=appliances, shared_yaxes=True)
@@ -500,7 +500,7 @@ def plot_detection_probabilities(data):
 def plot_cam(k, df, window_size, appliances, pred_dict_all):
     window_df = df.iloc[k*window_size: k*window_size + window_size]
 
-    dict_color_model = {'ConvNet': 'wheat', 'ResNet': 'coral', 'Inception': 'powderblue', 'TransAppS': 'peachpuff', 'Ensemble': 'indianred'}
+    dict_color_model = {'ConvNet': 'wheat', 'ResNet': 'coral', 'Inception': 'powderblue', 'TransAppS': 'indianred', 'Ensemble': 'peachpuff'}
 
     fig_cam = make_subplots(rows=len(appliances), cols=1, subplot_titles=[f'{appliance}' for appliance in appliances], shared_xaxes=True)
 
