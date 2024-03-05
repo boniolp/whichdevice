@@ -366,9 +366,13 @@ def plot_one_window(k, df, window_size, appliances, pred_dict_all):
     
     # Update y-axis for the aggregate consumption plot
     fig_agg.update_yaxes(title_text='Power Consumption (Watts)', row=1, col=1, range=[0, max(3000, np.max(window_df['Aggregate'].values) + 50)])
+    fig_appliances_window.update_yaxes(title_text='Appliance Consumption (Watts)', row=1, col=1, range=[0, max(3000, np.max(window_df['Aggregate'].values) + 50)])
+    fig_appliances_window_stacked.update_yaxes(title_text='Appliance Consumption (Watts)', row=1, col=1, range=[0, max(3000, np.max(window_df['Aggregate'].values) + 50)])
     
     # Update y-axis for the heatmap
     fig_agg.update_yaxes(tickmode='array', tickvals=list(appliances), ticktext=appliances, row=2, col=1, tickangle=-45)
+    fig_appliances_window.update_yaxes(tickmode='array', tickvals=list(appliances), ticktext=appliances, row=2, col=1, tickangle=-45)
+    fig_appliances_window_stacked.update_yaxes(tickmode='array', tickvals=list(appliances), ticktext=appliances, row=2, col=1, tickangle=-45)
 
     return fig_agg, fig_appliances_window, fig_appliances_window_stacked
 
@@ -470,6 +474,7 @@ def scale_cam_inst(arr):
     min_val = np.min(arr)
     max_val = np.max(arr)
     scaled_arr = 2 * (arr - min_val) / (max_val - min_val) - 1
+
     return scaled_arr
 
 
