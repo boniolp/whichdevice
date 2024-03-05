@@ -113,26 +113,90 @@ def run_playground_frame():
 def run_benchmark_frame():
     st.markdown("Here show benchmark/datasets/methods results")
 
-    tab_comparaison, tab_dataset_description, tab_model_description = st.tabs(["Benchmark results", "Datasets", "Methods"])
+    col1, col2, col3 = st.columns(2)
 
-    with tab_comparaison:
-        st.markdown("Here show benchmark results")
+    with col1:
+        appliances = st.multiselect(
+            "Select devices:", devices_list, ["Dishwasher", "Washing Machine", "Kettle", "Microwave"]
+        )
+    with col2:
+        measure = st.selectbox(
+            "Choose measures", ['Accuracy', 'Balanced Accuracy', ' F1 Score Macro'], index=0
+        )
+    with col3:
+        dataset = st.selectbox(
+            "Choose measures", ['All', 'UKDALE', ' REFIT'], index=0
+        )
 
-    with tab_dataset_description:
-        st.markdown(text_description_dataset)
-
-    with tab_model_description:
-        st.markdown(text_description_model)
+    fig_benchmark = plot_benchmark_figures(appliances, measure, dataset)
+    st.plotly_chart(fig_benchmark, use_container_width=True)
+    
     
 
 
 def run_about_frame():
     st.markdown("Here show info on the models, data and us")
 
+    tab_dataset_description, tab_model_description, tab_about = st.tabs(["Datasets", "Methods", "About"])
+
+    with tab_dataset_description:
+        st.markdown(text_description_dataset)
+
+    with tab_model_description:
+        st.markdown(text_description_dataset)
+
+    with tab_about:
+        st.markdown(text_description_model)
 
 
 
 
+
+
+def plot_benchmark_figures(appliances, measure, dataset):
+    df = pd.read_csv(os.getcwd()+'/TableResults/Results.gzip', compression='gzip')
+    sampling_rates = df['SamplingRate'].unique()
+
+    if dataset != 'All':
+        df = df.loc[df['Dataset'] == dataset]
+
+    dict_color_model = {'ConvNet': 'wheat', 'ResNet': 'coral', 'Inception': 'powderblue', 'TransAppS': 'peachpuff', 'Ensemble': 'indianred'}
+    dict_measure = {'Accuracy': 'Acc', 'Balanced Accuracy': 'Acc_Balanced', 'F1 Score Macro': 'F1_Macro'}
+
+    # Create subplots: one column for each appliance, shared y-axis
+    fig = make_subplots(rows=1, cols=len(appliances), shared_yaxes=True, subplot_titles=[f"{appliance}" for appliance in appliances])
+
+    legend_added = []
+
+    for j, appliance in enumerate(appliances, start=1):
+        if appliance == 'Washing Machine':
+            appliance = 'WashingMachine'
+        
+        for model in ['ConvNet', 'ResNet', 'Inception', 'TransAppS']:
+            accuracies = [df[(df['Appliance'] == appliance) & (df['SamplingRate'] == sr) & (df['Models'] == model)][dict_measure[measure]].values[0] for sr in sampling_rates]
+            showlegend = model not in legend_added
+            fig.add_trace(go.Scatter(x=sampling_rates, y=accuracies, mode='lines+markers',
+                                    name=model, marker_color=dict_color_model[model],
+                                    marker=dict(size=10), showlegend=showlegend),
+                          row=1, col=j)
+            if showlegend:
+                legend_added.append(model)
+
+    # Update y-axes for each subplot to have the range [0, 1]
+    for j in range(1, len(appliances) + 1):
+        fig.update_yaxes(range=[0, 1.05], row=1, col=j)
+
+    fig.update_layout(
+        height=600,
+        width=600 * len(appliances),
+        title_x=0.5,
+        xaxis_title="Sampling Rate",
+        yaxis_title=measure,
+        legend_title="Model",
+        font=dict(size=13)
+    )
+
+    return fig
 
 
 def get_model_instance(model_name, win_size):
@@ -298,9 +362,10 @@ def plot_one_window(k, df, window_size, appliances, pred_dict_all):
     
     # Create subplots with 2 rows, shared x-axis
     size_cam = 0.1 * (len(appliances)+1)
-    fig_agg = make_subplots(rows=2, cols=1, shared_xaxes=True, vertical_spacing=0.1, row_heights=[1-size_cam, size_cam])
-    fig_appliances_window = make_subplots(rows=2, cols=1, shared_xaxes=True, vertical_spacing=0.1, row_heights=[1-size_cam, size_cam])
-    fig_appliances_window_stacked = make_subplots(rows=2, cols=1, shared_xaxes=True, vertical_spacing=0.1, row_heights=[1-size_cam, size_cam])
+
+    fig_agg          = make_subplots(rows=2, cols=1, shared_xaxes=True, vertical_spacing=0.1, row_heights=[1-size_cam, size_cam])
+    fig_appl         = make_subplots(rows=2, cols=1, shared_xaxes=True, vertical_spacing=0.1, row_heights=[1-size_cam, size_cam])
+    fig_appl_stacked = make_subplots(rows=2, cols=1, shared_xaxes=True, vertical_spacing=0.1, row_heights=[1-size_cam, size_cam])
     
     # Aggregate plot
     fig_agg.add_trace(go.Scatter(x=window_df.index, y=window_df['Aggregate'], mode='lines', name='Aggregate', fill='tozeroy', line=dict(color='royalblue')),
@@ -309,8 +374,8 @@ def plot_one_window(k, df, window_size, appliances, pred_dict_all):
     # Stacked CAM heatmap calculations
     z = []
     for appl in appliances:
-        fig_appliances_window.add_trace(go.Scatter(x=window_df.index, y=window_df[appl], mode='lines', name=appl.capitalize(), fill='tozeroy'))
-        fig_appliances_window_stacked.add_trace(go.Scatter(x=window_df.index, y=window_df[appl], mode='lines', line=dict(width=0), name=appl.capitalize(), stackgroup='one'))
+        fig_appl.add_trace(go.Scatter(x=window_df.index, y=window_df[appl], mode='lines', name=appl.capitalize(), fill='tozeroy'))
+        fig_appl_stacked.add_trace(go.Scatter(x=window_df.index, y=window_df[appl], mode='lines', line=dict(width=0), name=appl.capitalize(), stackgroup='one'))
 
         stacked_cam = None
         dict_pred = pred_dict_all[appl]
@@ -336,8 +401,8 @@ def plot_one_window(k, df, window_size, appliances, pred_dict_all):
     
     # Heatmap for stacked CAM
     fig_agg.add_trace(go.Heatmap(z=z, x=window_df.index, y=appliances, colorscale='RdBu_r', showscale=False, zmin=0, zmax=1), row=2, col=1)
-    fig_appliances_window.add_trace(go.Heatmap(z=z, x=window_df.index, y=appliances, colorscale='RdBu_r', showscale=False, zmin=0, zmax=1), row=2, col=1)
-    fig_appliances_window_stacked.add_trace(go.Heatmap(z=z, x=window_df.index, y=appliances, colorscale='RdBu_r', showscale=False, zmin=0, zmax=1), row=2, col=1)
+    fig_appl.add_trace(go.Heatmap(z=z, x=window_df.index, y=appliances, colorscale='RdBu_r', showscale=False, zmin=0, zmax=1), row=2, col=1)
+    fig_appl_stacked.add_trace(go.Heatmap(z=z, x=window_df.index, y=appliances, colorscale='RdBu_r', showscale=False, zmin=0, zmax=1), row=2, col=1)
     
     # Update layout for the combined figure
     fig_agg.update_layout(
@@ -348,16 +413,18 @@ def plot_one_window(k, df, window_size, appliances, pred_dict_all):
         margin=dict(l=100, r=20, t=30, b=40)
     )
 
-    fig_appliances_window.update_layout(
+    fig_appl.update_layout(
         title='Aggregate Consumption and Stacked CAM',
+        legend=dict(orientation='h', x=0.5, xanchor='center', y=-0.2),
         xaxis2_title='Time',
         height=500,
         width=1000,
         margin=dict(l=100, r=20, t=30, b=40)
     )
 
-    fig_appliances_window_stacked.update_layout(
+    fig_appl_stacked.update_layout(
         title='Aggregate Consumption and Stacked CAM',
+        legend=dict(orientation='h', x=0.5, xanchor='center', y=-0.2),
         xaxis2_title='Time',
         height=500,
         width=1000,
@@ -366,15 +433,15 @@ def plot_one_window(k, df, window_size, appliances, pred_dict_all):
     
     # Update y-axis for the aggregate consumption plot
     fig_agg.update_yaxes(title_text='Power Consumption (Watts)', row=1, col=1, range=[0, max(3000, np.max(window_df['Aggregate'].values) + 50)])
-    fig_appliances_window.update_yaxes(title_text='Appliance Consumption (Watts)', row=1, col=1, range=[0, max(3000, np.max(window_df['Aggregate'].values) + 50)])
-    fig_appliances_window_stacked.update_yaxes(title_text='Appliance Consumption (Watts)', row=1, col=1, range=[0, max(3000, np.max(window_df['Aggregate'].values) + 50)])
+    fig_appl.update_yaxes(title_text='Appliance Consumption (Watts)', row=1, col=1, range=[0, max(3000, np.max(window_df['Aggregate'].values) + 50)])
+    fig_appl_stacked.update_yaxes(title_text='Appliance Consumption (Watts)', row=1, col=1, range=[0, max(3000, np.max(window_df['Aggregate'].values) + 50)])
     
     # Update y-axis for the heatmap
     fig_agg.update_yaxes(tickmode='array', tickvals=list(appliances), ticktext=appliances, row=2, col=1, tickangle=-45)
-    fig_appliances_window.update_yaxes(tickmode='array', tickvals=list(appliances), ticktext=appliances, row=2, col=1, tickangle=-45)
-    fig_appliances_window_stacked.update_yaxes(tickmode='array', tickvals=list(appliances), ticktext=appliances, row=2, col=1, tickangle=-45)
+    fig_appl.update_yaxes(tickmode='array', tickvals=list(appliances), ticktext=appliances, row=2, col=1, tickangle=-45)
+    fig_appl_stacked.update_yaxes(tickmode='array', tickvals=list(appliances), ticktext=appliances, row=2, col=1, tickangle=-45)
 
-    return fig_agg, fig_appliances_window, fig_appliances_window_stacked
+    return fig_agg, fig_appl, fig_appl_stacked
 
 
 def plot_detection_probabilities(data):
@@ -465,7 +532,7 @@ def plot_cam(k, df, window_size, appliances, pred_dict_all):
     fig_cam.update_layout(legend=dict(orientation='h', x=0.5, xanchor='center', y=-0.1),
                           height=50 + 30 + 180 * len(appliances),
                           width=1000,
-                          margin=dict(l=30, r=20, t=50, b=30))
+                          margin=dict(l=100, r=20, t=50, b=30))
 
     return fig_cam
 
@@ -503,7 +570,7 @@ def plot_cam(k, df, window_size, appliances, pred_dict_all):
     return fig_cam
 
 
-def plot_one_window_old(k, df, window_size, appliances, pred_dict_all):
+def plot_one_window(k, df, window_size, appliances, pred_dict_all):
     window_df = df.iloc[k*window_size: k*window_size + window_size]
     # Plot for 'Aggregate' column for the window
     fig_aggregate_window = go.Figure()
