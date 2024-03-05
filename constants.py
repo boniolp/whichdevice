@@ -2,6 +2,9 @@ frequency_list = ['30 seconds', '1 minutes','10 minutes']
 models_list    = ['ConvNet', 'ResNet', 'Inception', 'TransAppS']
 lengths_list   = ['6 hours', '12 hours', '1 Day']
 devices_list   = ['WashingMachine', 'Dishwasher', 'Microwave', 'Kettle']
+measures_list  = ['Accuracy', 'Balanced Accuracy', ' F1 Score Macro']
+dataset_list   = ['All', 'UKDALE', ' REFIT']
+
 list_name_ts   = ['UKDALE_House2_2013-05', 
                     'UKDALE_House2_2013-06', 
                     'UKDALE_House2_2013-07', 
