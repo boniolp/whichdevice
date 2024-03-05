@@ -186,7 +186,7 @@ def plot_benchmark_figures(appliances, measure, dataset):
 
     fig.update_layout(
         height=300,
-        width=600 * len(appliances),
+        width=300 * (len(appliances)+1),
         title_x=0.5,
         xaxis_title="Sampling Rate",
         yaxis_title=measure,
