@@ -169,9 +169,6 @@ def plot_benchmark_figures(appliances, measure, dataset):
     legend_added = []
 
     for j, appliance in enumerate(appliances, start=1):
-        if appliance == 'Washing Machine':
-            appliance = 'WashingMachine'
-        
         for model in ['ConvNet', 'ResNet', 'Inception', 'TransAppS']:
             accuracies = [df[(df['Appliance'] == appliance) & (df['SamplingRate'] == sr) & (df['Models'] == model)][dict_measure[measure]].values[0] for sr in sampling_rates]
             showlegend = model not in legend_added
@@ -185,9 +182,10 @@ def plot_benchmark_figures(appliances, measure, dataset):
     # Update y-axes for each subplot to have the range [0, 1]
     for j in range(1, len(appliances) + 1):
         fig.update_yaxes(range=[0, 1.05], row=1, col=j)
+        fig.update_xaxes(title_text="Sampling Rate", row=1, col=j)
 
     fig.update_layout(
-        height=600,
+        height=400,
         width=600 * len(appliances),
         title_x=0.5,
         xaxis_title="Sampling Rate",
