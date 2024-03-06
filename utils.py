@@ -144,10 +144,10 @@ def run_about_frame():
         st.markdown(text_description_dataset)
 
     with tab_model_description:
-        st.markdown(text_description_dataset)
+        st.markdown(text_description_model)
 
     with tab_about:
-        st.markdown(text_description_model)
+        st.markdown("""About""")
 
 
 
