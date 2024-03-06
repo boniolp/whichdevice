@@ -178,7 +178,7 @@ def plot_benchmark_figures1():
 
 def plot_benchmark_figures2():
     table = pd.read_csv(os.getcwd()+'/TableResults/Results.gzip', compression='gzip')
-    grouped_df = table[['Appliances', 'Models', 'Acc', 'Acc_Balanced', 'F1_Macro']].groupby(['Appliance', 'Models'], as_index=False).mean()
+    grouped_df = table[['Appliance', 'Models', 'Acc', 'Acc_Balanced', 'F1_Macro']].groupby(['Appliance', 'Models'], as_index=False).mean()
 
     # Assuming grouped_df is your DataFrame after grouping and sorting
     grouped_df = grouped_df.sort_values(['Models', 'Appliance'])
