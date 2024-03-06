@@ -75,13 +75,14 @@ def run_playground_frame():
     df, window_size = get_time_series_data(ts_name, frequency=frequency, length=length)
     n_win = len(df) // window_size
 
-    with colcontrol_2:
-        st.markdown("<p style='text-align: center;'>from {} to {} </p>".format(df.iloc[CURRENT_WINDOW*window_size: (CURRENT_WINDOW+1)*window_size].index[0],df.iloc[CURRENT_WINDOW*window_size: (CURRENT_WINDOW+1)*window_size].index[-1]),unsafe_allow_html=True)
-    
     if CURRENT_WINDOW > n_win:
         CURRENT_WINDOW=n_win
     elif CURRENT_WINDOW < 0:
         CURRENT_WINDOW=0
+
+    with colcontrol_2:
+        st.markdown("<p style='text-align: center;'>from {} to {} </p>".format(df.iloc[CURRENT_WINDOW*window_size: (CURRENT_WINDOW+1)*window_size].index[0],df.iloc[CURRENT_WINDOW*window_size: (CURRENT_WINDOW+1)*window_size].index[-1]),unsafe_allow_html=True)
+    
     
     pred_dict_all = pred_one_window(CURRENT_WINDOW, df, window_size, ts_name, appliances, frequency, models)
     fig_ts, fig_app, fig_stack = plot_one_window(CURRENT_WINDOW,  df, window_size, appliances, pred_dict_all)
