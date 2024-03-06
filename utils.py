@@ -114,12 +114,15 @@ def run_playground_frame():
 def run_benchmark_frame():
     st.markdown("Here show benchmark/datasets/methods results")
 
-    col1, col2, col3 = st.columns(3)
+    col1 = st.columns(1)
 
     with col1:
         appliances = st.multiselect(
             "Select devices:", devices_list, ["Dishwasher", "WashingMachine", "Kettle", "Microwave"]
         )
+
+    col2, col3 = st.columns(2)
+
     with col2:
         measure = st.selectbox(
             "Choose measures", measures_list, index=0
@@ -169,16 +172,23 @@ def plot_benchmark_figures(appliances, measure, dataset):
 
     legend_added = []
 
+    added_models = set() 
+
     for j, appliance in enumerate(appliances, start=1):
-        for model in ['ConvNet', 'ResNet', 'Inception', 'TransAppS']:
-            accuracies = [df[(df['Appliance'] == appliance) & (df['SamplingRate'] == sr) & (df['Models'] == model)][dict_measure[measure]].values[0] for sr in sampling_rates]
-            showlegend = model not in legend_added
+        for model_name in ['ConvNet', 'ResNet', 'Inception', 'TransAppS']:
+            accuracies = [df[(df['Appliance'] == appliance) & (df['SamplingRate'] == sr) & (df['Models'] == model_name)][dict_measure[measure]].values[0] for sr in sampling_rates]
+
+            show_legend = model_name not in added_models  
+            added_models.add(model_name)  
+
             fig.add_trace(go.Scatter(x=sampling_rates, y=accuracies, mode='lines+markers',
-                                    name=model, marker_color=dict_color_model[model],
-                                    marker=dict(size=10), showlegend=showlegend),
+                                    name=model_name, marker_color=dict_color_model[model_name],
+                                    marker=dict(size=10), showlegend=show_legend,
+                                    legendgroup=model_name),
                           row=1, col=j)
-            if showlegend:
-                legend_added.append(model)
+            
+            if show_legend:
+                legend_added.append(model_name)
 
     # Update y-axes for each subplot to have the range [0, 1]
     for j in range(1, len(appliances) + 1):
@@ -186,8 +196,9 @@ def plot_benchmark_figures(appliances, measure, dataset):
         fig.update_xaxes(title_text="Sampling Rate", row=1, col=j)
 
     fig.update_layout(
-        height=300,
+        height=400,
         width=300 * (len(appliances)+1),
+        title='Accuracy plots', # Set the main title of the figure
         title_x=0.5,
         xaxis_title="Sampling Rate",
         yaxis_title=measure,
