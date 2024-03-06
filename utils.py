@@ -452,8 +452,8 @@ def plot_one_window(k, df, window_size, appliances, pred_dict_all):
     # Stacked CAM heatmap calculations
     z = []
     for appl in appliances:
-        fig_appl.add_trace(go.Scatter(x=window_df.index, y=window_df[appl], mode='lines', name=appl.capitalize(), color=appl, color_discrete_map=dict_color_appliance, fill='tozeroy'))
-        fig_appl_stacked.add_trace(go.Scatter(x=window_df.index, y=window_df[appl], mode='lines', line=dict(width=0), color=appl, color_discrete_map=dict_color_appliance, name=appl.capitalize(), stackgroup='one'))
+        fig_appl.add_trace(go.Scatter(x=window_df.index, y=window_df[appl], mode='lines', name=appl.capitalize(),  fill='tozeroy'))
+        fig_appl_stacked.add_trace(go.Scatter(x=window_df.index, y=window_df[appl], mode='lines', line=dict(width=0), name=appl.capitalize(), stackgroup='one'))
 
         stacked_cam = None
         dict_pred = pred_dict_all[appl]
