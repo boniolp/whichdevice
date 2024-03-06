@@ -118,7 +118,7 @@ def run_benchmark_frame():
 
     with col1:
         appliances = st.multiselect(
-            "Select devices:", devices_list, ["Dishwasher"]
+            "Select devices:", devices_list, ["Dishwasher", "WashingMachine", "Kettle", "Microwave"]
         )
     with col2:
         measure = st.selectbox(
