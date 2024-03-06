@@ -113,7 +113,7 @@ def run_playground_frame():
     
 
 def run_benchmark_frame():
-    st.markdown("Here show benchmark/datasets/methods results")
+    st.markdown("Browse benchmark results: select a metric and dataset.")
 
     col1, col2 = st.columns(2)
 
@@ -133,6 +133,8 @@ def run_benchmark_frame():
     st.plotly_chart(fig1, use_container_width=True)
     st.plotly_chart(fig2, use_container_width=True)
     st.plotly_chart(fig3, use_container_width=True)
+
+    st.markdown("Browse the impact of sampling rate for each model and for selected devices.")
 
     appliances = st.multiselect(
         "Select devices:", devices_list, ["Dishwasher", "WashingMachine", "Kettle", "Microwave"]
@@ -172,7 +174,7 @@ def plot_benchmark_figures1():
                  color='Models', 
                  color_discrete_map=dict_color_model, 
                  range_y=[0.5, 1], 
-                 title='Overall models performance for selcted dataset')
+                 title='Overall models performance for selected dataset')
     
     return fig
 
@@ -194,7 +196,7 @@ def plot_benchmark_figures2():
                 color='Appliance',
                 color_discrete_map=dict_color_appliance,
                 barmode='group',  # Ensures that bars are grouped
-                title='Models performance for each appliance for selected dataset.')
+                title='Models performance for each appliance for selected dataset')
     
     return fig
 
@@ -220,7 +222,7 @@ def plot_benchmark_figures3():
                 color='SamplingRate',
                 color_discrete_map=dict_color_sp,
                 barmode='group',  # Ensures that bars are grouped
-                title='Models performance for each sampling rate for selected dataset.')
+                title='Models performance for each sampling rate for selected dataset')
     
     return fig
 
@@ -266,7 +268,6 @@ def plot_benchmark_figures4(appliances, measure, dataset):
     fig.update_layout(
         title='Influence of sampling frequency on appliance detection',
         title_x=0.5,
-        legend=dict(orientation='h', x=0.5, xanchor='center', y=-0.1),
         xaxis_title="Sampling Rate",
         yaxis_title=measure,
         legend_title="Model",
