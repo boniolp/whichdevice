@@ -114,12 +114,9 @@ def run_playground_frame():
 def run_benchmark_frame():
     st.markdown("Here show benchmark/datasets/methods results")
 
-    col1 = st.columns(1)
-
-    with col1:
-        appliances = st.multiselect(
-            "Select devices:", devices_list, ["Dishwasher", "WashingMachine", "Kettle", "Microwave"]
-        )
+    appliances = st.multiselect(
+        "Select devices:", devices_list, ["Dishwasher", "WashingMachine", "Kettle", "Microwave"]
+    )
 
     col2, col3 = st.columns(2)
 
