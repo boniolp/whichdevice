@@ -114,22 +114,30 @@ def run_playground_frame():
 def run_benchmark_frame():
     st.markdown("Here show benchmark/datasets/methods results")
 
-    appliances = st.multiselect(
-        "Select devices:", devices_list, ["Dishwasher", "WashingMachine", "Kettle", "Microwave"]
-    )
+    col1, col2 = st.columns(2)
 
-    col2, col3 = st.columns(2)
-
-    with col2:
+    with col1:
         measure = st.selectbox(
             "Choose measures", measures_list, index=0
         )
-    with col3:
+    with col2:
         dataset = st.selectbox(
             "Choose dataset", dataset_list, index=0
         )
 
-    fig_benchmark = plot_benchmark_figures(appliances, measure, dataset)
+    fig1 = plot_benchmark_figures1()
+    fig2 = plot_benchmark_figures2()
+    fig3 = plot_benchmark_figures3()
+
+    st.plotly_chart(fig1, use_container_width=True)
+    st.plotly_chart(fig2, use_container_width=True)
+    st.plotly_chart(fig3, use_container_width=True)
+
+    appliances = st.multiselect(
+        "Select devices:", devices_list, ["Dishwasher", "WashingMachine", "Kettle", "Microwave"]
+    )
+
+    fig_benchmark = plot_benchmark_figures4(appliances, measure, dataset)
     st.plotly_chart(fig_benchmark, use_container_width=True)
     
     
@@ -151,10 +159,73 @@ def run_about_frame():
 
 
 
+def plot_benchmark_figures1():
+    table = pd.read_csv(os.getcwd()+'/TableResults/Results.gzip', compression='gzip')
+
+    grouped_df = table.groupby(['Models'], as_index=False).mean()
+
+    grouped_df= grouped_df.sort_values('Acc')
+
+    dict_color_model = {'ConvNet': 'wheat', 'ResNet': 'coral', 'Inception': 'powderblue', 'TransAppS': 'indianred', 'Ensemble': 'peachpuff'}
+
+    fig = px.bar(grouped_df, x='Models', y='Acc', 
+                 color='Models', 
+                 color_discrete_map=dict_color_model, 
+                 range_y=[0.5, 1], 
+                 title='Overall models performance for selcted dataset')
+    
+    return fig
+
+def plot_benchmark_figures2():
+    table = pd.read_csv(os.getcwd()+'/TableResults/Results.gzip', compression='gzip')
+    grouped_df = table.groupby(['Appliance', 'Models'], as_index=False).mean()
+
+    # Assuming grouped_df is your DataFrame after grouping and sorting
+    grouped_df = grouped_df.sort_values(['Models', 'Appliance'])
+
+    grouped_df['Appliance'] = grouped_df['Appliance'].astype('category')
+
+    dict_color_appliance = {'WashingMachine': 'teal', 'Dishwasher': 'skyblue', 'Kettle': 'orange', 'Microwave': 'grey'}
+
+    # Create the grouped bar plot
+    fig = px.bar(grouped_df, 
+                x='Models', 
+                y='Acc', 
+                color='Appliance',
+                color_discrete_map=dict_color_appliance,
+                barmode='group',  # Ensures that bars are grouped
+                title='Models performance for each appliance for selected dataset.')
+    
+    return fig
 
 
+def plot_benchmark_figures3():
+    table = pd.read_csv(os.getcwd()+'/TableResults/Results.gzip', compression='gzip')
+    grouped_df = table.groupby(['SamplingRate', 'Models'], as_index=False).mean()
 
-def plot_benchmark_figures(appliances, measure, dataset):
+    sampling_order = ['30s', '1T', '10T']  # Define the logical order
+    grouped_df['SamplingRate_order'] = pd.Categorical(grouped_df['SamplingRate'], categories=sampling_order, ordered=True)
+
+    # Assuming grouped_df is your DataFrame after grouping and sorting
+    grouped_df = grouped_df.sort_values(['SamplingRate_order', 'Models'])
+
+    grouped_df['SamplingRate'] = grouped_df['SamplingRate'].astype('category')
+
+    dict_color_sp = {'30s': 'rgb(211, 211, 211)', '1T': 'rgb(128, 128, 128)', '10T': 'black'}
+
+    # Create the grouped bar plot
+    fig = px.bar(grouped_df, 
+                x='Models', 
+                y='Acc', 
+                color='SamplingRate',
+                color_discrete_map=dict_color_sp,
+                barmode='group',  # Ensures that bars are grouped
+                title='Models performance for each sampling rate for selected dataset.')
+    
+    return fig
+
+
+def plot_benchmark_figures4(appliances, measure, dataset):
     df = pd.read_csv(os.getcwd()+'/TableResults/Results.gzip', compression='gzip')
     sampling_rates = df['SamplingRate'].unique()
 
@@ -193,8 +264,9 @@ def plot_benchmark_figures(appliances, measure, dataset):
         fig.update_xaxes(title_text="Sampling Rate", row=1, col=j)
 
     fig.update_layout(
-        title='Accuracy plots', # Set the main title of the figure
+        title='Influence of sampling frequency on appliance detection',
         title_x=0.5,
+        legend=dict(orientation='h', x=0.5, xanchor='center', y=-0.1),
         xaxis_title="Sampling Rate",
         yaxis_title=measure,
         legend_title="Model",
@@ -364,6 +436,7 @@ def pred_one_window(k, df, window_size, ts_name, appliances, frequency, models):
 
 def plot_one_window(k, df, window_size, appliances, pred_dict_all):
     window_df = df.iloc[k*window_size: k*window_size + window_size]
+    dict_color_appliance = {'WashingMachine': 'teal', 'Dishwasher': 'skyblue', 'Kettle': 'orange', 'Microwave': 'grey'}
     
     # Create subplots with 2 rows, shared x-axis
     size_cam = 0.1 * (len(appliances)+1)
@@ -379,8 +452,8 @@ def plot_one_window(k, df, window_size, appliances, pred_dict_all):
     # Stacked CAM heatmap calculations
     z = []
     for appl in appliances:
-        fig_appl.add_trace(go.Scatter(x=window_df.index, y=window_df[appl], mode='lines', name=appl.capitalize(), fill='tozeroy'))
-        fig_appl_stacked.add_trace(go.Scatter(x=window_df.index, y=window_df[appl], mode='lines', line=dict(width=0), name=appl.capitalize(), stackgroup='one'))
+        fig_appl.add_trace(go.Scatter(x=window_df.index, y=window_df[appl], mode='lines', name=appl.capitalize(), color=appl, color_discrete_map=dict_color_appliance, fill='tozeroy'))
+        fig_appl_stacked.add_trace(go.Scatter(x=window_df.index, y=window_df[appl], mode='lines', line=dict(width=0), color=appl, color_discrete_map=dict_color_appliance, name=appl.capitalize(), stackgroup='one'))
 
         stacked_cam = None
         dict_pred = pred_dict_all[appl]
