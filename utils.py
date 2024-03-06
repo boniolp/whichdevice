@@ -162,7 +162,7 @@ def run_about_frame():
 
 def plot_benchmark_figures1():
     table = pd.read_csv(os.getcwd()+'/TableResults/Results.gzip', compression='gzip')
-    grouped_df = table.groupby(['Models']).mean().reset_index()
+    grouped_df = table[['Models', 'Acc', 'Acc_Balanced', 'F1_Macro']].groupby(['Models'], as_index=False).mean()
 
     grouped_df= grouped_df.sort_values('Acc')
 
@@ -178,7 +178,7 @@ def plot_benchmark_figures1():
 
 def plot_benchmark_figures2():
     table = pd.read_csv(os.getcwd()+'/TableResults/Results.gzip', compression='gzip')
-    grouped_df = table.groupby(['Appliance', 'Models'], as_index=False).mean()
+    grouped_df = table[['Appliances', 'Models', 'Acc', 'Acc_Balanced', 'F1_Macro']].groupby(['Appliance', 'Models'], as_index=False).mean()
 
     # Assuming grouped_df is your DataFrame after grouping and sorting
     grouped_df = grouped_df.sort_values(['Models', 'Appliance'])
@@ -201,7 +201,7 @@ def plot_benchmark_figures2():
 
 def plot_benchmark_figures3():
     table = pd.read_csv(os.getcwd()+'/TableResults/Results.gzip', compression='gzip')
-    grouped_df = table.groupby(['SamplingRate', 'Models'], as_index=False).mean()
+    grouped_df = table[['SamplingRate', 'Models', 'Acc', 'Acc_Balanced', 'F1_Macro']].groupby(['SamplingRate', 'Models'], as_index=False).mean()
 
     sampling_order = ['30s', '1T', '10T']  # Define the logical order
     grouped_df['SamplingRate_order'] = pd.Categorical(grouped_df['SamplingRate'], categories=sampling_order, ordered=True)
