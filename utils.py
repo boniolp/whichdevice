@@ -328,7 +328,7 @@ def get_cam(window_agg, model_name, model_inst):
         last_conv_layer = model_inst._modules['Blocks'][1]
         fc_layer_name   = model_inst._modules['Linear']
     elif model_name=='TransAppS':
-        n_encoder_layers = 3
+        n_encoder_layers = 1
 
     # Get CAM for selected model and device
     if model_name=='TransAppS':
