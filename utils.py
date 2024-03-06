@@ -126,7 +126,7 @@ def run_benchmark_frame():
             "Choose dataset", dataset_list, index=0
         )
 
-    fig1 = plot_benchmark_figures1()
+    #fig1 = plot_benchmark_figures1()
     fig2 = plot_benchmark_figures2()
     fig3 = plot_benchmark_figures3()
 
