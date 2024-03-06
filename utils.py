@@ -60,7 +60,7 @@ def run_playground_frame():
         )
     with col3_3:
         length = st.selectbox(
-            "Choose the window length:", lengths_list, index=0
+            "Choose the window length:", lengths_list, index=2
         )
 
     colcontrol_1, colcontrol_2, colcontrol_3 = st.columns([0.2,0.8,0.2])

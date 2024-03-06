@@ -1,10 +1,13 @@
 import numpy as np
+import warnings
 
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 
 from Models.Layers.Encoding import LearnablePositionalEncoding1D, PositionalEncoding1D, tAPE
 from Models.Layers.Transformer import EncoderLayer
+from Models.Layers.ConvLayer import DilatedBlock, InceptionModule
 
     
 # ======================= TransAppV1 =======================#
@@ -14,10 +17,10 @@ class TransAppS(nn.Module):
                  window_size=128,
                  c_in=1,  nb_class=2, 
                  instance_norm=False,
-                 kernel_size=5, kernel_size_head=3,
+                 kernel_size=3, kernel_size_head=3, 
                  encoder_encoding_type='tAPE',
                  decoder_encoding_type='tAPE',
-                 n_encoder_layers=3, n_decoder_layers=0,
+                 n_encoder_layers=1, n_decoder_layers=0,
                  d_model=96, dp_rate=0.2, activation='gelu',
                  pffn_ratio=4, n_head=8, prenorm=True, norm="LayerNorm", store_att=False, attn_dp_rate=0.2, 
                  att_param={'attenc_mask_diag': True, 'attenc_mask_flag': False, 'learnable_scale_enc': False,
@@ -39,10 +42,7 @@ class TransAppS(nn.Module):
         
         
         #============ Embedding ============#
-        self.EmbedBlock = nn.Sequential(nn.Conv1d(in_channels=c_in, out_channels=d_model, kernel_size=kernel_size, padding=kernel_size//2, padding_mode='replicate'),
-                                        nn.GELU(),
-                                        nn.BatchNorm1d(d_model)
-                                    )                      
+        self.EmbedBlock = InceptionModule(in_channels=c_in, n_filters=d_model//4, bottleneck_channels=d_model//4)           
             
         #============ Positional Encoding Encoder ============#
         if encoder_encoding_type == 'learnable':
@@ -251,14 +251,14 @@ class TransAppS(nn.Module):
             x = self.EmbedBlock(x).permute(0, 2, 1) # B L D
             # Add positional encoding
             if self.PosEncoding_Encoder is not None:
-                x = x + self.PosEncoding_Encoder(x) # B D L
+                x = self.PosEncoding_Encoder(x) # B D L
 
             # === Forward Transformer Encoder === #
             x = self.forward_encoder(x, ids_keep) # B L D
 
             # === Forward Transformer Decoder === #
             if self.PosEncoding_Encoder is not None:
-                x = x + self.PosEncoding_Encoder(x) # B L D
+                x = self.PosEncoding_Encoder(x) # B L D
             x = self.forward_decoder_pretraining(x, ids_restore) # B L D
 
             # === Conv Head === #
@@ -290,7 +290,7 @@ class TransAppS(nn.Module):
             x = self.EmbedBlock(x).permute(0, 2, 1) # B L D
             # Add positional encoding
             if self.PosEncoding_Encoder is not None:
-                x = x + self.PosEncoding_Encoder(x) # B L D
+                x = self.PosEncoding_Encoder(x) # B L D
 
             # === Mean and Std projection === #
             if self.instance_norm:
