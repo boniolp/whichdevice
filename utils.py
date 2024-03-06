@@ -113,7 +113,9 @@ def run_playground_frame():
     
 
 def run_benchmark_frame():
-    st.markdown("Browse benchmark results: select a metric and dataset.")
+    st.markdown("""## Browse benchmark results: 
+                
+                Select a metric and dataset.""")
 
     col1, col2 = st.columns(2)
 
@@ -134,7 +136,7 @@ def run_benchmark_frame():
     st.plotly_chart(fig2, use_container_width=True)
     st.plotly_chart(fig3, use_container_width=True)
 
-    st.markdown("Browse the impact of sampling rate for each model and for selected devices.")
+    st.markdown("## Browse the impact of sampling rate for each model and for selected devices.")
 
     appliances = st.multiselect(
         "Select devices:", devices_list, ["Dishwasher", "WashingMachine", "Kettle", "Microwave"]
