@@ -193,8 +193,6 @@ def plot_benchmark_figures(appliances, measure, dataset):
         fig.update_xaxes(title_text="Sampling Rate", row=1, col=j)
 
     fig.update_layout(
-        height=400,
-        width=300 * (len(appliances)+1),
         title='Accuracy plots', # Set the main title of the figure
         title_x=0.5,
         xaxis_title="Sampling Rate",
