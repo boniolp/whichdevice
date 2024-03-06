@@ -126,7 +126,7 @@ def run_benchmark_frame():
             "Choose dataset", dataset_list, index=0
         )
 
-    #fig1 = plot_benchmark_figures1()
+    fig1 = plot_benchmark_figures1()
     fig2 = plot_benchmark_figures2()
     fig3 = plot_benchmark_figures3()
 
@@ -162,8 +162,7 @@ def run_about_frame():
 
 def plot_benchmark_figures1():
     table = pd.read_csv(os.getcwd()+'/TableResults/Results.gzip', compression='gzip')
-
-    grouped_df = table.groupby(['Models'], as_index=False).mean()
+    grouped_df = table.groupby(['Models']).mean().reset_index()
 
     grouped_df= grouped_df.sort_values('Acc')
 
