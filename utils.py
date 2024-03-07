@@ -187,7 +187,7 @@ def plot_benchmark_figures1(name_measure):
     table = pd.read_csv(os.getcwd()+'/TableResults/Results.gzip', compression='gzip')
     grouped_df = table[['Models'] + [measure]].groupby(['Models'], as_index=False).mean()
 
-    grouped_df= grouped_df.sort_values('Acc')
+    grouped_df= grouped_df.sort_values(measure)
 
     dict_color_model = {'ConvNet': 'wheat', 'ResNet': 'coral', 'Inception': 'powderblue', 'TransAppS': 'indianred', 'Ensemble': 'peachpuff'}
 
@@ -195,6 +195,7 @@ def plot_benchmark_figures1(name_measure):
                  color='Models', 
                  color_discrete_map=dict_color_model, 
                  range_y=[0.5, 1], 
+                 height=200,
                  title='Overall models performance for selected dataset')
     
     return fig
@@ -220,7 +221,9 @@ def plot_benchmark_figures2(name_measure):
                 y=measure, 
                 color='Appliance',
                 color_discrete_map=dict_color_appliance,
-                barmode='group',  # Ensures that bars are grouped
+                barmode='group',
+                range_y=[0.5, 1], 
+                height=200,
                 title='Models performance for each appliance for selected dataset')
     
     return fig
@@ -250,7 +253,9 @@ def plot_benchmark_figures3(name_measure):
                 y=measure, 
                 color='SamplingRate',
                 color_discrete_map=dict_color_sp,
-                barmode='group',  # Ensures that bars are grouped
+                barmode='group',
+                range_y=[0.5, 1], 
+                height=200,
                 title='Models performance for each sampling rate for selected dataset')
     
     return fig
