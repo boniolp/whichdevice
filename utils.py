@@ -62,7 +62,7 @@ def run_playground_frame():
             "Select models:", models_list
         )
     with col2_2:
-        appliances = st.multiselect(
+        appliances1 = st.multiselect(
             "Select devices:", devices_list, ["Dishwasher", "WashingMachine", "Kettle", "Microwave"]
         )
 
@@ -87,8 +87,8 @@ def run_playground_frame():
         st.markdown("<p style='text-align: center;'>from {} to {} </p>".format(df.iloc[CURRENT_WINDOW*window_size: (CURRENT_WINDOW+1)*window_size].index[0],df.iloc[CURRENT_WINDOW*window_size: (CURRENT_WINDOW+1)*window_size].index[-1]),unsafe_allow_html=True)
     
     if len(models)>0:
-        pred_dict_all = pred_one_window(CURRENT_WINDOW, df, window_size, ts_name, appliances, frequency, models)
-        fig_ts, fig_app, fig_stack = plot_one_window1(CURRENT_WINDOW,  df, window_size, appliances, pred_dict_all)
+        pred_dict_all = pred_one_window(CURRENT_WINDOW, df, window_size, ts_name, appliances1, frequency, models)
+        fig_ts, fig_app, fig_stack = plot_one_window1(CURRENT_WINDOW,  df, window_size, appliances1, pred_dict_all)
         fig_prob = plot_detection_probabilities(pred_dict_all)
         
         tab_ts, tab_app = st.tabs(["Aggregated", "Per device"])
@@ -108,10 +108,10 @@ def run_playground_frame():
         with tab_prob:
             st.plotly_chart(fig_prob, use_container_width=True)
         with tab_cam:
-            fig_cam = plot_cam(CURRENT_WINDOW, df, window_size, appliances, pred_dict_all)
+            fig_cam = plot_cam(CURRENT_WINDOW, df, window_size, appliances1, pred_dict_all)
             st.plotly_chart(fig_cam, use_container_width=True)
     else:
-        fig_ts, fig_app, fig_stack = plot_one_window2(CURRENT_WINDOW,  df, window_size, appliances)
+        fig_ts, fig_app, fig_stack = plot_one_window2(CURRENT_WINDOW,  df, window_size, appliances1)
 
         tab_ts, tab_app = st.tabs(["Aggregated", "Per device"])
 
@@ -156,11 +156,11 @@ def run_benchmark_frame():
 
     st.markdown("#### Explore the impact of sampling rate for each model for selected devices")
 
-    appliances = st.multiselect(
+    appliances2 = st.multiselect(
         "Select devices:", devices_list, ["Dishwasher", "WashingMachine", "Kettle", "Microwave"]
     )
 
-    fig_benchmark = plot_benchmark_figures4(appliances, measure, dataset)
+    fig_benchmark = plot_benchmark_figures4(appliances2, measure, dataset)
     st.plotly_chart(fig_benchmark, use_container_width=True)
     
     
