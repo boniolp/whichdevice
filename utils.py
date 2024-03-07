@@ -174,7 +174,7 @@ def run_about_frame():
 
     with tab_model_description:
 
-        tab_classifiers, tab_explainabilities, tab_about = st.tabs(["Classifiers", "Localization methods"])
+        tab_classifiers, tab_explainabilities = st.tabs(["Classifiers", "Localization methods"])
 
         with tab_classifiers:
             st.markdown(text_description_model)
