@@ -39,29 +39,31 @@ def run_playground_frame():
     
     st.markdown("""### Explore electrical time series consumption""")
 
-    col1, col2 = st.columns(2)
+    col1_1, col1_2, col1_3 = st.columns(3)
 
-    with col1:
+    with col1_1:
         ts_name = st.selectbox(
             "Choose a load curve", list_name_ts, index=0
         )
-    with col2:
-        appliances = st.multiselect(
-            "Select devices:", devices_list, ["Dishwasher", "WashingMachine", "Kettle", "Microwave"]
-        )
-
-    col3_1, col3_2, col3_3 = st.columns(3)
-    with col3_1:
+    with col1_2:
         frequency = st.selectbox(
             "Choose a sampling rate:", frequency_list, index=0
         )
-    with col3_2:
+    with col1_3:
         length = st.selectbox(
             "Choose the window length:", lengths_list, index=2
         )
-    with col3_3:
+
+
+    col2_1, col2_2 = st.columns(2)
+    
+    with col2_1:
         models = st.multiselect(
             "Select models:", models_list
+        )
+    with col2_2:
+        appliances = st.multiselect(
+            "Select devices:", devices_list, ["Dishwasher", "WashingMachine", "Kettle", "Microwave"]
         )
 
     colcontrol_1, colcontrol_2, colcontrol_3 = st.columns([0.2,0.8,0.2])
@@ -173,7 +175,6 @@ def run_about_frame():
         st.markdown(text_description_dataset)
 
     with tab_model_description:
-
         tab_classifiers, tab_explainabilities = st.tabs(["Classifiers", "Localization methods"])
 
         with tab_classifiers:
