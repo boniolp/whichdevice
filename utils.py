@@ -63,7 +63,7 @@ def run_playground_frame():
         )
     with col2_2:
         models = st.multiselect(
-            "Select models:", models_list
+            "Choose models:", models_list
         )
 
     colcontrol_1, colcontrol_2, colcontrol_3 = st.columns([0.2,0.8,0.2])
@@ -465,6 +465,7 @@ def get_cam(window_agg, model_name, model_inst):
     if model_name=='TransAppS':
         CAM_builder = AttentionMap(model_inst, device='cpu', n_encoder_layers=n_encoder_layers, merge_channels_att='sum', head_att='sum')
         pred_cam, _ = CAM_builder.run(instance=window_agg, return_att_for='all')
+        pred_cam = np.convolve(pred_cam, np.ones(15), mode='same')
         pred_cam = scale_cam_inst(pred_cam)
     else:
         CAM_builder = CAM(model_inst, device='cpu', last_conv_layer=last_conv_layer, fc_layer_name=fc_layer_name, verbose=False)
