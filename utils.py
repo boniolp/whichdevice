@@ -195,7 +195,7 @@ def plot_benchmark_figures1(name_measure):
                  color='Models', 
                  color_discrete_map=dict_color_model, 
                  range_y=[0.5, 1], 
-                 height=200,
+                 height=400,
                  title='Overall models performance for selected dataset')
     
     return fig
@@ -223,7 +223,7 @@ def plot_benchmark_figures2(name_measure):
                 color_discrete_map=dict_color_appliance,
                 barmode='group',
                 range_y=[0.5, 1], 
-                height=200,
+                height=400,
                 title='Models performance for each appliance for selected dataset')
     
     return fig
@@ -255,7 +255,7 @@ def plot_benchmark_figures3(name_measure):
                 color_discrete_map=dict_color_sp,
                 barmode='group',
                 range_y=[0.5, 1], 
-                height=200,
+                height=400,
                 title='Models performance for each sampling rate for selected dataset')
     
     return fig
