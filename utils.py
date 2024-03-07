@@ -127,9 +127,9 @@ def run_playground_frame():
     
 
 def run_benchmark_frame():
-    st.markdown("""### Explore benchmark results 
+    st.markdown("""## Explore benchmark results 
                 
-                Select a metric and dataset.""")
+                Please select a metric and a dataset (or all dataset).""")
 
     col1, col2 = st.columns(2)
 
@@ -142,15 +142,17 @@ def run_benchmark_frame():
             "Choose dataset", dataset_list, index=0
         )
 
-    fig1 = plot_benchmark_figures1()
-    fig2 = plot_benchmark_figures2()
-    fig3 = plot_benchmark_figures3()
+    st.markdown("### Overall results")
+
+    fig1 = plot_benchmark_figures1(measure)
+    fig2 = plot_benchmark_figures2(measure)
+    fig3 = plot_benchmark_figures3(measure)
 
     st.plotly_chart(fig1, use_container_width=True)
     st.plotly_chart(fig2, use_container_width=True)
     st.plotly_chart(fig3, use_container_width=True)
 
-    st.markdown("## Explore the impact of sampling rate for each model and for selected devices.")
+    st.markdown("### Explore the impact of sampling rate for each model for selected devices")
 
     appliances = st.multiselect(
         "Select devices:", devices_list, ["Dishwasher", "WashingMachine", "Kettle", "Microwave"]
@@ -178,15 +180,18 @@ def run_about_frame():
 
 
 
-def plot_benchmark_figures1():
+def plot_benchmark_figures1(name_measure):
+    dict_measure = {'Accuracy': 'Acc', 'Balanced Accuracy': 'Acc_Balanced', 'F1 Macro': 'F1_Macro'}
+    measure = dict_measure[name_measure]
+
     table = pd.read_csv(os.getcwd()+'/TableResults/Results.gzip', compression='gzip')
-    grouped_df = table[['Models', 'Acc', 'Acc_Balanced', 'F1_Macro']].groupby(['Models'], as_index=False).mean()
+    grouped_df = table[['Models'] + [measure]].groupby(['Models'], as_index=False).mean()
 
     grouped_df= grouped_df.sort_values('Acc')
 
     dict_color_model = {'ConvNet': 'wheat', 'ResNet': 'coral', 'Inception': 'powderblue', 'TransAppS': 'indianred', 'Ensemble': 'peachpuff'}
 
-    fig = px.bar(grouped_df, x='Models', y='Acc', 
+    fig = px.bar(grouped_df, x='Models', y=measure, 
                  color='Models', 
                  color_discrete_map=dict_color_model, 
                  range_y=[0.5, 1], 
@@ -194,9 +199,13 @@ def plot_benchmark_figures1():
     
     return fig
 
-def plot_benchmark_figures2():
+def plot_benchmark_figures2(name_measure):
     table = pd.read_csv(os.getcwd()+'/TableResults/Results.gzip', compression='gzip')
-    grouped_df = table[['Appliance', 'Models', 'Acc', 'Acc_Balanced', 'F1_Macro']].groupby(['Appliance', 'Models'], as_index=False).mean()
+
+    dict_measure = {'Accuracy': 'Acc', 'Balanced Accuracy': 'Acc_Balanced', 'F1 Macro': 'F1_Macro'}
+    measure = dict_measure[name_measure]
+
+    grouped_df = table[['Appliance', 'Models']+[measure]].groupby(['Appliance', 'Models'], as_index=False).mean()
 
     # Assuming grouped_df is your DataFrame after grouping and sorting
     grouped_df = grouped_df.sort_values(['Models', 'Appliance'])
@@ -208,7 +217,7 @@ def plot_benchmark_figures2():
     # Create the grouped bar plot
     fig = px.bar(grouped_df, 
                 x='Models', 
-                y='Acc', 
+                y=measure, 
                 color='Appliance',
                 color_discrete_map=dict_color_appliance,
                 barmode='group',  # Ensures that bars are grouped
@@ -217,9 +226,13 @@ def plot_benchmark_figures2():
     return fig
 
 
-def plot_benchmark_figures3():
+def plot_benchmark_figures3(name_measure):
     table = pd.read_csv(os.getcwd()+'/TableResults/Results.gzip', compression='gzip')
-    grouped_df = table[['SamplingRate', 'Models', 'Acc', 'Acc_Balanced', 'F1_Macro']].groupby(['SamplingRate', 'Models'], as_index=False).mean()
+
+    dict_measure = {'Accuracy': 'Acc', 'Balanced Accuracy': 'Acc_Balanced', 'F1 Macro': 'F1_Macro'}
+    measure = dict_measure[name_measure]
+    
+    grouped_df = table[['SamplingRate', 'Models']+[measure]].groupby(['SamplingRate', 'Models'], as_index=False).mean()
 
     sampling_order = ['30s', '1T', '10T']  # Define the logical order
     grouped_df['SamplingRate_order'] = pd.Categorical(grouped_df['SamplingRate'], categories=sampling_order, ordered=True)
@@ -234,7 +247,7 @@ def plot_benchmark_figures3():
     # Create the grouped bar plot
     fig = px.bar(grouped_df, 
                 x='Models', 
-                y='Acc', 
+                y=measure, 
                 color='SamplingRate',
                 color_discrete_map=dict_color_sp,
                 barmode='group',  # Ensures that bars are grouped
