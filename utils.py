@@ -438,7 +438,7 @@ def get_prediction_one_appliance(ts_name, window_agg, appliance, frequency, mode
 
         # Predict CAM or AttMap
         #if model_name in ['ConvNet', 'ResNet', 'Inception']:
-        pred_cam = get_cam(window_agg, model_name, model_inst)
+        pred_cam = get_cam(window_agg, model_name, model_inst, sampling_rate)
 
         # Update pred_dict
         pred_dict[model_name] = {'pred_prob': pred_prob, 'pred_label': pred_label, 'pred_cam': pred_cam}
@@ -446,7 +446,7 @@ def get_prediction_one_appliance(ts_name, window_agg, appliance, frequency, mode
     return pred_dict
 
 
-def get_cam(window_agg, model_name, model_inst):
+def get_cam(window_agg, model_name, model_inst, sampling_rate):
 
     # Set layer conv and fc layer names for selected model
     if model_name=='ConvNet':
@@ -465,7 +465,8 @@ def get_cam(window_agg, model_name, model_inst):
     if model_name=='TransAppS':
         CAM_builder = AttentionMap(model_inst, device='cpu', n_encoder_layers=n_encoder_layers, merge_channels_att='sum', head_att='sum')
         pred_cam, _ = CAM_builder.run(instance=window_agg, return_att_for='all')
-        pred_cam = np.convolve(pred_cam, np.ones(15), mode='same')
+        dict_conv  = {'30s': 20, '1T': 10, '10T':5}
+        pred_cam = np.convolve(pred_cam, np.ones(dict_conv[sampling_rate]), mode='same')
         pred_cam = scale_cam_inst(pred_cam)
     else:
         CAM_builder = CAM(model_inst, device='cpu', last_conv_layer=last_conv_layer, fc_layer_name=fc_layer_name, verbose=False)
