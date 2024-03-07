@@ -206,7 +206,7 @@ def plot_benchmark_figures1(name_measure, dataset):
     fig = px.bar(table, x='Models', y=measure, labels={measure: name_measure},
                  color='Models', 
                  color_discrete_map=dict_color_model, 
-                 range_y=[min(0.5, round(min_val-1)), 1],
+                 range_y=[min(0.5, round(min_val-0.1)), 1],
                  height=400,
                  title='Overall models performance for selected dataset')
     
@@ -237,7 +237,7 @@ def plot_benchmark_figures2(name_measure, dataset):
                 color='Appliance',
                 color_discrete_map=dict_color_appliance,
                 barmode='group',
-                range_y=[min(0.5, round(min_val-1)), 1], 
+                range_y=[min(0.5, round(min_val-0.1)), 1], 
                 height=400,
                 title='Models performance for each appliance for selected dataset')
     
@@ -271,7 +271,7 @@ def plot_benchmark_figures3(name_measure, dataset):
                 color='SamplingRate',
                 color_discrete_map=dict_color_sp,
                 barmode='group',
-                range_y=[min(0.5, round(min_val-1)), 1], 
+                range_y=[min(0.5, round(min_val-0.1)), 1], 
                 height=400,
                 title='Models performance for each sampling rate for selected dataset')
     
