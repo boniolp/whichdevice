@@ -47,7 +47,7 @@ def run_playground_frame():
         )
     with col2:
         appliances = st.multiselect(
-            "Choose devices:", devices_list, ["Dishwasher", "WashingMachine", "Kettle", "Microwave"]
+            "Select devices:", devices_list, ["Dishwasher", "WashingMachine", "Kettle", "Microwave"]
         )
 
     col3_1, col3_2, col3_3 = st.columns(3)
@@ -56,12 +56,12 @@ def run_playground_frame():
             "Choose a sampling rate:", frequency_list, index=0
         )
     with col3_2:
-        models = st.multiselect(
-            "Choose models:", models_list
-        )
-    with col3_3:
         length = st.selectbox(
             "Choose the window length:", lengths_list, index=2
+        )
+    with col3_3:
+        models = st.multiselect(
+            "Select models:", models_list
         )
 
     colcontrol_1, colcontrol_2, colcontrol_3 = st.columns([0.2,0.8,0.2])
@@ -201,10 +201,12 @@ def plot_benchmark_figures1(name_measure, dataset):
 
     dict_color_model = {'ConvNet': 'wheat', 'ResNet': 'coral', 'Inception': 'powderblue', 'TransAppS': 'indianred', 'Ensemble': 'peachpuff'}
 
+
+    min_val = table[measure].values().flatten().min()
     fig = px.bar(table, x='Models', y=measure, labels={measure: name_measure},
                  color='Models', 
                  color_discrete_map=dict_color_model, 
-                 range_y=[0.5, 1], 
+                 range_y=[min(0.5, round(min_val-1)), 1],
                  height=400,
                  title='Overall models performance for selected dataset')
     
@@ -227,6 +229,7 @@ def plot_benchmark_figures2(name_measure, dataset):
 
     dict_color_appliance = {'WashingMachine': 'teal', 'Dishwasher': 'skyblue', 'Kettle': 'orange', 'Microwave': 'grey'}
 
+    min_val = table[measure].values().flatten().min()
     # Create the grouped bar plot
     fig = px.bar(table, 
                 x='Models', 
@@ -234,7 +237,7 @@ def plot_benchmark_figures2(name_measure, dataset):
                 color='Appliance',
                 color_discrete_map=dict_color_appliance,
                 barmode='group',
-                range_y=[0.5, 1], 
+                range_y=[min(0.5, round(min_val-1)), 1], 
                 height=400,
                 title='Models performance for each appliance for selected dataset')
     
@@ -260,14 +263,15 @@ def plot_benchmark_figures3(name_measure, dataset):
 
     dict_color_sp = {'30s': 'rgb(211, 211, 211)', '1T': 'rgb(128, 128, 128)', '10T': 'black'}
 
-    # Create the grouped bar plot
+    min_val = table[measure].values().flatten().min()
+
     fig = px.bar(table, 
                 x='Models', 
                 y=measure, labels={measure: name_measure},
                 color='SamplingRate',
                 color_discrete_map=dict_color_sp,
                 barmode='group',
-                range_y=[0.5, 1], 
+                range_y=[min(0.5, round(min_val-1)), 1], 
                 height=400,
                 title='Models performance for each sampling rate for selected dataset')
     
@@ -572,9 +576,6 @@ def plot_one_window1(k, df, window_size, appliances, pred_dict_all):
 def plot_one_window2(k, df, window_size, appliances):
     window_df = df.iloc[k*window_size: k*window_size + window_size]
     dict_color_appliance = {'WashingMachine': 'teal', 'Dishwasher': 'skyblue', 'Kettle': 'orange', 'Microwave': 'grey'}
-    
-    # Create subplots with 2 rows, shared x-axis
-    size_cam = 0.1 * (len(appliances)+1)
 
     fig_agg          = go.Figure()
     fig_appl         = go.Figure()
@@ -591,7 +592,7 @@ def plot_one_window2(k, df, window_size, appliances):
     fig_agg.update_layout(
         title='Aggregate Consumption',
         xaxis_title='Time',
-        height=500,
+        height=300,
         width=1000,
         margin=dict(l=100, r=20, t=30, b=40)
     )
@@ -600,7 +601,7 @@ def plot_one_window2(k, df, window_size, appliances):
         title='Appliance Power Consumption',
         legend=dict(orientation='h', x=0.5, xanchor='center', y=-0.2),
         xaxis_title='Time',
-        height=500,
+        height=300,
         width=1000,
         margin=dict(l=100, r=20, t=30, b=40)
     )
@@ -609,7 +610,7 @@ def plot_one_window2(k, df, window_size, appliances):
         title='Appliance Power Consumption (stacked)',
         legend=dict(orientation='h', x=0.5, xanchor='center', y=-0.2),
         xaxis_title='Time',
-        height=500,
+        height=300,
         width=1000,
         margin=dict(l=100, r=20, t=30, b=40)
     )
