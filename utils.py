@@ -127,7 +127,7 @@ def run_playground_frame():
     
 
 def run_benchmark_frame():
-    st.markdown("""## Explore benchmark results 
+    st.markdown("""### Explore benchmark results 
                 
                 Please select a metric and a dataset (or all dataset).""")
 
@@ -142,17 +142,17 @@ def run_benchmark_frame():
             "Choose dataset", dataset_list, index=0
         )
 
-    st.markdown("### Overall results")
+    st.markdown("#### Overall results")
 
-    fig1 = plot_benchmark_figures1(measure)
-    fig2 = plot_benchmark_figures2(measure)
-    fig3 = plot_benchmark_figures3(measure)
+    fig1 = plot_benchmark_figures1(measure, dataset)
+    fig2 = plot_benchmark_figures2(measure, dataset)
+    fig3 = plot_benchmark_figures3(measure, dataset)
 
     st.plotly_chart(fig1, use_container_width=True)
     st.plotly_chart(fig2, use_container_width=True)
     st.plotly_chart(fig3, use_container_width=True)
 
-    st.markdown("### Explore the impact of sampling rate for each model for selected devices")
+    st.markdown("#### Explore the impact of sampling rate for each model for selected devices")
 
     appliances = st.multiselect(
         "Select devices:", devices_list, ["Dishwasher", "WashingMachine", "Kettle", "Microwave"]
@@ -180,18 +180,21 @@ def run_about_frame():
 
 
 
-def plot_benchmark_figures1(name_measure):
+def plot_benchmark_figures1(name_measure, dataset):
+    table = pd.read_csv(os.getcwd()+'/TableResults/Results.gzip', compression='gzip')
+    if dataset != 'All':
+        table = table.loc[table['Dataset'] == dataset]
+
     dict_measure = {'Accuracy': 'Acc', 'Balanced Accuracy': 'Acc_Balanced', 'F1 Macro': 'F1_Macro'}
     measure = dict_measure[name_measure]
 
-    table = pd.read_csv(os.getcwd()+'/TableResults/Results.gzip', compression='gzip')
-    grouped_df = table[['Models'] + [measure]].groupby(['Models'], as_index=False).mean()
+    table = table[['Models'] + [measure]].groupby(['Models'], as_index=False).mean()
 
-    grouped_df= grouped_df.sort_values(measure)
+    table = table.sort_values(measure)
 
     dict_color_model = {'ConvNet': 'wheat', 'ResNet': 'coral', 'Inception': 'powderblue', 'TransAppS': 'indianred', 'Ensemble': 'peachpuff'}
 
-    fig = px.bar(grouped_df, x='Models', y=measure, 
+    fig = px.bar(table, x='Models', y=measure, 
                  color='Models', 
                  color_discrete_map=dict_color_model, 
                  range_y=[0.5, 1], 
@@ -200,23 +203,25 @@ def plot_benchmark_figures1(name_measure):
     
     return fig
 
-def plot_benchmark_figures2(name_measure):
+def plot_benchmark_figures2(name_measure, dataset):
     table = pd.read_csv(os.getcwd()+'/TableResults/Results.gzip', compression='gzip')
+    if dataset != 'All':
+        table = table.loc[table['Dataset'] == dataset]
 
     dict_measure = {'Accuracy': 'Acc', 'Balanced Accuracy': 'Acc_Balanced', 'F1 Macro': 'F1_Macro'}
     measure = dict_measure[name_measure]
 
-    grouped_df = table[['Appliance', 'Models']+[measure]].groupby(['Appliance', 'Models'], as_index=False).mean()
+    table = table[['Appliance', 'Models']+[measure]].groupby(['Appliance', 'Models'], as_index=False).mean()
 
     # Assuming grouped_df is your DataFrame after grouping and sorting
-    grouped_df = grouped_df.sort_values(['Models', 'Appliance'])
+    table = table.sort_values(['Models', 'Appliance'])
 
-    grouped_df['Appliance'] = grouped_df['Appliance'].astype('category')
+    table['Appliance'] = table['Appliance'].astype('category')
 
     dict_color_appliance = {'WashingMachine': 'teal', 'Dishwasher': 'skyblue', 'Kettle': 'orange', 'Microwave': 'grey'}
 
     # Create the grouped bar plot
-    fig = px.bar(grouped_df, 
+    fig = px.bar(table, 
                 x='Models', 
                 y=measure, 
                 color='Appliance',
@@ -229,26 +234,27 @@ def plot_benchmark_figures2(name_measure):
     return fig
 
 
-def plot_benchmark_figures3(name_measure):
+def plot_benchmark_figures3(name_measure, dataset):
     table = pd.read_csv(os.getcwd()+'/TableResults/Results.gzip', compression='gzip')
+    if dataset != 'All':
+        table = table.loc[table['Dataset'] == dataset]
 
     dict_measure = {'Accuracy': 'Acc', 'Balanced Accuracy': 'Acc_Balanced', 'F1 Macro': 'F1_Macro'}
     measure = dict_measure[name_measure]
     
-    grouped_df = table[['SamplingRate', 'Models']+[measure]].groupby(['SamplingRate', 'Models'], as_index=False).mean()
+    table = table[['SamplingRate', 'Models']+[measure]].groupby(['SamplingRate', 'Models'], as_index=False).mean()
 
     sampling_order = ['30s', '1T', '10T']  # Define the logical order
-    grouped_df['SamplingRate_order'] = pd.Categorical(grouped_df['SamplingRate'], categories=sampling_order, ordered=True)
+    table['SamplingRate_order'] = pd.Categorical(table['SamplingRate'], categories=sampling_order, ordered=True)
 
-    # Assuming grouped_df is your DataFrame after grouping and sorting
-    grouped_df = grouped_df.sort_values(['SamplingRate_order', 'Models'])
+    table = table.sort_values(['SamplingRate_order', 'Models'])
 
-    grouped_df['SamplingRate'] = grouped_df['SamplingRate'].astype('category')
+    table['SamplingRate'] = table['SamplingRate'].astype('category')
 
     dict_color_sp = {'30s': 'rgb(211, 211, 211)', '1T': 'rgb(128, 128, 128)', '10T': 'black'}
 
     # Create the grouped bar plot
-    fig = px.bar(grouped_df, 
+    fig = px.bar(table, 
                 x='Models', 
                 y=measure, 
                 color='SamplingRate',
