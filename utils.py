@@ -202,7 +202,7 @@ def plot_benchmark_figures1(name_measure, dataset):
     dict_color_model = {'ConvNet': 'wheat', 'ResNet': 'coral', 'Inception': 'powderblue', 'TransAppS': 'indianred', 'Ensemble': 'peachpuff'}
 
 
-    min_val = table[measure].values().flatten().min()
+    min_val = table[measure].values.flatten().min()
     fig = px.bar(table, x='Models', y=measure, labels={measure: name_measure},
                  color='Models', 
                  color_discrete_map=dict_color_model, 
@@ -229,7 +229,7 @@ def plot_benchmark_figures2(name_measure, dataset):
 
     dict_color_appliance = {'WashingMachine': 'teal', 'Dishwasher': 'skyblue', 'Kettle': 'orange', 'Microwave': 'grey'}
 
-    min_val = table[measure].values().flatten().min()
+    min_val = table[measure].values.flatten().min()
     # Create the grouped bar plot
     fig = px.bar(table, 
                 x='Models', 
@@ -263,7 +263,7 @@ def plot_benchmark_figures3(name_measure, dataset):
 
     dict_color_sp = {'30s': 'rgb(211, 211, 211)', '1T': 'rgb(128, 128, 128)', '10T': 'black'}
 
-    min_val = table[measure].values().flatten().min()
+    min_val = table[measure].values.flatten().min()
 
     fig = px.bar(table, 
                 x='Models', 
