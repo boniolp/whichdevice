@@ -173,7 +173,14 @@ def run_about_frame():
         st.markdown(text_description_dataset)
 
     with tab_model_description:
-        st.markdown(text_description_model)
+
+        tab_classifiers, tab_explainabilities, tab_about = st.tabs(["Classifiers", "Localization methods"])
+
+        with tab_classifiers:
+            st.markdown(text_description_model)
+
+        with tab_explainabilities:
+            st.markdown("CAM and Attention Map")
 
     with tab_about:
         st.markdown("""About""")
@@ -194,7 +201,7 @@ def plot_benchmark_figures1(name_measure, dataset):
 
     dict_color_model = {'ConvNet': 'wheat', 'ResNet': 'coral', 'Inception': 'powderblue', 'TransAppS': 'indianred', 'Ensemble': 'peachpuff'}
 
-    fig = px.bar(table, x='Models', y=measure, 
+    fig = px.bar(table, x='Models', y=measure, labels={measure: name_measure},
                  color='Models', 
                  color_discrete_map=dict_color_model, 
                  range_y=[0.5, 1], 
@@ -223,7 +230,7 @@ def plot_benchmark_figures2(name_measure, dataset):
     # Create the grouped bar plot
     fig = px.bar(table, 
                 x='Models', 
-                y=measure, 
+                y=measure, labels={measure: name_measure},
                 color='Appliance',
                 color_discrete_map=dict_color_appliance,
                 barmode='group',
@@ -256,7 +263,7 @@ def plot_benchmark_figures3(name_measure, dataset):
     # Create the grouped bar plot
     fig = px.bar(table, 
                 x='Models', 
-                y=measure, 
+                y=measure, labels={measure: name_measure},
                 color='SamplingRate',
                 color_discrete_map=dict_color_sp,
                 barmode='group',
