@@ -37,7 +37,7 @@ def run_playground_frame():
 
     global CURRENT_WINDOW
     
-    st.markdown("Here show the time series and CAM")
+    st.markdown("""### Explore electrical time series consumption""")
 
     col1, col2 = st.columns(2)
 
@@ -57,7 +57,7 @@ def run_playground_frame():
         )
     with col3_2:
         models = st.multiselect(
-            "Choose models:", models_list, ["ResNet"]
+            "Choose models:", models_list
         )
     with col3_3:
         length = st.selectbox(
@@ -84,36 +84,50 @@ def run_playground_frame():
     with colcontrol_2:
         st.markdown("<p style='text-align: center;'>from {} to {} </p>".format(df.iloc[CURRENT_WINDOW*window_size: (CURRENT_WINDOW+1)*window_size].index[0],df.iloc[CURRENT_WINDOW*window_size: (CURRENT_WINDOW+1)*window_size].index[-1]),unsafe_allow_html=True)
     
-    
-    pred_dict_all = pred_one_window(CURRENT_WINDOW, df, window_size, ts_name, appliances, frequency, models)
-    fig_ts, fig_app, fig_stack = plot_one_window(CURRENT_WINDOW,  df, window_size, appliances, pred_dict_all)
-    fig_prob = plot_detection_probabilities(pred_dict_all)
-    
-    tab_ts, tab_app = st.tabs(["Aggregated", "Per device"])
-    
-    with tab_ts:
-        st.plotly_chart(fig_ts, use_container_width=True)
-    
-    with tab_app:
-        on = st.toggle('Stack')
-        if on:
-            st.plotly_chart(fig_stack, use_container_width=True)
-        else:
-            st.plotly_chart(fig_app, use_container_width=True)
-    
-    tab_prob,tab_cam = st.tabs(["Probabilities for each model", "Localization for each model"])
+    if len(models)>0:
+        pred_dict_all = pred_one_window(CURRENT_WINDOW, df, window_size, ts_name, appliances, frequency, models)
+        fig_ts, fig_app, fig_stack = plot_one_window1(CURRENT_WINDOW,  df, window_size, appliances, pred_dict_all)
+        fig_prob = plot_detection_probabilities(pred_dict_all)
+        
+        tab_ts, tab_app = st.tabs(["Aggregated", "Per device"])
+        
+        with tab_ts:
+            st.plotly_chart(fig_ts, use_container_width=True)
+        
+        with tab_app:
+            on = st.toggle('Stack')
+            if on:
+                st.plotly_chart(fig_stack, use_container_width=True)
+            else:
+                st.plotly_chart(fig_app, use_container_width=True)
+        
+        tab_prob,tab_cam = st.tabs(["Probabilities for each model", "Localization for each model"])
 
-    with tab_prob:
-        st.plotly_chart(fig_prob, use_container_width=True)
-    with tab_cam:
-        fig_cam = plot_cam(CURRENT_WINDOW, df, window_size, appliances, pred_dict_all)
-        st.plotly_chart(fig_cam, use_container_width=True)
+        with tab_prob:
+            st.plotly_chart(fig_prob, use_container_width=True)
+        with tab_cam:
+            fig_cam = plot_cam(CURRENT_WINDOW, df, window_size, appliances, pred_dict_all)
+            st.plotly_chart(fig_cam, use_container_width=True)
+    else:
+        fig_ts, fig_app, fig_stack = plot_one_window2(CURRENT_WINDOW,  df, window_size, appliances, pred_dict_all)
+
+        tab_ts, tab_app = st.tabs(["Aggregated", "Per device"])
+
+        with tab_ts:
+            st.plotly_chart(fig_ts, use_container_width=True)
+        
+        with tab_app:
+            on = st.toggle('Stack')
+            if on:
+                st.plotly_chart(fig_stack, use_container_width=True)
+            else:
+                st.plotly_chart(fig_app, use_container_width=True)
         
             
     
 
 def run_benchmark_frame():
-    st.markdown("""## Explore benchmark results: 
+    st.markdown("""### Explore benchmark results 
                 
                 Select a metric and dataset.""")
 
@@ -121,7 +135,7 @@ def run_benchmark_frame():
 
     with col1:
         measure = st.selectbox(
-            "Choose measures", measures_list, index=0
+            "Choose measure", measures_list, index=0
         )
     with col2:
         dataset = st.selectbox(
@@ -437,7 +451,7 @@ def pred_one_window(k, df, window_size, ts_name, appliances, frequency, models):
     return pred_dict_all
 
 
-def plot_one_window(k, df, window_size, appliances, pred_dict_all):
+def plot_one_window1(k, df, window_size, appliances, pred_dict_all):
     window_df = df.iloc[k*window_size: k*window_size + window_size]
     dict_color_appliance = {'WashingMachine': 'teal', 'Dishwasher': 'skyblue', 'Kettle': 'orange', 'Microwave': 'grey'}
     
@@ -487,7 +501,7 @@ def plot_one_window(k, df, window_size, appliances, pred_dict_all):
     
     # Update layout for the combined figure
     fig_agg.update_layout(
-        title='Aggregate Consumption and Stacked CAM',
+        title='Total Power Consumption',
         xaxis2_title='Time',
         height=500,
         width=1000,
@@ -495,7 +509,7 @@ def plot_one_window(k, df, window_size, appliances, pred_dict_all):
     )
 
     fig_appl.update_layout(
-        title='Aggregate Consumption and Stacked CAM',
+        title='Appliance Power Consumption',
         legend=dict(orientation='h', x=0.5, xanchor='center', y=-0.2),
         xaxis2_title='Time',
         height=500,
@@ -504,7 +518,7 @@ def plot_one_window(k, df, window_size, appliances, pred_dict_all):
     )
 
     fig_appl_stacked.update_layout(
-        title='Aggregate Consumption and Stacked CAM',
+        title='Appliance Power Consumption (stacked)',
         legend=dict(orientation='h', x=0.5, xanchor='center', y=-0.2),
         xaxis2_title='Time',
         height=500,
@@ -513,14 +527,67 @@ def plot_one_window(k, df, window_size, appliances, pred_dict_all):
     )
     
     # Update y-axis for the aggregate consumption plot
-    fig_agg.update_yaxes(title_text='Power Consumption (Watts)', row=1, col=1, range=[0, max(3000, np.max(window_df['Aggregate'].values) + 50)])
-    fig_appl.update_yaxes(title_text='Appliance Consumption (Watts)', row=1, col=1, range=[0, max(3000, np.max(window_df['Aggregate'].values) + 50)])
-    fig_appl_stacked.update_yaxes(title_text='Appliance Consumption (Watts)', row=1, col=1, range=[0, max(3000, np.max(window_df['Aggregate'].values) + 50)])
+    fig_agg.update_yaxes(title_text='Power (Watts)', row=1, col=1, range=[0, max(3000, np.max(window_df['Aggregate'].values) + 50)])
+    fig_appl.update_yaxes(title_text='Power (Watts)', row=1, col=1, range=[0, max(3000, np.max(window_df['Aggregate'].values) + 50)])
+    fig_appl_stacked.update_yaxes(title_text='Power (Watts)', row=1, col=1, range=[0, max(3000, np.max(window_df['Aggregate'].values) + 50)])
     
     # Update y-axis for the heatmap
     fig_agg.update_yaxes(tickmode='array', tickvals=list(appliances), ticktext=appliances, row=2, col=1, tickangle=-45)
     fig_appl.update_yaxes(tickmode='array', tickvals=list(appliances), ticktext=appliances, row=2, col=1, tickangle=-45)
     fig_appl_stacked.update_yaxes(tickmode='array', tickvals=list(appliances), ticktext=appliances, row=2, col=1, tickangle=-45)
+
+    return fig_agg, fig_appl, fig_appl_stacked
+
+
+def plot_one_window2(k, df, window_size, appliances):
+    window_df = df.iloc[k*window_size: k*window_size + window_size]
+    dict_color_appliance = {'WashingMachine': 'teal', 'Dishwasher': 'skyblue', 'Kettle': 'orange', 'Microwave': 'grey'}
+    
+    # Create subplots with 2 rows, shared x-axis
+    size_cam = 0.1 * (len(appliances)+1)
+
+    fig_agg          = go.Figure()
+    fig_appl         = go.Figure()
+    fig_appl_stacked = go.Figure()
+    
+    # Aggregate plot
+    fig_agg.add_trace(go.Scatter(x=window_df.index, y=window_df['Aggregate'], mode='lines', name='Aggregate', fill='tozeroy', line=dict(color='royalblue')))
+    
+    for appl in appliances:
+        fig_appl.add_trace(go.Scatter(x=window_df.index, y=window_df[appl], mode='lines', name=appl.capitalize(),  fill='tozeroy'))
+        fig_appl_stacked.add_trace(go.Scatter(x=window_df.index, y=window_df[appl], mode='lines', line=dict(width=0), name=appl.capitalize(), stackgroup='one'))
+    
+    # Update layout for the combined figure
+    fig_agg.update_layout(
+        title='Aggregate Consumption',
+        xaxis_title='Time',
+        height=500,
+        width=1000,
+        margin=dict(l=100, r=20, t=30, b=40)
+    )
+
+    fig_appl.update_layout(
+        title='Appliance Power Consumption',
+        legend=dict(orientation='h', x=0.5, xanchor='center', y=-0.2),
+        xaxis_title='Time',
+        height=500,
+        width=1000,
+        margin=dict(l=100, r=20, t=30, b=40)
+    )
+
+    fig_appl_stacked.update_layout(
+        title='Appliance Power Consumption (stacked)',
+        legend=dict(orientation='h', x=0.5, xanchor='center', y=-0.2),
+        xaxis_title='Time',
+        height=500,
+        width=1000,
+        margin=dict(l=100, r=20, t=30, b=40)
+    )
+    
+    # Update y-axis for the aggregate consumption plot
+    fig_agg.update_yaxes(title_text='Power (Watts)', range=[0, max(3000, np.max(window_df['Aggregate'].values) + 50)])
+    fig_appl.update_yaxes(title_text='Power (Watts)', range=[0, max(3000, np.max(window_df['Aggregate'].values) + 50)])
+    fig_appl_stacked.update_yaxes(title_text='Power (Watts)', range=[0, max(3000, np.max(window_df['Aggregate'].values) + 50)])
 
     return fig_agg, fig_appl, fig_appl_stacked
 
