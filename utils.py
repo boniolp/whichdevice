@@ -506,8 +506,8 @@ def plot_one_window1(k, df, window_size, appliances, pred_dict_all):
     # Stacked CAM heatmap calculations
     z = []
     for appl in appliances:
-        fig_appl.add_trace(go.Scatter(x=window_df.index, y=window_df[appl], mode='lines', name=appl.capitalize(),  fill='tozeroy'))
-        fig_appl_stacked.add_trace(go.Scatter(x=window_df.index, y=window_df[appl], mode='lines', line=dict(width=0), name=appl.capitalize(), stackgroup='one'))
+        fig_appl.add_trace(go.Scatter(x=window_df.index, y=window_df[appl], mode='lines', name=appl.capitalize(), marker_color=dict_color_appliance[appl],  fill='tozeroy'))
+        fig_appl_stacked.add_trace(go.Scatter(x=window_df.index, y=window_df[appl], mode='lines', line=dict(width=0), marker_color=dict_color_appliance[appl], name=appl.capitalize(), stackgroup='one'))
 
         stacked_cam = None
         dict_pred = pred_dict_all[appl]
@@ -588,8 +588,8 @@ def plot_one_window2(k, df, window_size, appliances):
     fig_agg.add_trace(go.Scatter(x=window_df.index, y=window_df['Aggregate'], mode='lines', name='Aggregate', fill='tozeroy', line=dict(color='royalblue')))
     
     for appl in appliances:
-        fig_appl.add_trace(go.Scatter(x=window_df.index, y=window_df[appl], mode='lines', name=appl.capitalize(),  fill='tozeroy'))
-        fig_appl_stacked.add_trace(go.Scatter(x=window_df.index, y=window_df[appl], mode='lines', line=dict(width=0), name=appl.capitalize(), stackgroup='one'))
+        fig_appl.add_trace(go.Scatter(x=window_df.index, y=window_df[appl], mode='lines', name=appl.capitalize(), marker_color=dict_color_appliance[appl], fill='tozeroy'))
+        fig_appl_stacked.add_trace(go.Scatter(x=window_df.index, y=window_df[appl], mode='lines', line=dict(width=0), marker_color=dict_color_appliance[appl], name=appl.capitalize(), stackgroup='one'))
     
     # Update layout for the combined figure
     fig_agg.update_layout(
