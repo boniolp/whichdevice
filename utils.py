@@ -47,7 +47,7 @@ def run_playground_frame():
         )
     with col2:
         appliances = st.multiselect(
-            "Choose devices:", devices_list, ["Dishwasher"]
+            "Choose devices:", devices_list, ["Dishwasher", "WashingMachine", "Kettle", "Microwave"]
         )
 
     col3_1, col3_2, col3_3 = st.columns(3)
@@ -109,7 +109,7 @@ def run_playground_frame():
             fig_cam = plot_cam(CURRENT_WINDOW, df, window_size, appliances, pred_dict_all)
             st.plotly_chart(fig_cam, use_container_width=True)
     else:
-        fig_ts, fig_app, fig_stack = plot_one_window2(CURRENT_WINDOW,  df, window_size, appliances, pred_dict_all)
+        fig_ts, fig_app, fig_stack = plot_one_window2(CURRENT_WINDOW,  df, window_size, appliances)
 
         tab_ts, tab_app = st.tabs(["Aggregated", "Per device"])
 
