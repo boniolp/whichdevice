@@ -307,7 +307,6 @@ def plot_benchmark_figures4(appliances, measure, dataset):
 
     fig.update_layout(
         title='Influence of sampling frequency on appliance detection',
-        title_x=0.5,
         xaxis_title="Sampling Rate",
         yaxis_title=measure,
         legend_title="Model",
