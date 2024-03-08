@@ -757,7 +757,7 @@ def plot_signatures(appliances, frequency):
     fig.update_layout(title='Example of signature for each appliances', 
                       yaxis_title='Power (Watts)', 
                       showlegend=False,
-                      height=500, 
+                      height=400, 
                       margin=dict(l=100, r=30, t=70, b=40),
                       yaxis_range=[0, 6000]
                     )
