@@ -124,6 +124,10 @@ def run_playground_frame():
                 st.plotly_chart(fig_stack, use_container_width=True)
             else:
                 st.plotly_chart(fig_app, use_container_width=True)
+
+        fig_sig = plot_signatures(appliances1, frequency)
+
+        st.plotly_chart(fig_sig, use_container_width=True)
         
             
     
@@ -718,6 +722,8 @@ def plot_cam(k, df, window_size, appliances, pred_dict_all):
 
     return fig_cam
 
+    
+
 
 def scale_cam_inst(arr):
     min_val = np.min(arr)
@@ -726,6 +732,37 @@ def scale_cam_inst(arr):
 
     return scaled_arr
 
+
+
+def plot_signatures(appliances, frequency):
+    fig = make_subplots(rows=1, cols=len(appliances), subplot_titles=[f'{appliance}' for appliance in appliances], shared_yaxes=True)
+    dict_freq  = {'30 seconds': '30s', '1 minutes': '1T', '10 minutes': '10T'}
+    dict_color_appliance = {'WashingMachine': 'teal', 'Dishwasher': 'skyblue', 'Kettle': 'orange', 'Microwave': 'grey'}
+    sampling_rate = dict_freq[frequency]
+
+    for i, appliance in enumerate(appliances, start=1):
+        print(appliance)
+        signature = pd.read_csv(os.getcwd()+f'/Data/example_{appliance}.gzip', parse_dates=['Time'], compression='gzip').set_index('Time')
+        signature = signature.resample(sampling_rate).mean()
+
+        fig.add_trace(go.Scatter(x=signature.index, y=signature[appliance], 
+                                 marker_color=dict_color_appliance[appliance], 
+                                 mode='lines', fill='tozeroy'),
+                          row=1, col=i)
+        
+      # Update y-axes for each subplot to have the range [0, 1]
+    for j in range(1, len(appliances) + 1):
+        fig.update_xaxes(title_text="Time", row=1, col=j)
+        
+    fig.update_layout(title='Example of signature for each appliances', 
+                      yaxis_title='Power (Watts)', 
+                      showlegend=False,
+                      height=500, 
+                      margin=dict(l=100, r=30, t=70, b=40),
+                      yaxis_range=[0, 6000]
+                    )
+
+    return fig
 
 
 """
