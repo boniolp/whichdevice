@@ -606,7 +606,7 @@ def plot_one_window2(k, df, window_size, appliances):
 
     fig_appl.update_layout(
         title='Appliance Power Consumption',
-        legend=dict(orientation='h', x=0.5, xanchor='center', y=-0.2),
+        legend=dict(orientation='h', x=0.5, xanchor='center', y=-0.5),
         xaxis_title='Time',
         height=300,
         width=1000,
