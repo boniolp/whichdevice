@@ -189,7 +189,6 @@ def run_about_frame():
     with tab_about:
         st.markdown("""About""")
 
-@st.cache_data(ttl=3600, max_entries=1, show_spinner=True)
 def plot_benchmark_figures1(name_measure, dataset):
     table = pd.read_csv(os.getcwd()+'/TableResults/Results.gzip', compression='gzip')
     if dataset != 'All':
@@ -215,7 +214,6 @@ def plot_benchmark_figures1(name_measure, dataset):
     
     return fig
 
-@st.cache_data(ttl=3600, max_entries=1, show_spinner=True)
 def plot_benchmark_figures2(name_measure, dataset):
     table = pd.read_csv(os.getcwd()+'/TableResults/Results.gzip', compression='gzip')
     if dataset != 'All':
@@ -247,7 +245,7 @@ def plot_benchmark_figures2(name_measure, dataset):
     
     return fig
 
-@st.cache_data(ttl=3600, max_entries=1, show_spinner=True)
+
 def plot_benchmark_figures3(name_measure, dataset):
     table = pd.read_csv(os.getcwd()+'/TableResults/Results.gzip', compression='gzip')
     if dataset != 'All':
@@ -281,7 +279,7 @@ def plot_benchmark_figures3(name_measure, dataset):
     
     return fig
 
-@st.cache_data(ttl=3600, max_entries=1, show_spinner=True)
+
 def plot_benchmark_figures4(appliances, measure, dataset):
     df = pd.read_csv(os.getcwd()+'/TableResults/Results.gzip', compression='gzip')
     sampling_rates = df['SamplingRate'].unique()
@@ -392,7 +390,7 @@ def convert_length_to_window_size(frequency, length):
     
     return int(window_size)
     
-@st.cache_data(ttl=3600, max_entries=1, show_spinner=True)
+
 def get_time_series_data(ts_name, frequency, length):
     dict_freq   = {'30 seconds': '30s', '1 minutes': '1T', '10 minutes': '10T'}
     pd_freq     = dict_freq[frequency]
@@ -409,7 +407,7 @@ def get_time_series_data(ts_name, frequency, length):
 
     return df, window_size
 
-@st.cache_data(ttl=3600, max_entries=1, show_spinner=True)
+
 def get_prediction_one_appliance(ts_name, window_agg, appliance, frequency, model_list):
     dict_freq  = {'30 seconds': '30s', '1 minutes': '1T', '10 minutes': '10T'}
     dic_win    = {'30 seconds': 2880,  '1 minutes': 1440, '10 minutes':  144}
