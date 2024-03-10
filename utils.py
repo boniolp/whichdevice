@@ -448,7 +448,6 @@ def get_prediction_one_appliance(ts_name, window_agg, appliance, frequency, mode
 
     return pred_dict
 
-@st.cache_data(ttl=3600, max_entries=1, show_spinner=True)
 def get_cam(window_agg, model_name, model_inst, sampling_rate):
 
     # Set layer conv and fc layer names for selected model
