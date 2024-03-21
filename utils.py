@@ -39,6 +39,11 @@ def run_playground_frame():
     
     st.markdown("""### Explore electrical time series consumption""")
 
+    st.markdown("""-1 Explore the aggregate electrical time series and try to understand it by looking at 
+                   -2 Use the classifier to detect appliance in sliding windows.
+                   -3 Use explanability methods (CAM, AttentionMap) to localize appliance patterns and compare the results with ground truth data.
+                """)
+
     col1_1, col1_2, col1_3 = st.columns(3)
 
     with col1_1:
@@ -103,13 +108,17 @@ def run_playground_frame():
             else:
                 st.plotly_chart(fig_app, use_container_width=True)
         
-        tab_prob,tab_cam = st.tabs(["Probabilities for each model", "Localization for each model"])
+        tab_prob, tab_cam, tab_signatures = st.tabs(["Models detection probabilites", "Models patterns localization", "Patterns examples"])
 
         with tab_prob:
             st.plotly_chart(fig_prob, use_container_width=True)
         with tab_cam:
             fig_cam = plot_cam(CURRENT_WINDOW, df, window_size, appliances1, pred_dict_all)
             st.plotly_chart(fig_cam, use_container_width=True)
+        with tab_signatures:
+            fig_sig = plot_signatures(appliances1, frequency)
+
+            st.plotly_chart(fig_sig, use_container_width=True)
     else:
         fig_ts, fig_app, fig_stack = plot_one_window2(CURRENT_WINDOW,  df, window_size, appliances1)
 
