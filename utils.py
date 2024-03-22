@@ -162,7 +162,7 @@ def run_benchmark_frame():
     st.plotly_chart(fig2, use_container_width=True)
     st.plotly_chart(fig3, use_container_width=True)
 
-    st.markdown("#### Explore the impact of sampling rate for each model for selected devices")
+    st.markdown("#### Explore the influence of the sampling rate on the detection performance for selected appliance(s).")
 
     appliances2 = st.multiselect(
         "Select devices:", devices_list, ["Dishwasher", "WashingMachine", "Kettle", "Microwave"]
@@ -178,14 +178,16 @@ def run_about_frame():
     tab_dataset_description, tab_model_description, tab_about = st.tabs(["Datasets", "Methods", "About"])
 
     with tab_dataset_description:
+        st.markdown("""### Smart Meters datasets""")
+
         st.markdown(text_description_dataset)
 
     with tab_model_description:
-        st.markdown("""### Appliance Detection""")
+        st.markdown("""### Appliance Detection methods""")
 
         st.markdown(text_description_model)
 
-        st.markdown("""### Pattern localization""")
+        st.markdown("""### Pattern localization methods""")
 
         st.markdown(text_description_explainability)
 

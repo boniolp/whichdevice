@@ -4,7 +4,7 @@
 <img width="350" src="./Figures/logo.png"/>
 </p>
 
-<h2 align="center">An interactive tool to browse, detect and localize appliance patterns in electrical smart meter consumption series</h2>
+<h2 align="center">An interactive tool to browse, detect and localize appliance patterns in electrical consumption time series</h2>
 
 <div align="center">
 <p>
