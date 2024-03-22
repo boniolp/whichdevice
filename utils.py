@@ -137,9 +137,9 @@ def run_playground_frame():
     
 
 def run_benchmark_frame():
-    st.markdown("""### Explore benchmark results 
+    st.markdown(f"""### Explore benchmark results 
                 
-                Please select a metric and a dataset (or all dataset).""")
+                 Please select a metric and a dataset (or all dataset).""")
 
     col1, col2 = st.columns(2)
 
