@@ -190,7 +190,7 @@ def run_about_frame():
         st.markdown(text_description_explainability)
 
     with tab_about:
-        st.markdown("""About""")
+        st.markdown(text_about)
 
 def plot_benchmark_figures1(name_measure, dataset):
     table = pd.read_csv(os.getcwd()+'/TableResults/Results.gzip', compression='gzip')

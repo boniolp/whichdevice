@@ -97,3 +97,11 @@ In recent years, these methods have been applied to time series data and shown p
 With the advent of attention-based models in recent years, explainability methods based on the Attention Mechanism have been widely investigated in image recognition.
 Although it has not been tested on time series, we investigate this approach to localizing discriminative features using the TransApp model.
 """
+
+text_about = f"""
+## Contributors
+
+* [Adrien Petralia](https://adrienpetralia.github.io/), EDF R&D, Université Paris Cité
+* [Paul Boniol](https://boniolp.github.io/), Inria, ENS, PSL University, CNRS
+* [Philippe Charpentier](https://www.researchgate.net/profile/Philippe-Charpentier), EDF R&D
+* [Themis Palpanas](https://helios2.mi.parisdescartes.fr/~themisp/), Université Paris Cité, IUF"""
