@@ -89,13 +89,13 @@ We adapt the proposed architecture to our problem as a smaller and simplified ar
 
 text_description_explainability = f"""
 Identifying the discriminative features that influence the model's decision-making process for classifying each instance is a well-known problem that has been extensively studied in the literature.
-For models built on Convolutional Neural Networks (CNNs) architecture, the Class Activation Map (CAM) presents a method for explaining the reasons behind the classification outcomes. 
-CAM was originally proposed for explainable image classification. 
-It highlights the areas within an image that are most influential in the model's prediction for a particular class. 
-In recent years, these methods have been applied to time series data and shown promising results and different kinds of data.
 
-With the advent of attention-based models in recent years, explainability methods based on the Attention Mechanism have been widely investigated in image recognition.
-Although it has not been tested on time series, we investigate this approach to localizing discriminative features using the TransApp model.
+- Class Activation Map: For models built on Convolutional Neural Networks (CNNs) architecture, the Class Activation Map (CAM) presents a method for explaining the reasons behind the classification outcomes. 
+Originally proposed for explainable image classification, this method highlights the areas within an image that are most influential in the model's prediction for a particular class. 
+In recent years, this approach have been applied to time series data and shown promising results and different kinds of data.
+
+- Attention Map Vizualisation : With the recent advent of attention-based models, explainability methods based on the Attention Mechanism have been widely investigated in image recognition.
+We adapted this approach to localize discriminative features using the TransApp model.
 """
 
 text_about = f"""
