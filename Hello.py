@@ -30,7 +30,7 @@ def run():
 
     st.markdown(
         """
-        Welcome to DeviceScope!
+        Welcome to DeviceScope! :mag: :zap:
         """
     )
 
