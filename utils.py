@@ -174,7 +174,6 @@ def run_benchmark_frame():
     
 
 def run_about_frame():
-    st.markdown("Here show info on the models, data and us")
 
     tab_dataset_description, tab_model_description, tab_about = st.tabs(["Datasets", "Methods", "About"])
 
