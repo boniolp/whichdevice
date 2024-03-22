@@ -30,9 +30,16 @@ def run():
 
     st.markdown(
         """
-        Welcome to DeviceScope! This app provides an analytical tool to browse, detect and localize appliance patterns in electrical smart meter consumption series.
+        Welcome to DeviceScope!
         """
     )
+
+    st.markdown("""
+                This app provides an analytical tool to browse, detect and localize appliance patterns in electrical smart meter consumption series.
+                1. Browse electrical time series consumption at different sampling rate.
+                2. Use the trained classification methods to detect appliances in period of time.
+                3. Use explanability methods (CAM, AttentionMap) to localize appliance patterns and compare it with ground truth data.
+                """)
 
     tab_playground, tab_benchmark, tab_about = st.tabs(
         ["Playground", "Benchmark", "About"]
