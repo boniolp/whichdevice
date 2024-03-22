@@ -51,20 +51,38 @@ list_name_ts   = ['UKDALE_House2_2013-05',
                 ]
 
 text_description_dataset  = f"""
-UKDALE and REFIT are two well-known Smart Meters datasets.
+Two different datasets of electricity consumption were used in for this demonstraion: UKDALE and REFIT.
+Each dataset is composed of several houses that have been monitored by sensors that record the total main power and appliance-level power for a period of time. 
 
-- UKDALE: The UKDALE dataset [31] contains data from 5 houses in the United Kingdom, and includes appliance-level load curves sampled every 6 seconds, as well as the whole-house aggregate data series sampled at 16kHz. Four houses were recorded for over a year and a half, while the 5th house was recorded for 655 days.
+- UKDALE: The UK-DALE dataset contains data from 5 houses in the United Kingdom and includes appliance-level load curves sampled every 6 seconds, as well as the whole-house aggregate data series sampled at 16kHz. 
+Four houses were recorded for over a year and a half, while the 5th was recorded for 655 days.
 
-- REFIT Dataset: The REFIT project (Personalised Retrofit Decision Support Tools for UK Homes using Smart Home Technology) ran between 2013 and 2015. During this period, 20 houses in the United Kingdom were recorded after being monitored with smart meters and multiple sensors. 
-This dataset provides aggregate and individual appliance load curves at 8-second sampling intervals.
+
+- REFIT Dataset: The REFIT project (Personalised Retrofit Decision Support Tools for UK Homes using Smart Home Technology) ran between 2013 and 2015. 
+During this period, 20 houses in the United Kingdom were recorded after being monitored with smart meters and multiple sensors. 
+This dataset provides aggregate and individual appliance load curves at 8-second sampling intervals. 
 """
 
 text_description_model  = f"""
-- ConvNet
+Appliance detection can be cast as a time series classification problem.
+To do so, a classifier is trained to detect the presence of an appliance in a consumption time series as a supervised binary classification problem (yes/no). 
+The 4 methods used in this demonstration have been selected based on their performance in previous studies for the appliance detection tasks and their ability to be combined to explainability approaches.
 
-- ResNet
+- ConvNet: Convolutional Neural Network (CNN) is a deep learning architecture commonly used in image recognition. 
+The ConvNet variant, we use in this study employs stacked convolutional blocks with specific kernel sizes and filters, followed by global average pooling and linear layers for classification.
 
-- Inception
 
-- TransApp
+- ResNet: The Residual Network (ResNet) architecture addresses the gradient vanishing problem in large CNNs. 
+The adaptation for time series classification consists of stacked residual blocks with residual connections, where each block contains 1D convolutional layers with the same kernel sizes and filters. 
+A global average pooling, a linear layer, and a softmax activation are used for classification.
+
+
+-InceptionTime: Inspired by inception-based networks for image classification, InceptionTime is designed for time series classification.
+It employs Inception modules composed of concatenated convolutional layers using different filter sizes.
+The outputs are passed through activation and normalization layers; at the end, classification is performed using a global average pooling, followed by a linear layer and softmax activation function.
+
+
+-TransApp: In a recent study, the authors propose a Convolution-Transformer-based architecture to detect appliances in long and variable length consumption series.
+The architecture is a combination of a dilated convolution block followed by multiple Transformer layers.
+We adapt the proposed architecture to our problem as a smaller and simplified architecture by keeping only one Transformer layer after the convolution embedding block.
 """
