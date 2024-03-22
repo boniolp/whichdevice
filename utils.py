@@ -40,7 +40,9 @@ def run_playground_frame():
     st.markdown("""### Explore electrical time series consumption""")
 
     st.markdown("""-1 Explore the aggregate electrical time series and try to understand it by looking at 
+                
                    -2 Use the classifier to detect appliance in sliding windows.
+                
                    -3 Use explanability methods (CAM, AttentionMap) to localize appliance patterns and compare the results with ground truth data.
                 """)
 
