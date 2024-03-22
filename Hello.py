@@ -21,16 +21,16 @@ LOGGER = get_logger(__name__)
 
 def run():
     st.set_page_config(
-        page_title="WhichDevice",
+        page_title="DeviceScope",
         page_icon="👋",
     )
 
-    st.write("# Which Device?")
+    st.write("# DeviceScope: Browse, detect and localize appliance pattern in electrical consumption series.")
 
 
     st.markdown(
         """
-        Welcome to WhichDevice! This app provides an analytical tool to detect and localize appliance patterns in electrical smart meter signals.
+        Welcome to DeviceScope! This app provides an analytical tool to detect and localize appliance patterns in electrical smart meter consumption series.
         """
     )
 
