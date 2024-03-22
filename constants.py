@@ -77,12 +77,12 @@ The adaptation for time series classification consists of stacked residual block
 A global average pooling, a linear layer, and a softmax activation are used for classification.
 
 
--InceptionTime: Inspired by inception-based networks for image classification, InceptionTime is designed for time series classification.
+- InceptionTime: Inspired by inception-based networks for image classification, InceptionTime is designed for time series classification.
 It employs Inception modules composed of concatenated convolutional layers using different filter sizes.
 The outputs are passed through activation and normalization layers; at the end, classification is performed using a global average pooling, followed by a linear layer and softmax activation function.
 
 
--TransApp: In a recent study, the authors propose a Convolution-Transformer-based architecture to detect appliances in long and variable length consumption series.
+- TransApp: In a recent study, the authors propose a Convolution-Transformer-based architecture to detect appliances in long and variable length consumption series.
 The architecture is a combination of a dilated convolution block followed by multiple Transformer layers.
 We adapt the proposed architecture to our problem as a smaller and simplified architecture by keeping only one Transformer layer after the convolution embedding block.
 """
