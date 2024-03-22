@@ -86,3 +86,14 @@ The outputs are passed through activation and normalization layers; at the end, 
 The architecture is a combination of a dilated convolution block followed by multiple Transformer layers.
 We adapt the proposed architecture to our problem as a smaller and simplified architecture by keeping only one Transformer layer after the convolution embedding block.
 """
+
+text_description_explainability = f"""
+Identifying the discriminative features that influence the model's decision-making process for classifying each instance is a well-known problem that has been extensively studied in the literature.
+For models built on Convolutional Neural Networks (CNNs) architecture, the Class Activation Map (CAM) presents a method for explaining the reasons behind the classification outcomes. 
+CAM was originally proposed for explainable image classification. 
+It highlights the areas within an image that are most influential in the model's prediction for a particular class. 
+In recent years, these methods have been applied to time series data and shown promising results and different kinds of data.
+
+With the advent of attention-based models in recent years, explainability methods based on the Attention Mechanism have been widely investigated in image recognition.
+Although it has not been tested on time series, we investigate this approach to localizing discriminative features using the TransApp model.
+"""

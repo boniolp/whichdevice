@@ -182,13 +182,13 @@ def run_about_frame():
         st.markdown(text_description_dataset)
 
     with tab_model_description:
-        tab_classifiers, tab_explainabilities = st.tabs(["Classifiers", "Localization methods"])
+        st.markdown("""### Appliance Detection""")
 
-        with tab_classifiers:
-            st.markdown(text_description_model)
+        st.markdown(text_description_model)
 
-        with tab_explainabilities:
-            st.markdown("CAM and Attention Map")
+        st.markdown("""### Pattern localization""")
+
+        st.markdown(text_description_explainability)
 
     with tab_about:
         st.markdown("""About""")
