@@ -27,4 +27,30 @@ The application facilitate the understanding of electrical consumption patterns 
 
 ## Usage
 
+**Step 1:** Clone this repository using `git` and change into its root directory.
+
+```(bash)
+git clone https://github.com/boniolp/wichdevice.git
+cd whichdevice/
+```
+
+**Step 2:** Create and activate a `conda` environment and install the dependencies.
+
+```(bash)
+conda create -n wichdevice python=3.8
+conda activate wichdevice
+pip install -r requirements.txt
+```
+
+**Step 3:** You can use our tool in two different ways: 
+
+- Access online: https://wichdevice.streamlit.app/
+- Run locally (preferable for faster interaction). To do so, run the following command:
+
+```(bash)
+streamlit run Hello.py
+```
+
 ## Acknowledgments
+
+Work supported by EDF R&D and ANRT French program.
