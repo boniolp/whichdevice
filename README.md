@@ -1,7 +1,7 @@
 <h1 align="center">DeviceScope</h1>
 
 <p align="center">
-<img width="500" src="./Figures/deviceScope_demo.gif"/>
+<img width="350" src="./Figures/logo.png"/>
 </p>
 
 <h2 align="center">An interactive tool to browse, detect and localize appliance patterns in electrical consumption time series</h2>
@@ -13,6 +13,10 @@
 </div>
 
 <p align="center"><a href="https://whichdevice.streamlit.app/">Try our demo</a></p>
+<p align="center">
+<img width="500" src="./Figures/deviceScope_demo.gif"/>
+</p>
+
 
 DeviceScope is a Python-based web interactive tool that enables to understand better smart meters time series data.
 The application facilitate the understanding of electrical consumption patterns by identifying and localizing individual appliance usage within electrical consumption data.
