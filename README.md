@@ -1,7 +1,7 @@
 <h1 align="center">DeviceScope</h1>
 
 <p align="center">
-<img width="350" src="./Figures/DeviceScope_demo.gif"/>
+<img width="500" src="./Figures/deviceScope_demo.gif"/>
 </p>
 
 <h2 align="center">An interactive tool to browse, detect and localize appliance patterns in electrical consumption time series</h2>
