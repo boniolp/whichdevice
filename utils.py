@@ -712,10 +712,10 @@ def plot_cam(k, df, window_size, appliances, pred_dict_all):
 
     xaxis_title_dict = {f'xaxis{len(appliances)}_title': 'Time'}
     fig_cam.update_layout(title='Detail of explainable pattern localization for each classifier', **xaxis_title_dict)
-    fig_cam.update_layout(legend=dict(orientation='h', x=0.5, xanchor='center', y=-0.1),
-                          height=150 + 200 * len(appliances),
+    fig_cam.update_layout(legend=dict(orientation='h', x=0.5, xanchor='center', y=-0.2),
+                          height=100 + 200 * len(appliances),
                           width=1000,
-                          margin=dict(l=110, r=20, t=70, b=50))
+                          margin=dict(l=110, r=20, t=100, b=70))
 
     return fig_cam
 
