@@ -139,7 +139,7 @@ def run_playground_frame():
 def run_benchmark_frame():
     st.markdown(f"""### Explore benchmark results 
                 
-                 Please select a metric and a dataset (or all dataset).""")
+                 Select a metric and a dataset.""")
 
     col1, col2 = st.columns(2)
 
@@ -177,10 +177,10 @@ def run_about_frame():
 
     st.markdown(text_about)
     
-    with st.expander("Appliance detection as a time series classification problem"):
+    with st.expander("### Appliance detection as a time series classification problem"):
         st.markdown(text_description_model)
 
-    with st.expander("Explainable classification to localize appliance patterns"):
+    with st.expander("### Explainable classification to localize appliance patterns"):
         st.markdown(text_description_explainability)
 
     st.markdown("""### Smart meters datasets""")
