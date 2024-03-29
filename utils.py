@@ -177,10 +177,10 @@ def run_about_frame():
 
     st.markdown(text_about)
     
-    with st.expander("### Appliance detection as a time series classification problem"):
+    with st.expander(f"""### Appliance detection as a time series classification problem"""):
         st.markdown(text_description_model)
 
-    with st.expander("### Explainable classification to localize appliance patterns"):
+    with st.expander(f"""### Explainable classification to localize appliance patterns"""):
         st.markdown(text_description_explainability)
 
     st.markdown("""### Smart meters datasets""")
