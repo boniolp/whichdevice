@@ -94,6 +94,9 @@ def run_playground_frame():
         
         with tab_ts:
             st.plotly_chart(fig_ts, use_container_width=True)
+
+            if len(models)>1:
+                st.markdown(f"""***Note***: Multiple classifiers are selected, the heatmap shows the average of predicted localization for all the methods.""")
         
         with tab_app:
             on = st.toggle('Stack')
@@ -102,7 +105,7 @@ def run_playground_frame():
             else:
                 st.plotly_chart(fig_app, use_container_width=True)
         
-        tab_prob, tab_cam, tab_signatures = st.tabs(["Models detection probabilities", "Models patterns localization", "Patterns examples"])
+        tab_prob, tab_cam, tab_signatures = st.tabs(["Models detection probabilities", "Models patterns localization", "Examples of appliance patterns"])
 
         with tab_prob:
             st.plotly_chart(fig_prob, use_container_width=True)
@@ -128,6 +131,7 @@ def run_playground_frame():
             else:
                 st.plotly_chart(fig_app, use_container_width=True)
 
+        st.markdown(f"""### Try to identify the pattern of the selected devices by looking at provdiging example below. """)
         fig_sig = plot_signatures(appliances1, frequency)
 
         st.plotly_chart(fig_sig, use_container_width=True)
@@ -535,7 +539,7 @@ def plot_one_window1(k, df, window_size, appliances, pred_dict_all):
     
     # Update layout for the combined figure
     fig_agg.update_layout(
-        title='Aggregate power consumption',
+        title='Aggregate power consumption and predicted appliance localization.',
         xaxis2_title='Time',
         height=500,
         width=1000,
@@ -543,7 +547,7 @@ def plot_one_window1(k, df, window_size, appliances, pred_dict_all):
     )
 
     fig_appl.update_layout(
-        title='Individual appliance power consumption',
+        title='Individual appliance power consumption compared to predicted appliance localization.',
         legend=dict(orientation='h', x=0.5, xanchor='center', y=-0.2),
         xaxis2_title='Time',
         height=500,
@@ -552,7 +556,7 @@ def plot_one_window1(k, df, window_size, appliances, pred_dict_all):
     )
 
     fig_appl_stacked.update_layout(
-        title='Individual appliance power consumption (stacked)',
+        title='Individual appliance power consumption (stacked) compared to predicted appliance localization.',
         legend=dict(orientation='h', x=0.5, xanchor='center', y=-0.2),
         xaxis2_title='Time',
         height=500,
