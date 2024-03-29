@@ -106,10 +106,8 @@ We propose Deviscope as an interactive solution to facilitate the understanding 
 
 ### How DeviceScope works?
 The core of our system is based on a combination of recent works conducted on appliance detection [[1]](https://arxiv.org/abs/2305.10352) [[2]](https://arxiv.org/abs/2401.05381) and explainable classification [[3]](https://arxiv.org/abs/1611.06455) [[4]](https://epfml.github.io/attention-cnn/).
-to detect appliances using a time series classification approache combined to explainable classification methods to localize ***when*** a device is used.
-For a given input time series of electricity consumption, the classifier predicts a probability of detection.
-If the model detects the appliance in the current window (proba. > 0.5), we then apply its corresponding explanation method (CAM or AttentionMap) to highlight the region of the series that contributed the most to the decision.
-In our system, if multiple classifiers are selected, we average the predicted explainability output (CAM or AttMap) to give an overall explainable result.
+In a nutshell, DeviceScope uses a trained time series classifier to detect ***if*** an appliance is used in a given period of time. If this is the case, an explainability method is applied, enabling the highlight of the region of the series where the pattern is localized.
+Contrary to other works in this area, the approach is based on a weakly supervised process.
 """
 
 
