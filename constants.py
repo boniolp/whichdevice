@@ -49,14 +49,25 @@ As the architecture was originally proposed for detecting appliances in large da
 """
 
 text_description_explainability = f"""
-Identifying the discriminative features that influence the model's decision-making process for classifying each instance is a well-known problem that has been extensively studied in the literature.
+Identifying the discriminative features that influence a classifier's decision-making process has been extensively studied in the literature.
+For classification using deep-learning-based algorithms, different methods have been proposed to highlight the parts of an input instance that contribute the most to the final decision of the classifier.
+We investigate two of them for our system, which are related to the type of architecture used (CNN or Transformer).
 
-- Class Activation Map: For models built on Convolutional Neural Networks (CNNs) architecture, the Class Activation Map (CAM) presents a method for explaining the reasons behind the classification outcomes. 
-Originally proposed for explainable image classification, this method highlights the areas within an image that are most influential in the model's prediction for a particular class. 
-In recent years, this approach have been applied to time series data and shown promising results and different kinds of data.
+**Class Activation Map:** Originally proposed for explaining the decision-making process of deep-learning classifiers in computer vision, the Class Activation Map (CAM) enables the highlighting of the parts of an image that contributed the most to obtaining the predicted label. A one-dimensional adaptation of this method was proposed for time series classification to highlight the relevant subsequences of a time series. Note that CAM is only usable with CNN-based architectures incorporating a GAP layer before the softmax classifier. For univariate time series as load curves, the CAM for the label \(c\) is defined as follows:
 
-- Attention Map Vizualisation : With the recent advent of attention-based models, explainability methods based on the Attention Mechanism have been widely investigated in image recognition.
-We adapted this approach to localize discriminative features using the TransApp model.
+\[
+\text{CAM}_c = \sum_k w_k \cdot f_k(t)
+\]
+
+where \(w_k\) are the weights of the \(k^{th}\) filter associated to class \(c\), and \(f_k(t)\) are the inner features at a certain a timestamp \(t\). It results in a univariate time series where each element (at the timestamp \(t \in [1, T ]\)) equals the weighted sum of the data points at \(t\), with the weights learned by the neural network and reflect the importance of each timestamp.
+
+**Attention Map:** With the advent of Transformer models in numerous domains, explainability methods have been proposed to visualize the insight of the self-attention mechanism and localize important features. As already investigated for image classification, we adapt the idea to univariate time series in this demonstration to localize discriminative regions using TransApp (the only classifier based on a Transformer architecture). This approach relies on looking at the weights of the attention matrix of a Transformer layer when an input instance is passed through the network. Note that, contrary to the CAM, the Attention Map cannot be extracted for a specific label. Therefore, in our proposed approach, we only extract the activation map of TransApp if an appliance is detected and set the value to 0 otherwise. Formally, the Attention Map is defined as:
+
+\[
+\text{AttMap(t)} = \text{softmax}(W \cdot F(t))
+\]
+
+where a softmax activation function is applied on the product of \(F\), the inner feature matrix of the input series, and \(W\), the learned attention weights. It results in a univariate time series where each value reflects the importance given by the self-attention to each timestamp \(t \in [1, T ]\).
 """
 
 text_about = f"""
@@ -68,9 +79,9 @@ Making non-expert users (as consumers or sales advisors) understand it has becom
 We propose Deviscope as an interactive solution to facilitate the understanding of electrical data by detecting and localizing individual appliance patterns within recorded time periods.
 
 ### How DeviceScope works?
-The core of our system is based on a combination of recent works conducted on appliance detection [[1]](https://arxiv.org/abs/2305.10352) [[2]](https://arxiv.org/abs/2401.05381) and explainable classification [[3]](https://arxiv.org/abs/1611.06455) [[4]](https://epfml.github.io/attention-cnn/).
+The core of our system is based on a combination of recent works conducted on appliance detection [[1](https://arxiv.org/abs/2305.10352), [2](https://arxiv.org/abs/2401.05381)] and explainable classification [[3](https://arxiv.org/abs/1611.06455), [4](https://epfml.github.io/attention-cnn/)].
 In a nutshell, DeviceScope uses a trained time series classifier to detect ***if*** an appliance is used in a given period of time. If this is the case, a classification explainability method is applied to detect ***when***: it highlights of the region of the consumption series that contributed the most to the classifier's decision.
-Contrary to other works in this area (as NILM), the approach is based on a weakly supervised process.
+Unlike to other works conducted in this area (NILM based approaches), our method is based on a weakly supervised process.
 """
 
 
