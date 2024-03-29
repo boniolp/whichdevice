@@ -37,7 +37,7 @@ def run_playground_frame():
 
     global CURRENT_WINDOW
     
-    st.markdown("""### Explore electrical time series consumption""")
+    st.markdown(text_tab_playground)
 
     col1_1, col1_2, col1_3 = st.columns(3)
 
@@ -74,7 +74,6 @@ def run_playground_frame():
         if st.button("Next :fast_forward:", type="primary"):
             CURRENT_WINDOW += 1
     
-    #st.markdown("show TS et prob devices")
     df, window_size = get_time_series_data(ts_name, frequency=frequency, length=length)
     n_win = len(df) // window_size
 
@@ -137,9 +136,8 @@ def run_playground_frame():
     
 
 def run_benchmark_frame():
-    st.markdown(f"""### Explore benchmark results 
-                
-                 Select a metric and a dataset.""")
+    st.markdown(text_tab_playground)
+    st.markdown(f"""Select a metric and a dataset.""")
 
     col1, col2 = st.columns(2)
 
