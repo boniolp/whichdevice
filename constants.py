@@ -62,27 +62,31 @@ This dataset provides aggregate and individual appliance load curves at 8-second
 """
 
 text_description_model  = f"""
-Appliance detection can be cast as a time series classification problem.
-To do so, a classifier is trained to detect the presence of an appliance in a consumption time series as a supervised binary classification problem (yes/no). 
-The 4 methods used in this demonstration have been selected based on their performance in previous studies for the appliance detection tasks and their ability to be combined to explainability approaches.
+Appliance detection can be cast as a time series classification problem, where a classifier is trained in a binary supervised manner to detect the presence of an appliance in a consumption series. 
+Following results from previous studies, it has been proven that deep learning-based methods are the most accurate and efficient for tackling this task.
+Our system provide 4 different time series classifiers to detect appliance:
 
-- ConvNet: Convolutional Neural Network (CNN) is a deep learning architecture commonly used in image recognition. 
-The ConvNet variant, we use in this study employs stacked convolutional blocks with specific kernel sizes and filters, followed by global average pooling and linear layers for classification.
+- ConvNet: Convolutional Neural Network (CNN) is a well-knwon deep learning architecture commonly used in image recognition. 
+In this system, we use a variant designed for time series classification. 
+The architecture employs stacked 1D convolutional blocks with specific kernel sizes and filters, followed by global average pooling and linear layers for classification.
 
 
-- ResNet: The Residual Network (ResNet) architecture addresses the gradient vanishing problem in large CNNs. 
-The adaptation for time series classification consists of stacked residual blocks with residual connections, where each block contains 1D convolutional layers with the same kernel sizes and filters. 
+- ResNet: The Residual Network (ResNet) architecture was originally proposed to adress the gradient vanishing problem in deep CNNs. 
+It is also a well-knwon architecture to perform image recognition.
+As for the ConvNet, we use an variant proposed for time series classification.
+It consists of stacked residual blocks with residual connections, where each block contains 1D convolutional layers with the same kernel sizes and filters. 
 A global average pooling, a linear layer, and a softmax activation are used for classification.
 
 
 - InceptionTime: Inspired by inception-based networks for image classification, InceptionTime is designed for time series classification.
-It employs Inception modules composed of concatenated convolutional layers using different filter sizes.
+The model employs Inception modules composed of concatenated 1D convolutional layers using different filter sizes.
 The outputs are passed through activation and normalization layers; at the end, classification is performed using a global average pooling, followed by a linear layer and softmax activation function.
 
 
-- TransApp: In a recent study, the authors propose a Convolution-Transformer-based architecture to detect appliances in long and variable length consumption series.
-The architecture is a combination of a dilated convolution block followed by multiple Transformer layers.
-We adapt the proposed architecture to our problem as a smaller and simplified architecture by keeping only one Transformer layer after the convolution embedding block.
+- TransApp: A recent study proposed TransApp, a deep-learning time series classifier specially designed to detect appliances in electrical consumption series.
+The architecture results in an embedding block made of convolutional layers that serves as a features extractor followed by multiple Transformer layers.
+In the end, global average pooling, followed by a linear layer and softmax activation function, performs the classification.
+As the architecture was originally proposed for detecting appliances in large datasets, we adapted it for our system as a smaller and simplified version by keeping only one Transformer layer after the embedding block.
 """
 
 text_description_explainability = f"""
@@ -106,8 +110,8 @@ We propose Deviscope as an interactive solution to facilitate the understanding 
 
 ### How DeviceScope works?
 The core of our system is based on a combination of recent works conducted on appliance detection [[1]](https://arxiv.org/abs/2305.10352) [[2]](https://arxiv.org/abs/2401.05381) and explainable classification [[3]](https://arxiv.org/abs/1611.06455) [[4]](https://epfml.github.io/attention-cnn/).
-In a nutshell, DeviceScope uses a trained time series classifier to detect ***if*** an appliance is used in a given period of time. If this is the case, an explainability method is applied, enabling the highlight of the region of the series where the pattern is localized.
-Contrary to other works in this area, the approach is based on a weakly supervised process.
+In a nutshell, DeviceScope uses a trained time series classifier to detect ***if*** an appliance is used in a given period of time. If this is the case, a classification explainability method is applied to detect ***when***: it highlights of the region of the consumption series that contributed the most to the classifier's decision.
+Contrary to other works in this area (as NILM), the approach is based on a weakly supervised process.
 """
 
 
