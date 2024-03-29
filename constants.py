@@ -53,7 +53,7 @@ Identifying the discriminative features that influence a classifier's decision-m
 For classification using deep-learning-based algorithms, different methods have been proposed to highlight the parts of an input instance that contribute the most to the final decision of the classifier.
 We investigate two of them for our system, which are related to the type of architecture used (CNN or Transformer).
 
-\noindent \textbf{Class Activation Map:} Originally proposed for explaining the decision-making process of deep-learning classifier in computer vision, the Class Activation Map (CAM)enables the highlighting of the parts of an image that contributed the most to obtaining the predicted label. 
+**Class Activation Map:** Originally proposed for explaining the decision-making process of deep-learning classifier in computer vision, the Class Activation Map (CAM)enables the highlighting of the parts of an image that contributed the most to obtaining the predicted label. 
 A one-dimensional adaptation of this method was proposed for time series classification to highlight the relevant subsequences of a time series.
 Note that CAM is only usable with CNN-based architectures incorporating a GAP layer before the softmax classifier.
 For univariate time series as load curves, the CAM for the label $c$ is defined as follows:
@@ -64,7 +64,7 @@ $$
 where $w_k$ are the weights of the $k^{th}$ filter associated to class $c$, and $f_k(t)$ are the inner features at a certain a timestamp $t$.
 It results in a univariate time series where each element (at the timestamp $t  \in [1, T ]$) equals the weighted sum of the data points at $t$, with the weights learned by the neural network and reflect the importance of each timestamp.
 
-\noindent \textbf{Attention Map:} With the advent of Transformer models in numerous domains, explainability methods have been proposed to visualize the insight of the self-attention mechanism and localize important features.
+**Attention Map:** With the advent of Transformer models in numerous domains, explainability methods have been proposed to visualize the insight of the self-attention mechanism and localize important features.
 As already investigated for image classification, we adapt the idea to univariate time series in this demonstration to localize discriminative regions using TransApp (the only classifier based on a Transformer architecture).
 This approach relies on looking at the weights of the attention matrix of a Transformer layer when an input instance is passed through the network.
 Note that, contrary to the CAM, the Attention Map cannot be extracted for a specific label.
