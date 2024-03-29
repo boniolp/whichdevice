@@ -51,15 +51,13 @@ list_name_ts   = ['UKDALE_House2_2013-05',
                 ]
 
 text_description_dataset  = f"""
-Two different datasets of electricity consumption were used in for this demonstraion: UKDALE and REFIT.
-Each dataset is composed of several houses that have been monitored by sensors that record the total main power and appliance-level power for a period of time. 
+The electricity consumption data available to test our system come from two different studies and are available publicy online: [UKDALE](https://jack-kelly.com/data/) and [REFIT](https://pureportal.strath.ac.uk/en/datasets/refit-electrical-load-measurements-cleaned).
+Each dataset is composed of several houses that have been monitored by sensors that record the total main power and appliance-level power for a period of time.
 
-- UKDALE: The UK-DALE dataset contains data from 5 houses in the United Kingdom and includes appliance-level load curves sampled every 6 seconds, as well as the whole-house aggregate data series sampled at 16kHz. 
+- UKDALE: The UK-DALE dataset contains data from 5 houses in the United Kingdom and includes appliance-level and aggregate load curves sampled at a minimum sampling rate of 6 seconds.
 Four houses were recorded for over a year and a half, while the 5th was recorded for 655 days.
 
-
-- REFIT Dataset: The REFIT project (Personalised Retrofit Decision Support Tools for UK Homes using Smart Home Technology) ran between 2013 and 2015. 
-During this period, 20 houses in the United Kingdom were recorded after being monitored with smart meters and multiple sensors. 
+- REFIT Dataset: The REFIT dataset contains data from 20 different houses in the United Kingdom that have been monitored with smart meters and multiple sensors. 
 This dataset provides aggregate and individual appliance load curves at 8-second sampling intervals. 
 """
 
@@ -99,11 +97,19 @@ We adapted this approach to localize discriminative features using the TransApp 
 """
 
 text_about = f"""
-## DeviceScope: An Interactive App to Detect and Localize Appliance Patterns in Electrical Consumption Time Series
+## Interactive detection and localization of appliance patterns in electrical consumption time series
 
 Electricity suppliers have installed millions of smart meters worldwide to improve the management of the smart grid system.
 These meters capture detailed time-stamped electricity consumption of the total main power consumed in a house: this recorded signal is hard to analyze as it regroups multiple appliance signatures that run simultaneously.
 Making non-expert users (as consumers or sales advisors) understand it has become a major challenge for electricity suppliers.
+We propose Deviscope as an interactive solution to facilitate the understanding of electrical data by detecting and localizing individual appliance patterns within recorded time periods.
+
+### How DeviceScope works?
+The core of our system is based on a combination of recent works conducted on appliance detection [1](https://arxiv.org/abs/2305.10352) [2](https://arxiv.org/abs/2401.05381) and explainable classification [3](https://arxiv.org/abs/1611.06455) [4](https://epfml.github.io/attention-cnn/).
+to detect appliances using a time series classification approache combined to explainable classification methods to localize ***when*** a device is used.
+For a given input time series of electricity consumption, the classifier predicts a probability of detection.
+If the model detects the appliance in the current window (proba. > 0.5), we then apply its corresponding explanation method (CAM or AttentionMap) to highlight the region of the series that contributed the most to the decision.
+In our system, if multiple classifiers are selected, we average the predicted explainability output (CAM or AttMap) to give an overall explainable result.
 """
 
 
