@@ -35,9 +35,9 @@ def run():
     )
 
     st.markdown(f"""
-                1. Browse electrical time series consumption at different sampling rate.
-                2. Use the trained classification methods to detect appliances in period of time.
-                3. Use explanability methods (CAM, AttentionMap) to localize appliance patterns and compare it with ground truth data.
+                1. **Explore** electrical consumption series and observe different sampling rates.
+                2. **Detect** appliances in a period of time using the different trained classifiers and compare their performance.
+                3. **Localize** appliance patterns using explainable classification approaches (CAM/AttMap).
                 """)
 
     tab_playground, tab_benchmark, tab_about = st.tabs(
