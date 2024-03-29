@@ -185,7 +185,7 @@ def run_about_frame():
         st.markdown(text_description_model)
 
     with st.expander(f"""### Explainable classification to localize appliance patterns"""):
-        st.markdown(text_description_explainability)
+        st.write(text_description_explainability)
 
     st.markdown("""### Smart meters datasets""")
     st.markdown(text_description_dataset)
