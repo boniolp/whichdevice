@@ -175,7 +175,9 @@ def run_benchmark_frame():
 
 def run_about_frame():
 
-    tab_dataset_description, tab_model_description, tab_about = st.tabs(["Datasets", "Methods", "About"])
+    st.markdown(text_about)
+    
+    tab_dataset_description, tab_model_description, tab_info = st.tabs(["Datasets", "Methods", "Infos"])
 
     with tab_dataset_description:
         st.markdown("""### Smart Meters datasets""")
@@ -191,8 +193,8 @@ def run_about_frame():
 
         st.markdown(text_description_explainability)
 
-    with tab_about:
-        st.markdown(text_about)
+    with tab_info:
+        st.markdown(text_info)
 
 def plot_benchmark_figures1(name_measure, dataset):
     table = pd.read_csv(os.getcwd()+'/TableResults/Results.gzip', compression='gzip')
