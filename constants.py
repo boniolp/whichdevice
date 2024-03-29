@@ -86,8 +86,11 @@ We propose Deviscope as an interactive solution to facilitate the understanding 
 
 ### How DeviceScope works?
 The core of our system is based on a combination of recent works conducted on appliance detection [[1](https://arxiv.org/abs/2305.10352), [2](https://arxiv.org/abs/2401.05381)] and explainable classification [[3](https://arxiv.org/abs/1611.06455), [4](https://helios2.mi.parisdescartes.fr/~themisp/dCAM/), [5](https://epfml.github.io/attention-cnn/)].
-In a nutshell, DeviceScope uses a trained time series classifier to detect ***if*** an appliance is used in a given period of time. If this is the case, a classification explainability method is applied to detect ***when***: it highlights of the region of the consumption series that contributed the most to the classifier's decision.
-Unlike to other works conducted in this area (NILM based approaches), our method is based on a weakly supervised process.
+In a nutshell, DeviceScope uses a trained time series classifier to detect ***if*** an appliance is used in a given period of time. If this is the case, a explainable classification approach is applied to detect ***when*** the device is running. 
+It works by highlighting the portion of the input consumption series that had the most significant impact on the classifier's decision.
+Unlike other works conducted in this area (NILM based approaches [6](https://helios2.mi.parisdescartes.fr/~themisp/publications/energybuildings24.pdf)), our method is based on a weakly supervised process and therefore requires far fewer labeled data.
+
+To learn more about the DeviceScope system, look at the two sections below!
 """
 
 
