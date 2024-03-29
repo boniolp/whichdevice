@@ -96,7 +96,7 @@ def run_playground_frame():
             st.plotly_chart(fig_ts, use_container_width=True)
 
             if len(models)>1:
-                st.markdown(f"""***Multiple classifiers are selected:*** the heatmap shows the average of predicted pattern localization for selected models.""")
+                st.markdown(f"""**Multiple classifiers are selected:** the heatmap shows the average of predicted pattern localization for selected models.""")
         
         with tab_app:
             on = st.toggle('Stack')
@@ -110,7 +110,7 @@ def run_playground_frame():
         with tab_prob:
             st.plotly_chart(fig_prob, use_container_width=True)
             if len(models)>1:
-                st.markdown(f"""***Mean Prediction*** shows the average of predicted detection probabilities for selected models.""")
+                st.markdown(f"""**Mean Prediction** shows the average of predicted detection probabilities for selected models.""")
         with tab_cam:
             fig_cam = plot_cam(CURRENT_WINDOW, df, window_size, appliances1, pred_dict_all)
             st.plotly_chart(fig_cam, use_container_width=True)
