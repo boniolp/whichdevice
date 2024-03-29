@@ -177,24 +177,23 @@ def run_about_frame():
 
     st.markdown(text_about)
     
-    tab_model_description, tab_dataset_description, tab_info = st.tabs(["Methods", "Datasets", "Infos"])
+    tab_model_description, tab_dataset_description = st.tabs(["Methods", "Datasets"])
+
+    with tab_model_description:
+        with st.expander("Appliance detection as a time series classification problem")
+
+            st.markdown(text_description_model)
+
+        with st.expander("Explainable classification to localize appliance patterns"):
+
+            st.markdown(text_description_explainability)
 
     with tab_dataset_description:
         st.markdown("""### Smart Meters datasets""")
 
         st.markdown(text_description_dataset)
 
-    with tab_model_description:
-        st.markdown("""### Appliance Detection methods""")
-
-        st.markdown(text_description_model)
-
-        st.markdown("""### Pattern localization methods""")
-
-        st.markdown(text_description_explainability)
-
-    with tab_info:
-        st.markdown(text_info)
+    st.markdown(text_info)
 
 def plot_benchmark_figures1(name_measure, dataset):
     table = pd.read_csv(os.getcwd()+'/TableResults/Results.gzip', compression='gzip')
