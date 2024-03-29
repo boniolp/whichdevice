@@ -136,14 +136,14 @@ def run_playground_frame():
     
 
 def run_benchmark_frame():
-    st.markdown(text_tab_playground)
-    st.markdown(f"""Select a metric and a dataset.""")
+    st.markdown(text_tab_benchmark)
+    st.markdown(f"""Select a metric and a dataset:""")
 
     col1, col2 = st.columns(2)
 
     with col1:
         measure = st.selectbox(
-            "Choose measure", measures_list, index=0
+            "Choose metric", measures_list, index=0
         )
     with col2:
         dataset = st.selectbox(
