@@ -105,7 +105,7 @@ Making non-expert users (as consumers or sales advisors) understand it has becom
 We propose Deviscope as an interactive solution to facilitate the understanding of electrical data by detecting and localizing individual appliance patterns within recorded time periods.
 
 ### How DeviceScope works?
-The core of our system is based on a combination of recent works conducted on appliance detection [1](https://arxiv.org/abs/2305.10352) [2](https://arxiv.org/abs/2401.05381) and explainable classification [3](https://arxiv.org/abs/1611.06455) [4](https://epfml.github.io/attention-cnn/).
+The core of our system is based on a combination of recent works conducted on appliance detection [[1]](https://arxiv.org/abs/2305.10352) [2](https://arxiv.org/abs/2401.05381) and explainable classification [3](https://arxiv.org/abs/1611.06455) [4](https://epfml.github.io/attention-cnn/).
 to detect appliances using a time series classification approache combined to explainable classification methods to localize ***when*** a device is used.
 For a given input time series of electricity consumption, the classifier predicts a probability of detection.
 If the model detects the appliance in the current window (proba. > 0.5), we then apply its corresponding explanation method (CAM or AttentionMap) to highlight the region of the series that contributed the most to the decision.
