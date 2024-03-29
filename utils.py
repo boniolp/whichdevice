@@ -539,7 +539,7 @@ def plot_one_window1(k, df, window_size, appliances, pred_dict_all):
     
     # Update layout for the combined figure
     fig_agg.update_layout(
-        title='Aggregate power consumption and predicted appliance localization.',
+        title='Aggregate power consumption and predicted appliance localization',
         xaxis2_title='Time',
         height=500,
         width=1000,
@@ -547,7 +547,7 @@ def plot_one_window1(k, df, window_size, appliances, pred_dict_all):
     )
 
     fig_appl.update_layout(
-        title='Individual appliance power consumption compared to predicted appliance localization.',
+        title='Individual appliance power consumption compared to predicted appliance localization',
         legend=dict(orientation='h', x=0.5, xanchor='center', y=-0.2),
         xaxis2_title='Time',
         height=500,
@@ -556,7 +556,7 @@ def plot_one_window1(k, df, window_size, appliances, pred_dict_all):
     )
 
     fig_appl_stacked.update_layout(
-        title='Individual appliance power consumption (stacked) compared to predicted appliance localization.',
+        title='Individual appliance power consumption (stacked) compared to predicted appliance localization',
         legend=dict(orientation='h', x=0.5, xanchor='center', y=-0.2),
         xaxis2_title='Time',
         height=500,
@@ -670,7 +670,7 @@ def plot_detection_probabilities(data):
 
     # Update layout once, outside the loop
     fig.update_layout(
-        title_text='Probability of Detection for Each Model',
+        title_text='Probability of detection for each classifier',
         barmode='group',
         showlegend=False,
         bargap=0.15, # gap between bars of adjacent location coordinates.
@@ -711,7 +711,7 @@ def plot_cam(k, df, window_size, appliances, pred_dict_all):
         fig_cam.update_yaxes(range=[0, 1], row=i+1, col=1)
 
     xaxis_title_dict = {f'xaxis{len(appliances)}_title': 'Time'}
-    fig_cam.update_layout(title='Class Activation Map to localize appliance pattern', **xaxis_title_dict)
+    fig_cam.update_layout(title='Detail of explainable pattern localization for each classifier', **xaxis_title_dict)
     fig_cam.update_layout(legend=dict(orientation='h', x=0.5, xanchor='center', y=-0.1),
                           height=50 + 30 + 180 * len(appliances),
                           width=1000,
