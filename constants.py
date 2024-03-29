@@ -99,9 +99,22 @@ We adapted this approach to localize discriminative features using the TransApp 
 """
 
 text_about = f"""
-## Contributors
+## DeviceScope: An Interactive App to Detect and Localize Appliance Patterns in Electrical Consumption Time Series
+
+Electricity suppliers have installed millions of smart meters worldwide to improve the management of the smart grid system.
+These meters capture detailed time-stamped electricity consumption of the total main power consumed in a house: this recorded signal is hard to analyze as it regroups multiple appliance signatures that run simultaneously.
+Making non-expert users (as consumers or sales advisors) understand it has become a major challenge for electricity suppliers.
+"""
+
+
+text_info = f"""
+### Contributors
 
 * [Adrien Petralia](https://adrienpetralia.github.io/), EDF R&D, Université Paris Cité
 * [Paul Boniol](https://boniolp.github.io/), Inria, ENS, PSL University, CNRS
 * [Philippe Charpentier](https://www.researchgate.net/profile/Philippe-Charpentier), EDF R&D
-* [Themis Palpanas](https://helios2.mi.parisdescartes.fr/~themisp/), Université Paris Cité, IUF"""
+* [Themis Palpanas](https://helios2.mi.parisdescartes.fr/~themisp/), Université Paris Cité, IUF
+
+### Acknowledgments
+Work supported by EDF R&D and ANRT French program.
+"""
