@@ -703,7 +703,7 @@ def plot_cam(k, df, window_size, appliances, pred_dict_all):
 
                 fig_cam.add_trace(go.Scatter(x=window_df.index, y=cam, mode='lines', fill='tozeroy',
                                              marker=dict(color=dict_color_model[model_name]),
-                                             name=f'CAM {model_name}',
+                                             name='AttMap TransAppS' if model_name=='TransAppS' else f'CAM {model_name}',
                                              legendgroup=model_name,  # Assign legend group
                                              showlegend=show_legend),
                                   row=i+1, col=1)
@@ -713,7 +713,7 @@ def plot_cam(k, df, window_size, appliances, pred_dict_all):
     xaxis_title_dict = {f'xaxis{len(appliances)}_title': 'Time'}
     fig_cam.update_layout(title='Detail of explainable pattern localization for each classifier', **xaxis_title_dict)
     fig_cam.update_layout(legend=dict(orientation='h', x=0.5, xanchor='center', y=-0.1),
-                          height=50 + 30 + 180 * len(appliances),
+                          height=80 + 30 + 180 * len(appliances),
                           width=1000,
                           margin=dict(l=100, r=20, t=50, b=30))
 
