@@ -56,7 +56,7 @@ We investigate two of them for our system, which are related to the type of arch
 **Class Activation Map:** Originally proposed for explaining the decision-making process of deep-learning classifiers in computer vision, the Class Activation Map (CAM) enables the highlighting of the parts of an image that contributed the most to obtaining the predicted label. A one-dimensional adaptation of this method was proposed for time series classification to highlight the relevant subsequences of a time series. Note that CAM is only usable with CNN-based architectures incorporating a GAP layer before the softmax classifier. For univariate time series as load curves, the CAM for the label \(c\) is defined as follows:
 
 \[
-\text{CAM}_c = \sum_k w_k \cdot f_k(t)
+CAM_c = \sum_k w_k \cdot f_k(t)
 \]
 
 where \(w_k\) are the weights of the \(k^{th}\) filter associated to class \(c\), and \(f_k(t)\) are the inner features at a certain a timestamp \(t\). It results in a univariate time series where each element (at the timestamp \(t \in [1, T ]\)) equals the weighted sum of the data points at \(t\), with the weights learned by the neural network and reflect the importance of each timestamp.
@@ -64,7 +64,7 @@ where \(w_k\) are the weights of the \(k^{th}\) filter associated to class \(c\)
 **Attention Map:** With the advent of Transformer models in numerous domains, explainability methods have been proposed to visualize the insight of the self-attention mechanism and localize important features. As already investigated for image classification, we adapt the idea to univariate time series in this demonstration to localize discriminative regions using TransApp (the only classifier based on a Transformer architecture). This approach relies on looking at the weights of the attention matrix of a Transformer layer when an input instance is passed through the network. Note that, contrary to the CAM, the Attention Map cannot be extracted for a specific label. Therefore, in our proposed approach, we only extract the activation map of TransApp if an appliance is detected and set the value to 0 otherwise. Formally, the Attention Map is defined as:
 
 \[
-\text{AttMap(t)} = \text{softmax}(W \cdot F(t))
+AttMap(t) = softmax(W \cdot F(t))
 \]
 
 where a softmax activation function is applied on the product of \(F\), the inner feature matrix of the input series, and \(W\), the learned attention weights. It results in a univariate time series where each value reflects the importance given by the self-attention to each timestamp \(t \in [1, T ]\).
