@@ -6,7 +6,7 @@ Explore electrical time series data and select a model to detect and localize ap
 
 text_tab_benchmark = f"""
 ### Benchmark
-Explore the results of the different classifiers applied to detecting the different appliances for different sampling rates."""
+Explore the results of the different classifiers applied to detecting appliances for different sampling rates."""
 
 
 text_description_dataset  = f"""
