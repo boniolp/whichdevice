@@ -180,17 +180,14 @@ def run_about_frame():
     tab_model_description, tab_dataset_description = st.tabs(["Methods", "Datasets"])
 
     with tab_model_description:
-        with st.expander("Appliance detection as a time series classification problem")
-
+        with st.expander("Appliance detection as a time series classification problem"):
             st.markdown(text_description_model)
 
         with st.expander("Explainable classification to localize appliance patterns"):
-
             st.markdown(text_description_explainability)
 
     with tab_dataset_description:
         st.markdown("""### Smart Meters datasets""")
-
         st.markdown(text_description_dataset)
 
     st.markdown(text_info)
