@@ -535,7 +535,7 @@ def plot_one_window1(k, df, window_size, appliances, pred_dict_all):
     
     # Update layout for the combined figure
     fig_agg.update_layout(
-        title='Total Power Consumption',
+        title='Aggregate power consumption',
         xaxis2_title='Time',
         height=500,
         width=1000,
@@ -543,7 +543,7 @@ def plot_one_window1(k, df, window_size, appliances, pred_dict_all):
     )
 
     fig_appl.update_layout(
-        title='Appliance Power Consumption',
+        title='Individual appliance power consumption',
         legend=dict(orientation='h', x=0.5, xanchor='center', y=-0.2),
         xaxis2_title='Time',
         height=500,
@@ -552,7 +552,7 @@ def plot_one_window1(k, df, window_size, appliances, pred_dict_all):
     )
 
     fig_appl_stacked.update_layout(
-        title='Appliance Power Consumption (stacked)',
+        title='Individual appliance power consumption (stacked)',
         legend=dict(orientation='h', x=0.5, xanchor='center', y=-0.2),
         xaxis2_title='Time',
         height=500,
@@ -590,7 +590,7 @@ def plot_one_window2(k, df, window_size, appliances):
     
     # Update layout for the combined figure
     fig_agg.update_layout(
-        title='Aggregate Consumption',
+        title='Aggregate power consumption',
         xaxis_title='Time',
         height=300,
         width=1000,
@@ -598,7 +598,7 @@ def plot_one_window2(k, df, window_size, appliances):
     )
 
     fig_appl.update_layout(
-        title='Appliance Power Consumption',
+        title='Individual appliance power consumption',
         legend=dict(orientation='h', x=0.5, xanchor='center', y=-0.5),
         xaxis_title='Time',
         height=300,
@@ -607,7 +607,7 @@ def plot_one_window2(k, df, window_size, appliances):
     )
 
     fig_appl_stacked.update_layout(
-        title='Appliance Power Consumption (stacked)',
+        title='Individual appliance power consumption (stacked)',
         legend=dict(orientation='h', x=0.5, xanchor='center', y=-0.2),
         xaxis_title='Time',
         height=300,
@@ -747,7 +747,7 @@ def plot_signatures(appliances, frequency):
     for j in range(1, len(appliances) + 1):
         fig.update_xaxes(title_text="Time", row=1, col=j)
         
-    fig.update_layout(title='Example of signature for each appliances', 
+    fig.update_layout(title='Example of signature for each appliance (according to selected sampling rate)', 
                       yaxis_title='Power (Watts)', 
                       showlegend=False,
                       height=400, 
