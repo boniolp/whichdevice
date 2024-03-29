@@ -1,11 +1,11 @@
 # ========================== Texts ========================== #
 
 text_tab_playground = f"""
-### Playground:
+### Playground
 Explore electrical time series data and select a model to detect and localize appliance patterns."""
 
 text_tab_benchmark = f"""
-### Benchmark:
+### Benchmark
 Explore the results of the different classifiers applied to detecting the different appliances for different sampling rates."""
 
 
