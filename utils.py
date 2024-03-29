@@ -177,7 +177,7 @@ def run_about_frame():
 
     st.markdown(text_about)
     
-    tab_dataset_description, tab_model_description, tab_info = st.tabs(["Datasets", "Methods", "Infos"])
+    tab_model_description, tab_dataset_description, tab_info = st.tabs(["Methods", "Datasets", "Infos"])
 
     with tab_dataset_description:
         st.markdown("""### Smart Meters datasets""")
