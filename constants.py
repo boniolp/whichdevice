@@ -59,7 +59,7 @@ We investigate two of them for our system, which are related to the type of arch
 CAM_c = \sum_k w_k \cdot f_k(t)
 \]
 
-where \(w_k\) are the weights of the \(k^{th}\) filter associated to class \(c\), and \(f_k(t)\) are the inner features at a certain a timestamp \(t\). It results in a univariate time series where each element (at the timestamp \(t \in [1, T ]\)) equals the weighted sum of the data points at \(t\), with the weights learned by the neural network and reflect the importance of each timestamp.
+where \(w_k\) are the weights of the \(k^th\) filter associated to class \(c\), and \(f_k(t)\) are the inner features at a certain a timestamp \(t\). It results in a univariate time series where each element (at the timestamp \(t \in [1, T ]\)) equals the weighted sum of the data points at \(t\), with the weights learned by the neural network and reflect the importance of each timestamp.
 
 **Attention Map:** With the advent of Transformer models in numerous domains, explainability methods have been proposed to visualize the insight of the self-attention mechanism and localize important features. As already investigated for image classification, we adapt the idea to univariate time series in this demonstration to localize discriminative regions using TransApp (the only classifier based on a Transformer architecture). This approach relies on looking at the weights of the attention matrix of a Transformer layer when an input instance is passed through the network. Note that, contrary to the CAM, the Attention Map cannot be extracted for a specific label. Therefore, in our proposed approach, we only extract the activation map of TransApp if an appliance is detected and set the value to 0 otherwise. Formally, the Attention Map is defined as:
 
