@@ -181,7 +181,7 @@ def run_about_frame():
 
     st.markdown(text_about)
 
-    st.image("Figures/DeviceScopePipeline.png", caption="Proposed appliance detection pipeline.")
+    st.image("Figures/DeviceScopePipeline.png", caption="Proposed appliance detection pipeline.", width=500)
     
     with st.expander(f"""### Appliance detection as a time series classification problem"""):
         st.markdown(text_description_model)
