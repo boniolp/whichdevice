@@ -10,13 +10,13 @@ Explore the results of the different classifiers applied to detecting appliances
 
 
 text_description_dataset  = f"""
-The electricity consumption data available to test our system come from two different studies and are available publicy online: [UKDALE](https://jack-kelly.com/data/) and [REFIT](https://pureportal.strath.ac.uk/en/datasets/refit-electrical-load-measurements-cleaned).
+The electricity consumption data available to test our system come from two different studies and are available publicy online.
 Each dataset is composed of several houses that have been monitored by sensors that record the total main power and appliance-level power for a period of time.
 
-- UKDALE: The UK-DALE dataset contains data from 5 houses in the United Kingdom and includes appliance-level and aggregate load curves sampled at a minimum sampling rate of 6 seconds.
+- [UKDALE](https://jack-kelly.com/data/): The UK-DALE dataset contains data from 5 houses in the United Kingdom and includes appliance-level and aggregate load curves sampled at a minimum sampling rate of 6 seconds.
 Four houses were recorded for over a year and a half, while the 5th was recorded for 655 days.
 
-- REFIT Dataset: The REFIT dataset contains data from 20 different houses in the United Kingdom that have been monitored with smart meters and multiple sensors. 
+- [REFIT](https://pureportal.strath.ac.uk/en/datasets/refit-electrical-load-measurements-cleaned): The REFIT dataset contains data from 20 different houses in the United Kingdom that have been monitored with smart meters and multiple sensors. 
 This dataset provides aggregate and individual appliance load curves at 8-second sampling intervals. 
 """
 
