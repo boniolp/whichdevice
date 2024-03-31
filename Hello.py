@@ -35,7 +35,7 @@ def run():
     )
 
     st.markdown(f"""
-                1. **Explore** electrical consumption series and observe different sampling rates.
+                1. **Explore** electrical consumption series at different sampling rates.
                 2. **Detect** appliances in a period of time using the different trained classifiers and compare their performance.
                 3. **Localize** appliance patterns using explainable classification approaches (CAM/AttMap).
                 """)
