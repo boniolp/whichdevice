@@ -71,7 +71,7 @@ def run_playground_frame():
         if st.button(":rewind: Previous", type="primary"):
             CURRENT_WINDOW -= 1
     with colcontrol_3:
-        if st.button("Next :fast_forward:", type="primary"):
+        if st.button("   Next   :fast_forward:", type="primary"):
             CURRENT_WINDOW += 1
     
     df, window_size = get_time_series_data(ts_name, frequency=frequency, length=length)
