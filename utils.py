@@ -155,7 +155,7 @@ def run_benchmark_frame():
             "Choose dataset", dataset_list, index=0
         )
 
-    st.markdown("#### Overall results")
+    #st.markdown("#### Overall results")
 
     fig1 = plot_benchmark_figures1(measure, dataset)
     fig2 = plot_benchmark_figures2(measure, dataset)
@@ -165,7 +165,7 @@ def run_benchmark_frame():
     st.plotly_chart(fig2, use_container_width=True)
     st.plotly_chart(fig3, use_container_width=True)
 
-    st.markdown("#### Explore the influence of the sampling rate on the detection performance for selected appliance(s).")
+    #st.markdown("#### Explore the influence of the sampling rate on the detection performance for selected appliance(s).")
 
     appliances2 = st.multiselect(
         "Select devices:", devices_list, ["Dishwasher", "WashingMachine", "Kettle", "Microwave"]
@@ -323,7 +323,7 @@ def plot_benchmark_figures4(appliances, measure, dataset):
         fig.update_xaxes(title_text="Sampling Rate", row=1, col=j)
 
     fig.update_layout(
-        title='Influence of sampling frequency on appliance detection',
+        title='Sampling rate influence on the detection performance of each classifier for selected appliance(s)',
         xaxis_title="Sampling Rate",
         yaxis_title=measure,
         legend_title="Model",
