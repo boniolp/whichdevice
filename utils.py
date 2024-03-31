@@ -143,7 +143,6 @@ def run_playground_frame():
 
 def run_benchmark_frame():
     st.markdown(text_tab_benchmark)
-    st.markdown(f"""Select a metric and a dataset:""")
 
     col1, col2 = st.columns(2)
 
