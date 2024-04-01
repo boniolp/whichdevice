@@ -66,6 +66,9 @@ def run_playground_frame():
             "Choose models:", models_list
         )
 
+    if len(models)>0:
+        loc_toggle = st.toggle('Localize appliance patterns')
+
     colcontrol_1, colcontrol_2, colcontrol_3 = st.columns([0.2,0.8,0.2])
     with colcontrol_1:
         if st.button(":rewind: Previous", type="primary"):
@@ -81,9 +84,6 @@ def run_playground_frame():
         CURRENT_WINDOW=n_win
     elif CURRENT_WINDOW < 0:
         CURRENT_WINDOW=0
-
-    if len(models)>0:
-        loc_toggle = st.toggle('Localize appliance patterns')
 
     with colcontrol_2:
         st.markdown("<p style='text-align: center;'> <b>from</b> <i>{}</i> <b>to</b> <i>{}</i> </p>".format(df.iloc[CURRENT_WINDOW*window_size: (CURRENT_WINDOW+1)*window_size].index[0],df.iloc[CURRENT_WINDOW*window_size: (CURRENT_WINDOW+1)*window_size].index[-1]),unsafe_allow_html=True)
