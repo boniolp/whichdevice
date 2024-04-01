@@ -150,7 +150,8 @@ def run_playground_frame():
             else:
                 st.plotly_chart(fig_app, use_container_width=True)
 
-        st.markdown(f"""Look at the provided example signatures below to identify the pattern of the selected devices in the total aggregate main power!""")
+        st.markdown(f"""Look at the example patterns of selected devices below and try to identify them in the aggregate main power!""")
+        
         fig_sig = plot_signatures(appliances1, frequency)
 
         st.plotly_chart(fig_sig, use_container_width=True)
