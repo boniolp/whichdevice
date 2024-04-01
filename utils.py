@@ -32,16 +32,6 @@ from Models.TransAppS import TransAppS
 from Helpers.class_activation_map import CAM, AttentionMap
 
 CURRENT_WINDOW=0
-
-from streamlit_extras.stylable_container import stylable_container
-with stylable_container(key="my_unique_button",css_styles="""
-{
-    [data-testid="baseButton-secondary"] {
-        background-color: red;
-    }
-}
-""",):
-    st.button("button", on_click=foo)
     
 def run_playground_frame():
 
@@ -81,10 +71,10 @@ def run_playground_frame():
 
     colcontrol_1, colcontrol_2, colcontrol_3 = st.columns([0.2,0.8,0.2])
     with colcontrol_1:
-        if st.button(":rewind: Previous", type="primary"):
+        if st.button(":rewind: Prev.", type="primary"):
             CURRENT_WINDOW -= 1
     with colcontrol_3:
-        if st.button(":fast_forward: Next", type="primary"):
+        if st.button("Next :fast_forward:", type="primary"):
             CURRENT_WINDOW += 1
     
     df, window_size = get_time_series_data(ts_name, frequency=frequency, length=length)
