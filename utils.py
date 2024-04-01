@@ -33,6 +33,13 @@ from Helpers.class_activation_map import CAM, AttentionMap
 
 CURRENT_WINDOW=0
 
+m = st.markdown("""
+<style>
+div.stButton > button:first-child {
+    background-color: rgb(204, 49, 49);
+}
+</style>""", unsafe_allow_html=True)
+
 def run_playground_frame():
 
     global CURRENT_WINDOW
@@ -71,10 +78,10 @@ def run_playground_frame():
 
     colcontrol_1, colcontrol_2, colcontrol_3 = st.columns([0.2,0.8,0.2])
     with colcontrol_1:
-        if st.button(":rewind: <br /> Previous", type="primary"):
+        if st.button(":rewind: Previous", type="primary"):
             CURRENT_WINDOW -= 1
     with colcontrol_3:
-        if st.button(":fast_forward: <br /> Next", type="primary"):
+        if st.button(":fast_forward: Next", type="primary"):
             CURRENT_WINDOW += 1
     
     df, window_size = get_time_series_data(ts_name, frequency=frequency, length=length)
