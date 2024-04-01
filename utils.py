@@ -33,10 +33,16 @@ from Helpers.class_activation_map import CAM, AttentionMap
 
 CURRENT_WINDOW=0
 
-st.markdown("""div.stButton > button:first-child {
-background-color: #00cc00;color:white;font-size:20px;height:3em;width:30em;border-radius:10px 10px 10px 10px;
-}""", unsafe_allow_html=True)
-
+from streamlit_extras.stylable_container import stylable_container
+with stylable_container(key="my_unique_button",css_styles="""
+{
+    [data-testid="baseButton-secondary"] {
+        background-color: red;
+    }
+}
+""",):
+    st.button("button", on_click=foo)
+    
 def run_playground_frame():
 
     global CURRENT_WINDOW
