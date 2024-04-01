@@ -134,6 +134,7 @@ def run_playground_frame():
                     st.markdown(f"""**Mean Prediction** shows the average of predicted detection probabilities for selected models.""")
             with tab_signatures:
                 fig_sig = plot_signatures(appliances1, frequency)
+                st.plotly_chart(fig_sig, use_container_width=True)
     else:
         fig_ts, fig_app, fig_stack = plot_one_window2(CURRENT_WINDOW,  df, window_size, appliances1)
 
