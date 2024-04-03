@@ -109,7 +109,7 @@ Work supported by EDF R&D and ANRT French program.
 
 
 # ========================== Lists ========================== #
-frequency_list = ['30 seconds', '1 minutes','10 minutes']
+frequency_list = ['30 seconds', '1 minute','10 minutes']
 models_list    = ['ConvNet', 'ResNet', 'Inception', 'TransAppS']
 lengths_list   = ['6 hours', '12 hours', '1 Day']
 devices_list   = ['WashingMachine', 'Dishwasher', 'Microwave', 'Kettle']
