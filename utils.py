@@ -66,29 +66,30 @@ def run_playground_frame():
             "Choose models:", models_list
         )
 
+    
+    if len(models)>0:
+        loc_toggle = st.toggle('Localize appliance patterns')
+
+    colcontrol_1, colcontrol_2, colcontrol_3 = st.columns([0.2,0.8,0.2])
+    with colcontrol_1:
+        if st.button(":rewind: **Prev.**", type="primary"):
+            CURRENT_WINDOW -= 1
+    with colcontrol_3:
+        if st.button("**Next** :fast_forward:", type="primary"):
+            CURRENT_WINDOW += 1
+    
+    df, window_size = get_time_series_data(ts_name, frequency=frequency, length=length)
+    n_win = len(df) // window_size
+
+    if CURRENT_WINDOW > n_win:
+        CURRENT_WINDOW=n_win
+    elif CURRENT_WINDOW < 0:
+        CURRENT_WINDOW=0
+
+    with colcontrol_2:
+        st.markdown("<p style='text-align: center;'> <b>from</b> <i>{}</i> <b>to</b> <i>{}</i> </p>".format(df.iloc[CURRENT_WINDOW*window_size: (CURRENT_WINDOW+1)*window_size].index[0],df.iloc[CURRENT_WINDOW*window_size: (CURRENT_WINDOW+1)*window_size].index[-1]),unsafe_allow_html=True)
+        
     if len(appliances1)>0:
-        if len(models)>0:
-            loc_toggle = st.toggle('Localize appliance patterns')
-    
-        colcontrol_1, colcontrol_2, colcontrol_3 = st.columns([0.2,0.8,0.2])
-        with colcontrol_1:
-            if st.button(":rewind: **Prev.**", type="primary"):
-                CURRENT_WINDOW -= 1
-        with colcontrol_3:
-            if st.button("**Next** :fast_forward:", type="primary"):
-                CURRENT_WINDOW += 1
-        
-        df, window_size = get_time_series_data(ts_name, frequency=frequency, length=length)
-        n_win = len(df) // window_size
-    
-        if CURRENT_WINDOW > n_win:
-            CURRENT_WINDOW=n_win
-        elif CURRENT_WINDOW < 0:
-            CURRENT_WINDOW=0
-    
-        with colcontrol_2:
-            st.markdown("<p style='text-align: center;'> <b>from</b> <i>{}</i> <b>to</b> <i>{}</i> </p>".format(df.iloc[CURRENT_WINDOW*window_size: (CURRENT_WINDOW+1)*window_size].index[0],df.iloc[CURRENT_WINDOW*window_size: (CURRENT_WINDOW+1)*window_size].index[-1]),unsafe_allow_html=True)
-        
         if len(models)>0:
             pred_dict_all = pred_one_window(CURRENT_WINDOW, df, window_size, ts_name, appliances1, frequency, models)
             if loc_toggle:
