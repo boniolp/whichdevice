@@ -39,8 +39,6 @@ def run_playground_frame():
     
     st.markdown(text_tab_playground)
 
-    st.markdown(f"""Look at the example patterns of selected devices below and try to identify them in the aggregate main power!""")
-
     col1_1, col1_2, col1_3 = st.columns(3)
 
     with col1_1:
