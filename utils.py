@@ -791,9 +791,9 @@ def plot_one_window3(k, df, window_size, appliances, pred_dict_all):
     
     # Update y-axis for the heatmap
     for z, appl in enumerate(appliances, start=2):
-        fig_agg.update_yaxes(row=z, col=1, range=[0, 1])
-        fig_appl.update_yaxes(row=z, col=1, range=[0, 1])
-        fig_appl_stacked.update_yaxes(row=z, col=1, range=[0, 1])
+        fig_agg.update_yaxes(row=z, col=1, range=[0, 1], visible=False, showticklabels=False)
+        fig_appl.update_yaxes(row=z, col=1, range=[0, 1], visible=False, showticklabels=False)
+        fig_appl_stacked.update_yaxes(row=z, col=1, range=[0, 1], visible=False, showticklabels=False)
     #fig_agg.update_yaxes(tickmode='array', tickvals=list(appliances), ticktext=appliances, row=2, col=1, tickangle=-45)
     #fig_appl.update_yaxes(tickmode='array', tickvals=list(appliances), ticktext=appliances, row=2, col=1, tickangle=-45)
     #fig_appl_stacked.update_yaxes(tickmode='array', tickvals=list(appliances), ticktext=appliances, row=2, col=1, tickangle=-45)
