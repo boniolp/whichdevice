@@ -648,6 +648,158 @@ def plot_one_window2(k, df, window_size, appliances):
     return fig_agg, fig_appl, fig_appl_stacked
 
 
+def plot_one_window3(k, df, window_size, appliances, pred_dict_all, stack_appl_cons):
+    window_df = df.iloc[k*window_size: k*window_size + window_size]
+    dict_color_appliance = {'WashingMachine': 'teal', 'Dishwasher': 'skyblue', 'Kettle': 'orange', 'Microwave': 'grey'}
+    
+    # Create subplots with 2 rows, shared x-axis
+    list_row_heights = [0.6] + [0.4/len(appliances) for _ in range(len(appliances))]
+
+    fig_agg          = make_subplots(rows=len(appliances)+1, cols=1, 
+                                     shared_xaxes=True, vertical_spacing=0.1, row_heights=list_row_heights,
+                                     subplot_titles=[""]+appliances)
+    fig_appl         = make_subplots(rows=len(appliances)+1, cols=1, shared_xaxes=True, 
+                                     vertical_spacing=0.1, row_heights=list_row_heights,
+                                     subplot_titles=[""]+appliances)
+    fig_appl_stacked = make_subplots(rows=len(appliances)+1, cols=1, shared_xaxes=True, 
+                                     vertical_spacing=0.1, row_heights=list_row_heights,
+                                     subplot_titles=[""]+appliances)
+    
+    # Aggregate plot
+    fig_agg.add_trace(go.Scatter(x=window_df.index, y=window_df['Aggregate'], mode='lines', name='Aggregate', fill='tozeroy', line=dict(color='royalblue')),
+                      row=1, col=1)
+    
+    # Stacked CAM calculations
+    for z, appl in enumerate(appliances, start=1):
+
+        fig_appl.add_trace(go.Scatter(x=window_df.index, y=window_df[appl], mode='lines', name=appl.capitalize(), marker_color=dict_color_appliance[appl],  fill='tozeroy'))
+        fig_appl_stacked.add_trace(go.Scatter(x=window_df.index, y=window_df[appl], mode='lines', line=dict(width=0), marker_color=dict_color_appliance[appl], name=appl.capitalize(), stackgroup='one'))
+
+        stacked_cam = None
+        dict_pred = pred_dict_all[appl]
+
+        k = 0
+        for name_model, dict_model in dict_pred.items():
+            if dict_model['pred_cam'] is not None:
+                # Aggregate CAMs from different models
+                if dict_model['pred_label'] < 1:
+                    tmp_cam = dict_model['pred_cam'] * 0
+                    #if name_model == 'TransAppS':
+                    #    tmp_cam = dict_model['pred_cam'] * 0
+                    #else:
+                    #    tmp_cam = dict_model['pred_cam'] * dict_model['pred_prob'][1]
+                else:
+                    tmp_cam = dict_model['pred_cam']
+
+                stacked_cam = stacked_cam + tmp_cam if stacked_cam is not None else tmp_cam
+                k += 1
+        
+        # Clip values and ensure it's an array with the same length as window_agg
+        stacked_cam = np.clip(stacked_cam/k, a_min=0, a_max=None) if stacked_cam is not None else np.zeros(len(window_df['Aggregate']))
+
+        if appl=='WashingMachine' or appl=='Dishwasher':
+            w=30
+        elif appl=='Kettle':
+            w=3
+        else:
+            w=3
+        #stacked_cam = np.convolve(stacked_cam, np.ones(w), 'same') / w
+    
+        # Stacked CAM
+        fig_agg.add_trace(go.Scatter(x=window_df.index, y=stacked_cam, mode='lines', showlegend=False, name=appl.capitalize(), marker_color=dict_color_appliance[appl], fill='tozeroy'), row=1+z, col=1)
+        fig_appl.add_trace(go.Scatter(x=window_df.index, y=stacked_cam, mode='lines', showlegend=False,  name=appl.capitalize(), marker_color=dict_color_appliance[appl],  fill='tozeroy'), row=1+z, col=1)
+        fig_appl_stacked.add_trace(go.Scatter(x=window_df.index, y=stacked_cam, mode='lines', showlegend=False,  name=appl.capitalize(), marker_color=dict_color_appliance[appl],  fill='tozeroy'), row=1+z, col=1)
+        
+
+        # Example modification: Iterate over stacked_cam to identify and draw rectangles
+        color = dict_color_appliance[appl]  # Get color for the current appliance
+        start_idx = None  # Start index of the active segment
+
+        threshold = np.mean(stacked_cam)
+
+        for i, value in enumerate(stacked_cam):
+            if value > threshold and start_idx is None:  # CAM becomes active
+                start_idx = i
+            elif value <= threshold and start_idx is not None:  # End of an active segment
+                # Add shape for the active segment
+                fig_agg.add_shape(
+                    type="rect",
+                    x0=window_df.index[start_idx],  # Convert index to x-value as needed
+                    y0=0,
+                    x1=window_df.index[i],
+                    y1=max(3000, np.max(window_df['Aggregate'].values) + 50),
+                    line=dict(width=0),
+                    fillcolor=color,
+                    opacity=0.3,  # Adjust for desired transparency
+                    layer="below",
+                    row=1, col=1
+                )
+                start_idx = None  # Reset for next segment
+
+        # Check if there's an active segment until the end
+        if start_idx is not None:
+            fig_agg.add_shape(
+                type="rect",
+                x0=window_df.index[start_idx],
+                y0=0,
+                x1=window_df.index[-1],
+                y1=max(3000, np.max(window_df['Aggregate'].values) + 50),
+                line=dict(width=0),
+                fillcolor=color,
+                opacity=0.3,
+                layer="below",
+                row=1, col=1
+            )
+
+    # Update layout for the combined figure
+    xaxis_title_dict = {f'xaxis{len(appliances)+1}_title': 'Time'}
+    fig_agg.update_layout(
+        title='Aggregate power consumption and predicted appliance localization',
+        showlegend=False,
+        height=500,
+        width=1000,
+        margin=dict(l=100, r=20, t=30, b=40),
+        **xaxis_title_dict
+    )
+    
+    fig_appl.update_layout(
+        title='Individual appliance power consumption compared to predicted appliance localization',
+        legend=dict(orientation='h', x=0.5, xanchor='center', y=-0.2),
+        height=500,
+        width=1000,
+        margin=dict(l=100, r=20, t=30, b=40),
+        **xaxis_title_dict
+    )
+
+    fig_appl_stacked.update_layout(
+        title='Individual appliance power consumption compared to predicted appliance localization',
+        legend=dict(orientation='h', x=0.5, xanchor='center', y=-0.2),
+        height=500,
+        width=1000,
+        margin=dict(l=100, r=20, t=30, b=40),
+        **xaxis_title_dict
+    )
+    
+    fig_agg.update_annotations(font=dict(family="Helvetica", size=15))
+    fig_appl.update_annotations(font=dict(family="Helvetica", size=15))
+    fig_appl_stacked.update_annotations(font=dict(family="Helvetica", size=15))
+
+    fig_agg.update_yaxes(title_text='Power (Watts)', row=1, col=1, range=[0, max(3000, np.max(window_df['Aggregate'].values) + 50)])
+    fig_appl.update_yaxes(title_text='Power (Watts)', row=1, col=1, range=[0, max(3000, np.max(window_df['Aggregate'].values) + 50)])
+    fig_appl_stacked.update_yaxes(title_text='Power (Watts)', row=1, col=1, range=[0, max(3000, np.max(window_df['Aggregate'].values) + 50)])
+    
+    # Update y-axis for the heatmap
+    for z, appl in enumerate(appliances, start=2):
+        fig_agg.update_yaxes(row=z, col=1, range=[0, 1])
+        fig_appl.update_yaxes(row=z, col=1, range=[0, 1])
+        fig_appl_stacked.update_yaxes(row=z, col=1, range=[0, 1])
+    #fig_agg.update_yaxes(tickmode='array', tickvals=list(appliances), ticktext=appliances, row=2, col=1, tickangle=-45)
+    #fig_appl.update_yaxes(tickmode='array', tickvals=list(appliances), ticktext=appliances, row=2, col=1, tickangle=-45)
+    #fig_appl_stacked.update_yaxes(tickmode='array', tickvals=list(appliances), ticktext=appliances, row=2, col=1, tickangle=-45)
+
+    return fig_agg, fig_appl, fig_appl_stacked
+
+
 def plot_detection_probabilities(data):
     # Determine the number of appliances to plot
     num_appliances = len(data)
@@ -781,124 +933,3 @@ def plot_signatures(appliances, frequency):
                     )
 
     return fig
-
-
-"""
-def plot_cam(k, df, window_size, appliances, pred_dict_all):
-    window_df = df.iloc[k*window_size: k*window_size + window_size]
-
-    dict_color_model = {'ConvNet': 'wheat', 'ResNet': 'coral', 'Inception': 'powderblue', 'TransAppS': 'peachpuff', 'Ensemble': 'indianred'}
-
-    fig_cam = make_subplots(rows=len(appliances), cols=1, subplot_titles=[f'CAM {appliance}' for appliance in appliances], shared_xaxes=True)
-
-    for i,appliance in enumerate(appliances):
-        pred_dict_appl = pred_dict_all[appliance]
-
-        for model_name, values in pred_dict_appl.items():
-            if values['pred_cam'] is not None:
-                # Clip CAM to 0 and set * by predicted label for each model
-                cam = np.clip(values['pred_cam'], a_min=0, a_max=None) * values['pred_label']
-                fig_cam.add_trace(go.Scatter(x=window_df.index, y=cam, mode='lines', fill='tozeroy', marker=dict(color=dict_color_model[model_name]), name=f'CAM {model_name}', legendgroup=i+1), row=i+1, col=1)
-
-        fig_cam.update_layout(title='CAM', 
-                              xaxis_title='Time', 
-                              legend_tracegroupgap=(3 - len(pred_dict_appl))*20+10,
-                )
-    return fig_cam
-
-
-def plot_one_window(k, df, window_size, appliances, pred_dict_all):
-    window_df = df.iloc[k*window_size: k*window_size + window_size]
-    # Plot for 'Aggregate' column for the window
-    fig_aggregate_window = go.Figure()
-    fig_aggregate_window.add_trace(go.Scatter(x=window_df.index, y=window_df['Aggregate'], mode='lines', name='Aggregate', fill='tozeroy', line=dict(color='royalblue')))
-    fig_aggregate_window.update_layout(title='Aggregate Consumption', 
-                                       xaxis_title='Time', 
-                                       yaxis_title='Power Consumption (Watts)',
-                                       template="plotly",
-                                       height=450,
-                                       width=1000, 
-                                       margin=dict(l=30, r=20, t=30, b=40),
-                                       yaxis_range=[0, max(3000, np.max(window_df['Aggregate'].values) + 50)]
-                                       )
-
-    # Plot load curve of selected Appliances for the window
-    fig_appliances_window = go.Figure()
-    fig_appliances_window_stacked = go.Figure()
-    for appliance in appliances:
-        fig_appliances_window.add_trace(go.Scatter(x=window_df.index, y=window_df[appliance], mode='lines', name=appliance.capitalize(), fill='tozeroy'))
-        fig_appliances_window_stacked.add_trace(go.Scatter(x=window_df.index, y=window_df[appliance], mode='lines', line=dict(width=0), name=appliance.capitalize(), stackgroup='one'))
-
-    fig_appliances_window.update_layout(title='True Appliance Consumption', 
-                                        xaxis_title='Time', 
-                                        yaxis_title='Appliances Consumption (Watts)', 
-                                        template="plotly",
-                                        legend=dict(orientation='h', x=0.5, xanchor='center', y=-0.2),
-                                        height=450,
-                                        width=1000, 
-                                        margin=dict(l=30, r=20, t=30, b=40),
-                                        yaxis_range=[0, max(3000, np.max(window_df['Aggregate'].values) + 50)]
-                                        )
-
-    fig_appliances_window_stacked.update_layout(title='True Appliance Consumption', 
-                                        xaxis_title='Time', 
-                                        yaxis_title='Appliances Consumption (Watts)', 
-                                        template="plotly",
-                                        legend=dict(orientation='h', x=0.5, xanchor='center', y=-0.2),
-                                        height=450,
-                                        width=1000, 
-                                        margin=dict(l=30, r=20, t=30, b=40),
-                                        yaxis_range=[0, max(3000, np.max(window_df['Aggregate'].values) + 50)]
-                                        )
-    
-    return fig_aggregate_window, fig_appliances_window, plot_detection_probabilities(pred_dict_all), fig_appliances_window_stacked
-
-
-def plot_stacked_cam(k, df, window_size, appliances, pred_dict_all):
-    window_df = df.iloc[k*window_size: k*window_size + window_size]
-    window_agg = window_df['Aggregate']
-
-    z = []  
-    for appl in appliances:
-        stacked_cam = None
-        dict_pred = pred_dict_all[appl]
-
-        k = 0
-        for name_model, dict_model in dict_pred.items():
-            if dict_model['pred_cam'] is not None:
-                # Aggregate CAMs from different models
-                if dict_model['pred_label']<1:
-                    if name_model=='TransAppS':
-                        tmp_cam = dict_model['pred_cam'] * 0
-                    else:
-                        tmp_cam = dict_model['pred_cam'] * dict_model['pred_prob'][1]
-                else:
-                    tmp_cam = dict_model['pred_cam']
-
-                stacked_cam = stacked_cam + tmp_cam if stacked_cam is not None else tmp_cam
-                k+=1
-        
-            # Clip values and ensure it's an array with the same length as window_agg
-        stacked_cam = np.clip(stacked_cam/k, a_min=0, a_max=None) if stacked_cam is not None else np.zeros(len(window_agg))
-        z.append(stacked_cam)
-
-    # Create the heatmap
-    fig = go.Figure(data=go.Heatmap(z=z,
-                                    x=window_agg.index,  # Timestamps as x-axis
-                                    y=appliances,  # Appliances as y-axis
-                                    colorscale='RdBu_r',  # Color scale to represent stacked_cam values
-                                    showscale=False
-                                    )
-                    )
-
-    # Update layout to add titles and adjust axis labels
-    fig.update_layout(xaxis_title='Time',
-                      xaxis=dict(tickmode='auto'), 
-                      yaxis=dict(tickmode='auto', tickvals=list(range(len(appliances))), ticktext=appliances),
-                      height= 100 * (len(appliances)+1),
-                    )
-    
-    fig.update_yaxes(tickangle=-45)
-
-    return fig  
-"""
