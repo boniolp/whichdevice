@@ -104,9 +104,6 @@ def run_playground_frame():
             
             with tab_ts:
                 st.plotly_chart(fig_ts, use_container_width=True)
-    
-                if loc_toggle and len(models)>1:
-                    st.markdown(f"""**Multiple classifiers are selected:** the plot show the average predicted location for each model.""")
             
             with tab_app:
                 on = st.toggle('Stack')
@@ -114,6 +111,9 @@ def run_playground_frame():
                     st.plotly_chart(fig_stack, use_container_width=True)
                 else:
                     st.plotly_chart(fig_app, use_container_width=True)
+                    
+            if loc_toggle and len(models)>1:
+                st.markdown(f"""**Multiple classifiers are selected:** the plot show the average predicted location for each model.""")
     
             if loc_toggle:
                 tab_prob, tab_cam, tab_signatures = st.tabs(["Models detection probabilities", "Models patterns localization", "Examples of appliance patterns"])
