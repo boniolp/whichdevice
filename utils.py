@@ -649,7 +649,7 @@ def plot_one_window2(k, df, window_size, appliances):
     return fig_agg, fig_appl, fig_appl_stacked
 
 
-def plot_one_window3(k, df, window_size, appliances, pred_dict_all, stack_appl_cons):
+def plot_one_window3(k, df, window_size, appliances, pred_dict_all):
     window_df = df.iloc[k*window_size: k*window_size + window_size]
     dict_color_appliance = {'WashingMachine': 'teal', 'Dishwasher': 'skyblue', 'Kettle': 'orange', 'Microwave': 'grey'}
     
