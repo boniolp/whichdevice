@@ -39,6 +39,8 @@ def run_playground_frame():
     
     st.markdown(text_tab_playground)
 
+    st.markdown(f"""Look at the example patterns of selected devices below and try to identify them in the aggregate main power!""")
+
     col1_1, col1_2, col1_3 = st.columns(3)
 
     with col1_1:
@@ -150,8 +152,6 @@ def run_playground_frame():
                 st.plotly_chart(fig_stack, use_container_width=True)
             else:
                 st.plotly_chart(fig_app, use_container_width=True)
-
-        st.markdown(f"""Look at the example patterns of selected devices below and try to identify them in the aggregate main power!""")
         
         fig_sig = plot_signatures(appliances1, frequency)
 
@@ -634,7 +634,7 @@ def plot_one_window2(k, df, window_size, appliances):
 
     fig_appl_stacked.update_layout(
         title='Individual appliance power consumption (stacked)',
-        legend=dict(orientation='h', x=0.5, xanchor='center', y=-0.2),
+        legend=dict(orientation='h', x=0.5, xanchor='center', y=-0.4),
         xaxis_title='Time',
         height=300,
         width=1000,
