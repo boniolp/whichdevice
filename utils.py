@@ -66,94 +66,99 @@ def run_playground_frame():
             "Choose models:", models_list
         )
 
-    if len(models)>0:
-        loc_toggle = st.toggle('Localize appliance patterns')
-
-    colcontrol_1, colcontrol_2, colcontrol_3 = st.columns([0.2,0.8,0.2])
-    with colcontrol_1:
-        if st.button(":rewind: **Prev.**", type="primary"):
-            CURRENT_WINDOW -= 1
-    with colcontrol_3:
-        if st.button("**Next** :fast_forward:", type="primary"):
-            CURRENT_WINDOW += 1
+    if len(appliances1)>0:
+        if len(models)>0:
+            loc_toggle = st.toggle('Localize appliance patterns')
     
-    df, window_size = get_time_series_data(ts_name, frequency=frequency, length=length)
-    n_win = len(df) // window_size
-
-    if CURRENT_WINDOW > n_win:
-        CURRENT_WINDOW=n_win
-    elif CURRENT_WINDOW < 0:
-        CURRENT_WINDOW=0
-
-    with colcontrol_2:
-        st.markdown("<p style='text-align: center;'> <b>from</b> <i>{}</i> <b>to</b> <i>{}</i> </p>".format(df.iloc[CURRENT_WINDOW*window_size: (CURRENT_WINDOW+1)*window_size].index[0],df.iloc[CURRENT_WINDOW*window_size: (CURRENT_WINDOW+1)*window_size].index[-1]),unsafe_allow_html=True)
+        colcontrol_1, colcontrol_2, colcontrol_3 = st.columns([0.2,0.8,0.2])
+        with colcontrol_1:
+            if st.button(":rewind: **Prev.**", type="primary"):
+                CURRENT_WINDOW -= 1
+        with colcontrol_3:
+            if st.button("**Next** :fast_forward:", type="primary"):
+                CURRENT_WINDOW += 1
+        
+        df, window_size = get_time_series_data(ts_name, frequency=frequency, length=length)
+        n_win = len(df) // window_size
     
-    if len(models)>0:
-        pred_dict_all = pred_one_window(CURRENT_WINDOW, df, window_size, ts_name, appliances1, frequency, models)
-        if loc_toggle:
-            #fig_ts, fig_app, fig_stack = plot_one_window1(CURRENT_WINDOW,  df, window_size, appliances1, pred_dict_all)
-            fig_ts, fig_app, fig_stack = plot_one_window3(CURRENT_WINDOW,  df, window_size, appliances1, pred_dict_all)
+        if CURRENT_WINDOW > n_win:
+            CURRENT_WINDOW=n_win
+        elif CURRENT_WINDOW < 0:
+            CURRENT_WINDOW=0
+    
+        with colcontrol_2:
+            st.markdown("<p style='text-align: center;'> <b>from</b> <i>{}</i> <b>to</b> <i>{}</i> </p>".format(df.iloc[CURRENT_WINDOW*window_size: (CURRENT_WINDOW+1)*window_size].index[0],df.iloc[CURRENT_WINDOW*window_size: (CURRENT_WINDOW+1)*window_size].index[-1]),unsafe_allow_html=True)
+        
+        if len(models)>0:
+            pred_dict_all = pred_one_window(CURRENT_WINDOW, df, window_size, ts_name, appliances1, frequency, models)
+            if loc_toggle:
+                #fig_ts, fig_app, fig_stack = plot_one_window1(CURRENT_WINDOW,  df, window_size, appliances1, pred_dict_all)
+                fig_ts, fig_app, fig_stack = plot_one_window3(CURRENT_WINDOW,  df, window_size, appliances1, pred_dict_all)
+            else:
+                fig_ts, fig_app, fig_stack = plot_one_window2(CURRENT_WINDOW,  df, window_size, appliances1)
+                
+            fig_prob = plot_detection_probabilities(pred_dict_all)
+            
+            tab_ts, tab_app = st.tabs(["Aggregated", "Per device"])
+            
+            with tab_ts:
+                st.plotly_chart(fig_ts, use_container_width=True)
+    
+                if loc_toggle and len(models)>1:
+                    st.markdown(f"""**Multiple classifiers are selected:** the heatmap shows the average of predicted pattern localization for selected models.""")
+            
+            with tab_app:
+                on = st.toggle('Stack')
+                if on:
+                    st.plotly_chart(fig_stack, use_container_width=True)
+                else:
+                    st.plotly_chart(fig_app, use_container_width=True)
+    
+            if loc_toggle:
+                tab_prob, tab_cam, tab_signatures = st.tabs(["Models detection probabilities", "Models patterns localization", "Examples of appliance patterns"])
+        
+                with tab_prob:
+                    st.plotly_chart(fig_prob, use_container_width=True)
+                    if len(models)>1:
+                        st.markdown(f"""**Mean Prediction** shows the average of predicted detection probabilities for selected models.""")
+                with tab_cam:
+                    fig_cam = plot_cam(CURRENT_WINDOW, df, window_size, appliances1, pred_dict_all)
+                    st.plotly_chart(fig_cam, use_container_width=True)
+                with tab_signatures:
+                    fig_sig = plot_signatures(appliances1, frequency)
+                    st.plotly_chart(fig_sig, use_container_width=True)
+            else:
+                tab_prob, tab_signatures = st.tabs(["Models detection probabilities", "Examples of appliance patterns"])
+        
+                with tab_prob:
+                    st.plotly_chart(fig_prob, use_container_width=True)
+                    if len(models)>1:
+                        st.markdown(f"""**Mean Prediction** shows the average of predicted detection probabilities for selected models.""")
+                with tab_signatures:
+                    fig_sig = plot_signatures(appliances1, frequency)
+                    st.plotly_chart(fig_sig, use_container_width=True)
         else:
             fig_ts, fig_app, fig_stack = plot_one_window2(CURRENT_WINDOW,  df, window_size, appliances1)
+    
+            tab_ts, tab_app = st.tabs(["Aggregated", "Per device"])
+    
+            with tab_ts:
+                st.plotly_chart(fig_ts, use_container_width=True)
             
-        fig_prob = plot_detection_probabilities(pred_dict_all)
-        
-        tab_ts, tab_app = st.tabs(["Aggregated", "Per device"])
-        
-        with tab_ts:
-            st.plotly_chart(fig_ts, use_container_width=True)
-
-            if loc_toggle and len(models)>1:
-                st.markdown(f"""**Multiple classifiers are selected:** the heatmap shows the average of predicted pattern localization for selected models.""")
-        
-        with tab_app:
-            on = st.toggle('Stack')
-            if on:
-                st.plotly_chart(fig_stack, use_container_width=True)
-            else:
-                st.plotly_chart(fig_app, use_container_width=True)
-
-        if loc_toggle:
-            tab_prob, tab_cam, tab_signatures = st.tabs(["Models detection probabilities", "Models patterns localization", "Examples of appliance patterns"])
+            with tab_app:
+                on = st.toggle('Stack')
+                if on:
+                    st.plotly_chart(fig_stack, use_container_width=True)
+                else:
+                    st.plotly_chart(fig_app, use_container_width=True)
+            
+            fig_sig = plot_signatures(appliances1, frequency)
     
-            with tab_prob:
-                st.plotly_chart(fig_prob, use_container_width=True)
-                if len(models)>1:
-                    st.markdown(f"""**Mean Prediction** shows the average of predicted detection probabilities for selected models.""")
-            with tab_cam:
-                fig_cam = plot_cam(CURRENT_WINDOW, df, window_size, appliances1, pred_dict_all)
-                st.plotly_chart(fig_cam, use_container_width=True)
-            with tab_signatures:
-                fig_sig = plot_signatures(appliances1, frequency)
-                st.plotly_chart(fig_sig, use_container_width=True)
-        else:
-            tab_prob, tab_signatures = st.tabs(["Models detection probabilities", "Examples of appliance patterns"])
-    
-            with tab_prob:
-                st.plotly_chart(fig_prob, use_container_width=True)
-                if len(models)>1:
-                    st.markdown(f"""**Mean Prediction** shows the average of predicted detection probabilities for selected models.""")
-            with tab_signatures:
-                fig_sig = plot_signatures(appliances1, frequency)
-                st.plotly_chart(fig_sig, use_container_width=True)
+            st.plotly_chart(fig_sig, use_container_width=True)
     else:
-        fig_ts, fig_app, fig_stack = plot_one_window2(CURRENT_WINDOW,  df, window_size, appliances1)
-
-        tab_ts, tab_app = st.tabs(["Aggregated", "Per device"])
-
-        with tab_ts:
-            st.plotly_chart(fig_ts, use_container_width=True)
+        fig_ts, fig_app, fig_stack = plot_one_window2(CURRENT_WINDOW,  df, window_size)
         
-        with tab_app:
-            on = st.toggle('Stack')
-            if on:
-                st.plotly_chart(fig_stack, use_container_width=True)
-            else:
-                st.plotly_chart(fig_app, use_container_width=True)
-        
-        fig_sig = plot_signatures(appliances1, frequency)
-
-        st.plotly_chart(fig_sig, use_container_width=True)
+        st.plotly_chart(fig_ts, use_container_width=True)
         
             
     
