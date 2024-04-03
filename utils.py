@@ -156,7 +156,7 @@ def run_playground_frame():
     
             st.plotly_chart(fig_sig, use_container_width=True)
     else:
-        fig_ts, fig_app, fig_stack = plot_one_window2(CURRENT_WINDOW,  df, window_size)
+        fig_ts = plot_one_window_agg(CURRENT_WINDOW,  df, window_size)
         
         st.plotly_chart(fig_ts, use_container_width=True)
         
@@ -650,6 +650,29 @@ def plot_one_window2(k, df, window_size, appliances):
     fig_appl_stacked.update_yaxes(title_text='Power (Watts)', range=[0, max(3000, np.max(window_df['Aggregate'].values) + 50)])
 
     return fig_agg, fig_appl, fig_appl_stacked
+
+
+def plot_one_window_agg(k, df, window_size):
+    window_df = df.iloc[k*window_size: k*window_size + window_size]
+
+    fig_agg          = go.Figure()
+    
+    # Aggregate plot
+    fig_agg.add_trace(go.Scatter(x=window_df.index, y=window_df['Aggregate'], mode='lines', name='Aggregate', fill='tozeroy', line=dict(color='royalblue')))
+    
+    # Update layout for the combined figure
+    fig_agg.update_layout(
+        title='Aggregate power consumption',
+        xaxis_title='Time',
+        height=300,
+        width=1000,
+        margin=dict(l=100, r=20, t=30, b=40)
+    )
+    
+    # Update y-axis for the aggregate consumption plot
+    fig_agg.update_yaxes(title_text='Power (Watts)', range=[0, max(3000, np.max(window_df['Aggregate'].values) + 50)])
+
+    return fig_agg
 
 
 def plot_one_window3(k, df, window_size, appliances, pred_dict_all):
