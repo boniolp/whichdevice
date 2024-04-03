@@ -2,7 +2,7 @@
 
 text_tab_playground = f"""
 ### Playground
-Explore electrical time series data and select a model to detect and localize appliance patterns."""
+Attempt to identify the selected appliances in the aggregate power by looking at the provided example patterns at the bottom of the frame or choose a classifier to detect and localize them automatically."""
 
 text_tab_benchmark = f"""
 ### Benchmark
