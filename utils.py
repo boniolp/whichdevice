@@ -798,6 +798,34 @@ def plot_one_window3(k, df, window_size, appliances, pred_dict_all):
     #fig_appl.update_yaxes(tickmode='array', tickvals=list(appliances), ticktext=appliances, row=2, col=1, tickangle=-45)
     #fig_appl_stacked.update_yaxes(tickmode='array', tickvals=list(appliances), ticktext=appliances, row=2, col=1, tickangle=-45)
 
+    if len(appliances)==4:
+        yaxis_title_y = 0.3
+    elif len(appliances)==3:
+        yaxis_title_y = 0.27
+    elif len(appliances)==3:
+        yaxis_title_y = 0.25
+    else:
+        yaxis_title_y = 0.22
+        
+    shared_yaxis_title = {
+        'text': "Localization",  # Update with your desired title
+        'showarrow': False,
+        'xref': 'paper',
+        'yref': 'paper',
+        'x': -0.05,
+        'y': yaxis_title_y,
+        'xanchor': 'center',
+        'yanchor': 'middle',
+        'textangle': -90,  # Rotate the text for vertical alignment
+        'font': {'size': 12}
+    }
+
+    for fig in [fig_agg, fig_appl, fig_appl_stacked]:
+        if 'annotations' in fig.layout:
+            fig.layout.annotations += (shared_yaxis_title,)
+        else:
+            fig.update_layout(annotations=[shared_yaxis_title])
+
     return fig_agg, fig_appl, fig_appl_stacked
 
 
