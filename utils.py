@@ -403,7 +403,7 @@ def convert_length_to_window_size(frequency, length):
     if frequency in freq_to_seconds:
         frequency_seconds = freq_to_seconds[frequency]
     else:
-        raise ValueError("Frequency not recognized. Please use '30 seconds', '1 minutes', or '10 minutes'.")
+        raise ValueError("Frequency not recognized. Please use '30 seconds', '1 minute', or '10 minutes'.")
     
     # Calculate window size (total_length in seconds divided by frequency in seconds)
     # Ensure to convert minutes to seconds for total length
@@ -413,7 +413,7 @@ def convert_length_to_window_size(frequency, length):
     
 
 def get_time_series_data(ts_name, frequency, length):
-    dict_freq   = {'30 seconds': '30s', '1 minutes': '1T', '10 minutes': '10T'}
+    dict_freq   = {'30 seconds': '30s', '1 minute': '1T', '10 minutes': '10T'}
     pd_freq     = dict_freq[frequency]
 
     # Convert selected length to window_size according to choseen frequency
@@ -430,8 +430,8 @@ def get_time_series_data(ts_name, frequency, length):
 
 
 def get_prediction_one_appliance(ts_name, window_agg, appliance, frequency, model_list):
-    dict_freq  = {'30 seconds': '30s', '1 minutes': '1T', '10 minutes': '10T'}
-    dic_win    = {'30 seconds': 2880,  '1 minutes': 1440, '10 minutes':  144}
+    dict_freq  = {'30 seconds': '30s', '1 minute': '1T', '10 minutes': '10T'}
+    dic_win    = {'30 seconds': 2880,  '1 minute': 1440, '10 minutes':  144}
     sampling_rate = dict_freq[frequency]
 
     window_agg  = torch.Tensor(window_agg).unsqueeze(0).unsqueeze(0)
@@ -815,7 +815,7 @@ def plot_one_window3(k, df, window_size, appliances, pred_dict_all):
         'xanchor': 'center',
         'yanchor': 'middle',
         'textangle': -90,  # Rotate the text for vertical alignment
-        'font': {'size': 12}
+        'font': {'size': 15}
     }
 
     for fig in [fig_agg, fig_appl, fig_appl_stacked]:
@@ -933,7 +933,7 @@ def scale_cam_inst(arr):
 
 def plot_signatures(appliances, frequency):
     fig = make_subplots(rows=1, cols=len(appliances), subplot_titles=[f'{appliance}' for appliance in appliances], shared_yaxes=True)
-    dict_freq  = {'30 seconds': '30s', '1 minutes': '1T', '10 minutes': '10T'}
+    dict_freq  = {'30 seconds': '30s', '1 minute': '1T', '10 minutes': '10T'}
     dict_color_appliance = {'WashingMachine': 'teal', 'Dishwasher': 'skyblue', 'Kettle': 'orange', 'Microwave': 'grey'}
     sampling_rate = dict_freq[frequency]
 
