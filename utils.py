@@ -106,7 +106,7 @@ def run_playground_frame():
                 st.plotly_chart(fig_ts, use_container_width=True)
     
                 if loc_toggle and len(models)>1:
-                    st.markdown(f"""**Multiple classifiers are selected:** the heatmap shows the average of predicted pattern localization for selected models.""")
+                    st.markdown(f"""**Multiple classifiers are selected:** plotted results show the average of predicted localization for each model.""")
             
             with tab_app:
                 on = st.toggle('Stack')
