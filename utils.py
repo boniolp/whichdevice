@@ -91,7 +91,8 @@ def run_playground_frame():
     if len(models)>0:
         pred_dict_all = pred_one_window(CURRENT_WINDOW, df, window_size, ts_name, appliances1, frequency, models)
         if loc_toggle:
-            fig_ts, fig_app, fig_stack = plot_one_window1(CURRENT_WINDOW,  df, window_size, appliances1, pred_dict_all)
+            #fig_ts, fig_app, fig_stack = plot_one_window1(CURRENT_WINDOW,  df, window_size, appliances1, pred_dict_all)
+            fig_ts, fig_app, fig_stack = plot_one_window3(CURRENT_WINDOW,  df, window_size, appliances1, pred_dict_all)
         else:
             fig_ts, fig_app, fig_stack = plot_one_window2(CURRENT_WINDOW,  df, window_size, appliances1)
             
